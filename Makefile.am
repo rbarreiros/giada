@@ -5,7 +5,7 @@ AUTOMAKE_OPTIONS = foreign
 # inside configure.ac.
 
 
-cppFlags =
+cppFlags = -I$(top_srcdir)/src
 cxxFlags = -std=c++14 -Wall
 ldAdd =
 ldFlags =
