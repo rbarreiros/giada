@@ -29,7 +29,7 @@
 #define GE_SAMPLE_CHANNEL_H
 
 
-#include "../../../../core/sampleChannel.h"
+#include "core/sampleChannel.h"
 #include "channel.h"
 
 

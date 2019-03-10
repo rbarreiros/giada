@@ -30,8 +30,8 @@
 
 
 #include <FL/Fl_Group.H>
-#include "../../../../core/types.h"
-#include "../../../../core/channel.h"
+#include "core/types.h"
+#include "core/channel.h"
 
 
 class geChannelStatus;

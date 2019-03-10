@@ -51,6 +51,7 @@ public:
     Data();
     Data(const Data& o);
     // TODO - Data(Data&& o);
+    ~Data();
 
     void render(AudioBuffer& out, const AudioBuffer& in, AudioBuffer& inToOut);
 

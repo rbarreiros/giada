@@ -27,9 +27,11 @@
 
 #include <cassert>
 #include <cstring>
-#include "../deps/rtaudio-mod/RtAudio.h"
-#include "../utils/log.h"
-#include "../utils/math.h"
+#include "deps/rtaudio-mod/RtAudio.h"
+#include "utils/log.h"
+#include "utils/math.h"
+#include "render/render.h"
+#include "render/data.h"
 #include "wave.h"
 #include "kernelAudio.h"
 #include "recorder.h"
@@ -366,7 +368,9 @@ int masterPlay(void* outBuf, void* inBuf, unsigned bufferSize,
 	prepareBuffers_(out);
 	processLineIn_(in);
 
-	pthread_mutex_lock(&mutex);
+	//pthread_mutex_lock(&mutex);
+
+	m::render::get()->render(out, in, vChanInToOut_);
 
 	if (clock::isActive()) {
 		for (unsigned j=0; j<bufferSize; j++) {
@@ -383,7 +387,7 @@ int masterPlay(void* outBuf, void* inBuf, unsigned bufferSize,
 
 	renderIO_(out, in);
 
-	pthread_mutex_unlock(&mutex);
+	//pthread_mutex_unlock(&mutex);
 
 	/* Post processing */
 

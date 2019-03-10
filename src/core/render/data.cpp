@@ -60,8 +60,20 @@ Data::Data(const Data& o)
 /* -------------------------------------------------------------------------- */
 
 
+Data::~Data()
+{
+	puts("~Data");
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void Data::render(AudioBuffer& out, const AudioBuffer& in, AudioBuffer& inToOut)
 {
+	for (Channel* channel : channels)
+		channel->prepareBuffer(clock::isRunning());
+
 	if (clock::isRunning())
 		for (Frame i=0; i<out.countFrames(); i++)
 			parseEvents(i);
