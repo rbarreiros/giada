@@ -26,39 +26,42 @@
 
 
 #include <cmath>
+#include <cassert>
 #include <FL/Fl.H>
-#include "../gui/dialogs/mainWindow.h"
-#include "../gui/dialogs/sampleEditor.h"
-#include "../gui/dialogs/warnings.h"
-#include "../gui/elems/basics/input.h"
-#include "../gui/elems/basics/dial.h"
-#include "../gui/elems/sampleEditor/waveTools.h"
-#include "../gui/elems/sampleEditor/volumeTool.h"
-#include "../gui/elems/sampleEditor/boostTool.h"
-#include "../gui/elems/sampleEditor/panTool.h"
-#include "../gui/elems/sampleEditor/pitchTool.h"
-#include "../gui/elems/sampleEditor/rangeTool.h"
-#include "../gui/elems/sampleEditor/waveform.h"
-#include "../gui/elems/mainWindow/keyboard/keyboard.h"
-#include "../gui/elems/mainWindow/keyboard/channel.h"
-#include "../gui/elems/mainWindow/keyboard/sampleChannel.h"
-#include "../gui/elems/mainWindow/keyboard/channelButton.h"
-#include "../utils/gui.h"
-#include "../utils/fs.h"
-#include "../utils/log.h"
-#include "../core/kernelAudio.h"
-#include "../core/mixerHandler.h"
-#include "../core/mixer.h"
-#include "../core/clock.h"
-#include "../core/pluginHost.h"
-#include "../core/conf.h"
-#include "../core/wave.h"
-#include "../core/channel.h"
-#include "../core/sampleChannel.h"
-#include "../core/midiChannel.h"
-#include "../core/recorder.h"
-#include "../core/plugin.h"
-#include "../core/waveManager.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/sampleEditor.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/elems/basics/input.h"
+#include "gui/elems/basics/dial.h"
+#include "gui/elems/sampleEditor/waveTools.h"
+#include "gui/elems/sampleEditor/volumeTool.h"
+#include "gui/elems/sampleEditor/boostTool.h"
+#include "gui/elems/sampleEditor/panTool.h"
+#include "gui/elems/sampleEditor/pitchTool.h"
+#include "gui/elems/sampleEditor/rangeTool.h"
+#include "gui/elems/sampleEditor/waveform.h"
+#include "gui/elems/mainWindow/keyboard/keyboard.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
+#include "gui/elems/mainWindow/keyboard/sampleChannel.h"
+#include "gui/elems/mainWindow/keyboard/channelButton.h"
+#include "utils/gui.h"
+#include "utils/fs.h"
+#include "utils/log.h"
+#include "core/render/render.h"
+#include "core/render/data.h"
+#include "core/kernelAudio.h"
+#include "core/mixerHandler.h"
+#include "core/mixer.h"
+#include "core/clock.h"
+#include "core/pluginHost.h"
+#include "core/conf.h"
+#include "core/wave.h"
+#include "core/channel.h"
+#include "core/sampleChannel.h"
+#include "core/midiChannel.h"
+#include "core/recorder.h"
+#include "core/plugin.h"
+#include "core/waveManager.h"
 #include "main.h"
 #include "channel.h"
 
@@ -75,49 +78,21 @@ namespace channel
 {
 int loadChannel(m::SampleChannel* ch, const string& fname)
 {
-	using namespace giada::m;
-
-	/* Always stop a channel before loading a new sample in it. This will prevent
-	issues if tracker is outside the boundaries of the new sample -> segfault. */
-
-	if (ch->isPlaying())
-		ch->kill(0);
-
 	/* Save the patch and take the last browser's dir in order to re-use it the 
 	next time. */
 
-	conf::samplePath = gu_dirname(fname);
+	m::conf::samplePath = gu_dirname(fname);
 
-	waveManager::Result res = waveManager::createFromFile(fname); 
-
-	if (res.status != G_RES_OK)
-		return res.status;
-
-	if (res.wave->getRate() != conf::samplerate) {
-		gu_log("[loadChannel] input rate (%d) != system rate (%d), conversion needed\n",
-			res.wave->getRate(), conf::samplerate);
-		res.status = waveManager::resample(res.wave.get(), conf::rsmpQuality, conf::samplerate); 
-		if (res.status != G_RES_OK)
-			return res.status;
-	}
-
-	ch->pushWave(std::move(res.wave));
-
-	G_MainWin->keyboard->updateChannel(ch->guiChannel);
-
-	return res.status;
+	return m::mh::loadChannel(ch, fname);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-m::Channel* addChannel(int column, ChannelType type, int size)
+m::Channel* addChannel(size_t column, ChannelType type, int size)
 {
-	m::Channel* ch = m::mh::addChannel(type);
-	geChannel* gch = G_MainWin->keyboard->addChannel(column, ch, size);
-	ch->guiChannel = gch;
-	return ch;
+	return m::mh::addChannel(type, column);
 }
 
 
@@ -195,6 +170,8 @@ void toggleInputMonitor(m::Channel* ch)
 
 int cloneChannel(m::Channel* src)
 {
+	assert(false);
+#if 0
 	using namespace giada::m;
 
 	Channel* ch    = mh::addChannel(src->type);
@@ -206,6 +183,7 @@ int cloneChannel(m::Channel* src)
 
 	G_MainWin->keyboard->updateChannel(ch->guiChannel);
 	return true;
+#endif
 }
 
 
@@ -214,8 +192,9 @@ int cloneChannel(m::Channel* src)
 
 void setVolume(m::Channel* ch, float v, bool gui, bool editor)
 {
-	ch->volume = v;
+	m::render::get()->getChannel(ch)->volume = v;
 
+#if 0
 	/* Changing channel volume? Update wave editor (if it's shown). */
 
 	if (!editor) {
@@ -232,6 +211,7 @@ void setVolume(m::Channel* ch, float v, bool gui, bool editor)
 		ch->guiChannel->vol->value(v);
 		Fl::unlock();
 	}
+#endif
 }
 
 

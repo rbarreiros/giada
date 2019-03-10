@@ -25,25 +25,47 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef G_V_DISPATCHER_H
-#define G_V_DISPATCHER_H
+#ifndef G_DATA_H
+#define G_DATA_H
 
 
-#include <functional>
+#include <memory>
+#include <vector>
+#include "core/recorder.h"
+#include "core/plugin.h"
 
 
 namespace giada {
-namespace m 
+namespace m
 {
+class AudioBuffer;
 class Channel;
-}
-namespace v {
-namespace dispatcher
-{
-void dispatchKey(int event);
-void dispatchTouch(m::Channel* ch, bool status);
-void setSignalCallback(std::function<void()> f);
-}}} // giada::v::dispatcher
 
+
+namespace render
+{
+class Data
+{
+public:
+
+    Data();
+    Data(const Data& o);
+    // TODO - Data(Data&& o);
+
+    void render(AudioBuffer& out, const AudioBuffer& in, AudioBuffer& inToOut);
+
+    recorder::ActionMap actions;
+    std::vector<Channel*> channels;
+    std::vector<std::unique_ptr<Plugin>> masterOutPlugins;
+    std::vector<std::unique_ptr<Plugin>> masterInPlugins;
+
+    Channel* getChannel(const Channel* c);
+
+private:
+
+    void parseEvents(Frame f);
+};
+
+}}} // giada::m::
 
 #endif

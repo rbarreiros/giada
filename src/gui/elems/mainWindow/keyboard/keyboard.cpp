@@ -25,13 +25,14 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../../../core/sampleChannel.h"
-#include "../../../../glue/transport.h"
-#include "../../../../glue/io.h"
-#include "../../../../utils/log.h"
-#include "../../../dialogs/warnings.h"
-#include "../../../dispatcher.h"
-#include "../../basics/boxtypes.h"
+#include "core/render/render.h"
+#include "core/sampleChannel.h"
+#include "glue/transport.h"
+#include "glue/io.h"
+#include "utils/log.h"
+#include "gui/dispatcher.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/elems/basics/boxtypes.h"
 #include "column.h"
 #include "sampleChannel.h"
 #include "channelButton.h"
@@ -77,12 +78,30 @@ void geKeyboard::init()
 {
 	/* add 6 empty columns as init layout */
 
-	__cb_addColumn();
-	__cb_addColumn();
-	__cb_addColumn();
-	__cb_addColumn();
-	__cb_addColumn();
-	__cb_addColumn();
+	cb_addColumn();
+	cb_addColumn();
+	cb_addColumn();
+	cb_addColumn();
+	cb_addColumn();
+	cb_addColumn();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geKeyboard::rebuild()
+{
+	const std::vector<m::Channel*>& channels = m::render::get()->channels;
+
+	emptyColumns();
+
+/* TODO - temporary const_cast: remove it and make everything immutable */
+/* TODO - temporary const_cast: remove it and make everything immutable */
+/* TODO - temporary const_cast: remove it and make everything immutable */
+
+	for (const m::Channel* c : channels)
+		columns[c->column]->addChannel(const_cast<m::Channel*>(c), G_GUI_CHANNEL_H_1);
 }
 
 
@@ -159,7 +178,7 @@ void geKeyboard::organizeColumns()
 
 void geKeyboard::cb_addColumn(Fl_Widget* v, void* p)
 {
-	((geKeyboard*)p)->__cb_addColumn(G_DEFAULT_COLUMN_WIDTH);
+	((geKeyboard*)p)->cb_addColumn(G_DEFAULT_COLUMN_WIDTH);
 }
 
 
@@ -174,7 +193,7 @@ geChannel* geKeyboard::addChannel(int colIndex, m::Channel* ch, int size, bool b
 	to 'colIndex'. */
 
 	if (!col) {
-		__cb_addColumn();
+		cb_addColumn();
 		col = columns.back();
 		col->setIndex(colIndex);
 		gu_log("[geKeyboard::addChannel] created new column with index=%d\n", colIndex);
@@ -189,10 +208,10 @@ geChannel* geKeyboard::addChannel(int colIndex, m::Channel* ch, int size, bool b
 /* -------------------------------------------------------------------------- */
 
 
-void geKeyboard::refreshColumns()
+void geKeyboard::refresh()
 {
-	for (unsigned i=0; i<columns.size(); i++)
-		columns.at(i)->refreshChannels();
+	for (geColumn* c : columns)
+		c->refresh();
 }
 
 
@@ -275,7 +294,7 @@ void geKeyboard::printChannelMessage(int res)
 /* -------------------------------------------------------------------------- */
 
 
-void geKeyboard::__cb_addColumn(int width)
+void geKeyboard::cb_addColumn(int width)
 {
 	int colx;
 	int colxw;
@@ -292,7 +311,7 @@ void geKeyboard::__cb_addColumn(int width)
 	/* add geColumn to geKeyboard and to columns vector */
 
 	geColumn* gc = new geColumn(colx, y(), width, 2000, indexColumn, this);
-  add(gc);
+	add(gc);
 	columns.push_back(gc);
 	indexColumn++;
 
@@ -315,7 +334,7 @@ void geKeyboard::__cb_addColumn(int width)
 
 void geKeyboard::addColumn(int width)
 {
-	__cb_addColumn(width);
+	cb_addColumn(width);
 }
 
 
@@ -344,6 +363,16 @@ int geKeyboard::getColumnWidth(int i)
 geColumn* geKeyboard::getColumn(int i)
 {
   return columns.at(i);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geKeyboard::emptyColumns()
+{
+	for (geColumn* column : columns)
+		column->clear();
 }
 
 }} // giada::v::

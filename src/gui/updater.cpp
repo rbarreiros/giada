@@ -25,25 +25,27 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef G_V_DISPATCHER_H
-#define G_V_DISPATCHER_H
-
-
-#include <functional>
+#include <FL/Fl.H>
+#include "core/const.h"
+#include "core/render/render.h"
+#include "utils/gui.h"
+#include "updater.h"
 
 
 namespace giada {
-namespace m 
-{
-class Channel;
-}
 namespace v {
-namespace dispatcher
+namespace updater
 {
-void dispatchKey(int event);
-void dispatchTouch(m::Channel* ch, bool status);
-void setSignalCallback(std::function<void()> f);
-}}} // giada::v::dispatcher
+void update(void* p)
+{
+    if (m::render::changed.load() == true) {
+        puts("REBUILD!");
+        u::gui::rebuild();
+        m::render::changed.store(false);
+    }
+    else
+        u::gui::refresh();
 
-
-#endif
+    Fl::add_timeout(G_GUI_REFRESH_RATE, update, nullptr);
+}
+}}} // giada::v::updater

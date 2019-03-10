@@ -28,37 +28,35 @@
 #include <cassert>
 #include <vector>
 #include <algorithm>
-#include "../utils/fs.h"
-#include "../utils/string.h"
-#include "../utils/log.h"
-#include "../utils/vector.h"
-#include "../glue/main.h"
-#include "../glue/channel.h"
-#include "kernelMidi.h"
-#include "mixer.h"
-#include "const.h"
-#include "init.h"
-#include "pluginHost.h"
-#include "pluginManager.h"
-#include "plugin.h"
-#include "waveFx.h"
-#include "conf.h"
-#include "patch.h"
-#include "recorder.h"
-#include "clock.h"
-#include "channel.h"
-#include "kernelAudio.h"
-#include "midiMapConf.h"
-#include "sampleChannel.h"
-#include "midiChannel.h"
-#include "wave.h"
-#include "waveManager.h"
-#include "channelManager.h"
+#include "utils/fs.h"
+#include "utils/string.h"
+#include "utils/log.h"
+#include "utils/vector.h"
+#include "glue/main.h"
+#include "glue/channel.h"
+#include "core/render/render.h"
+#include "core/render/data.h"
+#include "core/kernelMidi.h"
+#include "core/mixer.h"
+#include "core/const.h"
+#include "core/init.h"
+#include "core/pluginHost.h"
+#include "core/pluginManager.h"
+#include "core/plugin.h"
+#include "core/waveFx.h"
+#include "core/conf.h"
+#include "core/patch.h"
+#include "core/recorder.h"
+#include "core/clock.h"
+#include "core/channel.h"
+#include "core/kernelAudio.h"
+#include "core/midiMapConf.h"
+#include "core/sampleChannel.h"
+#include "core/midiChannel.h"
+#include "core/wave.h"
+#include "core/waveManager.h"
+#include "core/channelManager.h"
 #include "mixerHandler.h"
-
-
-using std::vector;
-using std::string;
 
 
 namespace giada {
@@ -69,7 +67,7 @@ namespace
 {
 #ifdef WITH_VST
 
-int readPatchPlugins_(const vector<patch::plugin_t>& list, pluginHost::StackType t)
+int readPatchPlugins_(const std::vector<patch::plugin_t>& list, pluginHost::StackType t)
 {
 	int ret = 1;
 	for (const patch::plugin_t& ppl : list) {
@@ -95,15 +93,17 @@ int readPatchPlugins_(const vector<patch::plugin_t>& list, pluginHost::StackType
 
 int getNewChanIndex()
 {
-	/* always skip last channel: it's the last one just added */
+	/* Always skip last channel: it's the last one just added. */
 
-	if (mixer::channels.size() == 1)
+	const std::vector<Channel*>& channels = render::get()->channels;
+	
+	if (channels.size() == 1)
 		return 0;
 
 	int index = 0;
-	for (unsigned i=0; i<mixer::channels.size()-1; i++) {
-		if (mixer::channels.at(i)->index > index)
-			index = mixer::channels.at(i)->index;
+	for (unsigned i=0; i<channels.size()-1; i++) {
+		if (channels.at(i)->index > index)
+			index = channels.at(i)->index;
 		}
 	index += 1;
 	return index;
@@ -118,7 +118,7 @@ int getNewChanIndex()
 /* -------------------------------------------------------------------------- */
 
 
-bool uniqueSamplePath(const SampleChannel* skip, const string& path)
+bool uniqueSamplePath(const SampleChannel* skip, const std::string& path)
 {
 	for (const Channel* ch : mixer::channels) {
 		if (skip == ch || ch->type != ChannelType::SAMPLE) // skip itself and MIDI channels
@@ -134,14 +134,14 @@ bool uniqueSamplePath(const SampleChannel* skip, const string& path)
 /* -------------------------------------------------------------------------- */
 
 
-Channel* addChannel(ChannelType type)
+Channel* addChannel(ChannelType type, size_t column)
 {
 	Channel* ch = channelManager::create(type, kernelAudio::getRealBufSize(), 
-		conf::inputMonitorDefaultOn);
+		conf::inputMonitorDefaultOn, column);
 
-	pthread_mutex_lock(&mixer::mutex);
-	mixer::channels.push_back(ch);
-	pthread_mutex_unlock(&mixer::mutex);
+	std::shared_ptr<render::Data> data = render::clone();
+	data->channels.push_back(ch);
+	render::swap(data);
 
 	ch->index = getNewChanIndex();
 	gu_log("[addChannel] channel index=%d added, type=%d, total=%d\n",
@@ -151,6 +151,32 @@ Channel* addChannel(ChannelType type)
 
 
 /* -------------------------------------------------------------------------- */
+
+
+int loadChannel(SampleChannel* ch, const std::string& fname)
+{
+	waveManager::Result res = waveManager::createFromFile(fname); 
+
+	if (res.status != G_RES_OK)
+		return res.status;
+
+	if (res.wave->getRate() != conf::samplerate) {
+		gu_log("[mh::loadChannel] input rate (%d) != system rate (%d), conversion needed\n",
+			res.wave->getRate(), conf::samplerate);
+		res.status = waveManager::resample(res.wave.get(), conf::rsmpQuality, conf::samplerate); 
+		if (res.status != G_RES_OK)
+			return res.status;
+	}
+
+	std::shared_ptr<render::Data> data = render::clone();
+	static_cast<SampleChannel*>(data->getChannel(ch))->pushWave(std::move(res.wave));
+	render::swap(data);
+
+	return res.status;
+}
+
+
+/* ------------------------------------------------------------------------- */
 
 
 void deleteChannel(Channel* target)
@@ -265,8 +291,8 @@ bool startInputRec()
 
 		/* Allocate empty sample for the current channel. */
 
-		string name    = string("TAKE-" + u::string::iToString(patch::lastTakeId++));
-		string nameExt = name + ".wav";
+		std::string name    = std::string("TAKE-" + u::string::iToString(patch::lastTakeId++));
+		std::string nameExt = name + ".wav";
 
 		sch->pushWave(waveManager::createEmpty(clock::getFramesInLoop(), 
 			G_MAX_IO_CHANS, conf::samplerate, nameExt));

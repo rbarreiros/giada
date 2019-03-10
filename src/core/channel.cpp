@@ -54,11 +54,12 @@ using std::string;
 namespace giada {
 namespace m 
 {
-Channel::Channel(ChannelType type, ChannelStatus status, int bufferSize)
+Channel::Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t column)
 :	guiChannel     (nullptr),
 	type           (type),
 	status         (status),
 	recStatus      (ChannelStatus::OFF),
+	column         (column),
 	previewMode    (PreviewMode::NONE),
 	pan            (0.5f),
 	volume         (G_DEFAULT_VOL),

@@ -210,6 +210,8 @@ public:
 	ChannelStatus status;
 	ChannelStatus recStatus;
 
+	size_t column;
+
 	/* previewMode
 	Whether the channel is in audio preview mode or not. */
 
@@ -266,7 +268,7 @@ public:
 
 protected:
 
-	Channel(ChannelType type, ChannelStatus status, int bufferSize);
+	Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t column);
 
 #ifdef WITH_VST
 

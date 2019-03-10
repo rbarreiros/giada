@@ -86,7 +86,7 @@ public:
 	/* refreshChannels
 	Updates channels' graphical statues. Called on each GUI cycle. */
 
-	void refreshChannels();
+	void refresh();
 
 	giada::m::Channel* getChannel(int i);
 	int getIndex();

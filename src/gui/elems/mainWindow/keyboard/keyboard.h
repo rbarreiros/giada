@@ -31,8 +31,8 @@
 
 #include <vector>
 #include <FL/Fl_Scroll.H>
-#include "../../../../core/const.h"
-#include "../../../../core/channel.h"
+#include "core/const.h"
+#include "core/channel.h"
 
 
 class geButton;
@@ -46,41 +46,26 @@ namespace v
 {
 class geKeyboard : public Fl_Scroll
 {
-private:
-
-	static const int COLUMN_GAP = 16;
-
-	/* refreshColIndexes
-	 * Recompute all column indexes in order to avoid any gaps between them.
-	 * Indexes must always be contiguous! */
-
-	void refreshColIndexes();
-
-	static void cb_addColumn  (Fl_Widget* v, void* p);
-	inline void __cb_addColumn(int width=G_DEFAULT_COLUMN_WIDTH);
-
-	/* indexColumn
-	 * the last index used for column. */
-
-	static int indexColumn;
-
-	geButton* addColumnBtn;
-
-	/* columns
-	 * a vector of columns which in turn contain channels. */
-
-	std::vector<geColumn*> columns;
-
 public:
 
 	geKeyboard(int X, int Y, int W, int H);
 
-	int handle(int e);
+	int handle(int e) override;
 
 	/* init
-	 * build the initial setup of empty channels. */
+	Builds the initial setup of empty channels. */
 
 	void init();
+
+	/* rebuild
+	Rebuilds this widget from scratch. Used when the model has changed. */
+
+	void rebuild();
+
+	/* refresh
+	Refreshes each column's channel, called on each GUI cycle. */
+
+	void refresh();
 
 	/* addChannel
 	Adds a new channel to geChannels. Used by callbacks and during patch loading. 
@@ -115,11 +100,6 @@ public:
 	 * reorganize columns layout by removing empty gaps. */
 
 	void organizeColumns();
-
-	/* refreshColumns
-	 * refresh each column's channel, called on each GUI cycle. */
-
-	void refreshColumns();
 
 	/* getColumnByIndex
 	 * return the column with index 'index', or nullptr if not found. */
@@ -156,6 +136,34 @@ public:
 	 * in the column array, NOT the index. */
 
 	int getColumnWidth(int i);
+
+private:
+
+	static const int COLUMN_GAP = 16;
+
+	void emptyColumns();
+	
+	/* refreshColIndexes
+	 * Recompute all column indexes in order to avoid any gaps between them.
+	 * Indexes must always be contiguous! */
+
+	void refreshColIndexes();
+
+	static void cb_addColumn(Fl_Widget* v, void* p);
+	void cb_addColumn(int width=G_DEFAULT_COLUMN_WIDTH);
+
+	/* indexColumn
+	 * the last index used for column. */
+
+	static int indexColumn;
+
+	geButton* addColumnBtn;
+
+	/* columns
+	 * a vector of columns which in turn contain channels. */
+
+	std::vector<geColumn*> columns;
+
 };
 }} // giada::v::
 

@@ -46,7 +46,7 @@ class SampleChannel : public Channel
 {
 public:
 
-	SampleChannel(bool inputMonitor, int bufferSize);
+	SampleChannel(bool inputMonitor, int bufferSize, size_t column);
 	~SampleChannel();
 
 	void copy(const Channel* src, pthread_mutex_t* pluginMutex) override;

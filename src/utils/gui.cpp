@@ -74,18 +74,16 @@ int blinker_ = 0;
 /* -------------------------------------------------------------------------- */
 
 
-void refreshUI()
+void refresh()
 {
-	Fl::lock();
-
-	/* update dynamic elements: in and out meters, beat meter and
-	 * each channel */
+	/* Update dynamic elements: in and out meters, beat meter and each 
+	channel. */
 
 	G_MainWin->mainIO->refresh();
 	G_MainWin->beatMeter->redraw();
-	G_MainWin->keyboard->refreshColumns();
+	G_MainWin->keyboard->refresh();
 
-	/* compute timer for blinker */
+	/* Compute timer for blinker. */
 
 	if (blinker_++ > 12)
 		blinker_ = 0;
@@ -95,11 +93,15 @@ void refreshUI()
 	gdSampleEditor* se = static_cast<gdSampleEditor*>(getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
 	if (se != nullptr)
 		se->waveTools->redrawWaveformAsync();
+}
 
-	/* redraw GUI */
 
-	Fl::unlock();
-	Fl::awake();
+/* -------------------------------------------------------------------------- */
+
+
+void rebuild()
+{
+	G_MainWin->keyboard->rebuild();	
 }
 
 

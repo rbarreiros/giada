@@ -44,9 +44,14 @@ class SampleChannel;
 namespace mh
 {
 /* addChannel
-Adds a new channel of type 'type' into mixer's stack. */
+Adds a new channel of type 'type' into the channels stack. */
 
-Channel* addChannel(ChannelType type);
+Channel* addChannel(ChannelType type, size_t column);
+
+/* loadChannel
+Loads a new Wave inside SampleChannel 'ch'. */
+
+int loadChannel(SampleChannel* ch, const std::string& fname);
 
 /* deleteChannel
 Completely removes a channel from the stack. */

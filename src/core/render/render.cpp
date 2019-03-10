@@ -25,25 +25,43 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef G_V_DISPATCHER_H
-#define G_V_DISPATCHER_H
-
-
-#include <functional>
+#include "render.h"
 
 
 namespace giada {
-namespace m 
+namespace m {
+namespace render
 {
-class Channel;
+std::atomic<bool> changed(false);
+std::shared_ptr<Data> data_ = std::make_shared<Data>();
+
+
+/* -------------------------------------------------------------------------- */
+
+
+const std::shared_ptr<Data> get()
+{
+    return std::atomic_load(&data_);
 }
-namespace v {
-namespace dispatcher
+
+
+/* -------------------------------------------------------------------------- */
+
+
+std::shared_ptr<Data> clone()
 {
-void dispatchKey(int event);
-void dispatchTouch(m::Channel* ch, bool status);
-void setSignalCallback(std::function<void()> f);
-}}} // giada::v::dispatcher
+    return std::make_shared<render::Data>(*render::data_);
+}
 
 
-#endif
+/* -------------------------------------------------------------------------- */
+
+
+void swap(std::shared_ptr<Data> newData)
+{
+    std::shared_ptr<Data> oldData = std::atomic_load(&data_);
+    while (!std::atomic_compare_exchange_weak(&data_, &oldData, newData));
+    changed.store(true);
+}
+
+}}} // giada::m::render::

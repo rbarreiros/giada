@@ -30,7 +30,7 @@
 
 
 #include <string>
-#include "../core/types.h"
+#include "core/types.h"
 
 
 class gdSampleEditor;
@@ -48,7 +48,7 @@ namespace channel
 /* addChannel
 Adds an empty new channel to the stack. Returns the new channel. */
 
-m::Channel* addChannel(int column, ChannelType type, int size);
+m::Channel* addChannel(size_t column, ChannelType type, int size);
 
 /* loadChannel
 Fills an existing channel with a wave. */

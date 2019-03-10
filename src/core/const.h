@@ -63,18 +63,17 @@ constexpr auto CONF_FILENAME = "giada.conf";
 
 
 /* -- GUI ------------------------------------------------------------------- */
-#define G_GUI_REFRESH_RATE   1000/24
-#define G_GUI_PLUGIN_RATE    0.05  // refresh rate for plugin GUI
-#define G_GUI_FONT_SIZE_BASE 12
-#define G_GUI_INNER_MARGIN   4
-#define G_GUI_OUTER_MARGIN   8
-#define G_GUI_UNIT           20    // base unit for elements 
-#define G_GUI_CHANNEL_H_1    G_GUI_UNIT
-#define G_GUI_CHANNEL_H_2    G_GUI_UNIT * 2
-#define G_GUI_CHANNEL_H_3    G_GUI_UNIT * 4
-#define G_GUI_CHANNEL_H_4    G_GUI_UNIT * 6
-#define G_GUI_ZOOM_FACTOR    2
-
+constexpr float G_GUI_REFRESH_RATE = 0.05;
+constexpr float G_GUI_PLUGIN_RATE  = 0.05;   // refresh rate for plugin GUI
+constexpr int G_GUI_FONT_SIZE_BASE = 12;
+constexpr int G_GUI_INNER_MARGIN   = 4;
+constexpr int G_GUI_OUTER_MARGIN   = 8;
+constexpr int G_GUI_UNIT           = 20;    // base unit for elements 
+constexpr int G_GUI_CHANNEL_H_1    = G_GUI_UNIT;
+constexpr int G_GUI_CHANNEL_H_2    = G_GUI_UNIT * 2;
+constexpr int G_GUI_CHANNEL_H_3    = G_GUI_UNIT * 4;
+constexpr int G_GUI_CHANNEL_H_4    = G_GUI_UNIT * 6;
+constexpr int G_GUI_ZOOM_FACTOR    = 2;
 
 #define G_COLOR_RED       fl_rgb_color(28,  32,  80)
 #define G_COLOR_BLUE      fl_rgb_color(113, 31,  31)

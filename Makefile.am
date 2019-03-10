@@ -11,7 +11,7 @@ ldAdd =
 ldFlags =
 sourcesExtra = 
 sourcesMain = src/main.cpp 
-sourcesCore =                            \
+sourcesCore =                              \
 	src/core/const.h                       \
 	src/core/types.h                       \
 	src/core/range.h                       \
@@ -76,6 +76,10 @@ sourcesCore =                            \
 	src/core/midiChannelProc.cpp           \
 	src/core/recManager.h                  \
 	src/core/recManager.cpp                \
+	src/core/render/render.h               \
+	src/core/render/render.cpp             \
+	src/core/render/data.h                 \
+	src/core/render/data.cpp               \
 	src/glue/main.h                        \
 	src/glue/main.cpp                      \
 	src/glue/io.h                          \
@@ -98,6 +102,8 @@ sourcesCore =                            \
 	src/gui/dialogs/window.cpp             \
 	src/gui/dispatcher.h                   \
 	src/gui/dispatcher.cpp                 \
+	src/gui/updater.h                      \
+	src/gui/updater.cpp                    \
 	src/gui/dialogs/keyGrabber.h           \
 	src/gui/dialogs/keyGrabber.cpp         \
 	src/gui/dialogs/about.h                \

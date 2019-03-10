@@ -35,28 +35,29 @@
 	#include <X11/Xlib.h> // For XInitThreads
 #endif
 #include <FL/Fl.H>
-#include "../utils/log.h"
-#include "../utils/fs.h"
-#include "../utils/time.h"
-#include "../utils/gui.h"
-#include "../gui/dialogs/mainWindow.h"
-#include "../gui/dialogs/warnings.h"
-#include "../glue/main.h"
-#include "mixer.h"
-#include "wave.h"
-#include "const.h"
-#include "clock.h"
-#include "channel.h"
-#include "mixerHandler.h"
-#include "patch.h"
-#include "conf.h"
-#include "pluginManager.h"
-#include "pluginHost.h"
-#include "recorder.h"
-#include "recManager.h"
-#include "midiMapConf.h"
-#include "kernelMidi.h"
-#include "kernelAudio.h"
+#include "gui/updater.h"
+#include "utils/log.h"
+#include "utils/fs.h"
+#include "utils/time.h"
+#include "utils/gui.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/warnings.h"
+#include "glue/main.h"
+#include "core/mixer.h"
+#include "core/wave.h"
+#include "core/const.h"
+#include "core/clock.h"
+#include "core/channel.h"
+#include "core/mixerHandler.h"
+#include "core/patch.h"
+#include "core/conf.h"
+#include "core/pluginManager.h"
+#include "core/pluginHost.h"
+#include "core/recorder.h"
+#include "core/recManager.h"
+#include "core/midiMapConf.h"
+#include "core/kernelMidi.h"
+#include "core/kernelAudio.h"
 #include "init.h"
 
 
@@ -70,25 +71,6 @@ namespace init
 {
 namespace
 {
-std::thread UIThread_;
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void UIThreadCallback_()
-{
-	while (G_quit.load() == false) {
-		if (m::kernelAudio::getStatus())
-			u::gui::refreshUI();
-		u::time::sleep(G_GUI_REFRESH_RATE);
-	}
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
 void initConf_()
 {
 	if (!conf::read())
@@ -171,8 +153,8 @@ void initGUI_(int argc, char** argv)
 			"Check the configuration and restart Giada.");
 
 	u::gui::updateControls();
-	
-	UIThread_ = std::thread(UIThreadCallback_);
+
+	Fl::add_timeout(G_GUI_REFRESH_RATE, v::updater::update, nullptr);
 }
 
 
@@ -204,7 +186,6 @@ void shutdownAudio_()
 void shutdownGUI_()
 {
 	u::gui::closeAllSubwindows();
-	UIThread_.join();	
 
 	gu_log("[init] All subwindows and UI thread closed\n");
 }

@@ -164,9 +164,9 @@ void geColumn::resize(int X, int Y, int W, int H)
 /* -------------------------------------------------------------------------- */
 
 
-void geColumn::refreshChannels()
+void geColumn::refresh()
 {
-	for (int i=1; i<children(); i++)
+	for (int i=1; i<children(); i++) // Child 0 is 'add channel' button
 		static_cast<geChannel*>(child(i))->refresh();
 }
 

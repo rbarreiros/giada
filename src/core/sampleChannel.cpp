@@ -40,8 +40,8 @@ using std::string;
 namespace giada {
 namespace m 
 {
-SampleChannel::SampleChannel(bool inputMonitor, int bufferSize)
-	: Channel          (ChannelType::SAMPLE, ChannelStatus::EMPTY, bufferSize),
+SampleChannel::SampleChannel(bool inputMonitor, int bufferSize, size_t column)
+	: Channel          (ChannelType::SAMPLE, ChannelStatus::EMPTY, bufferSize, column),
 	  mode             (ChannelMode::SINGLE_BASIC),
 	  wave             (nullptr),
 	  tracker          (0),

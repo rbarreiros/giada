@@ -43,7 +43,12 @@ namespace gui
 /* refresh
 Repaints some dynamic GUI elements. */
 
-void refreshUI();
+void refresh();
+
+/* rebuild
+Rebuilds the UI from scratch. Used when the model has changed. */
+
+void rebuild();
 
 /* shouldBlink
 Return whether is time to blink something or not. This is used to make widgets 

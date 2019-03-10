@@ -43,9 +43,6 @@
 #include "channelManager.h"
 
 
-using std::string;
-
-
 namespace giada {
 namespace m {
 namespace channelManager
@@ -120,12 +117,12 @@ void readPlugins_(Channel* ch, const patch::channel_t& pch)
 /* -------------------------------------------------------------------------- */
 
 
-Channel* create(ChannelType type, int bufferSize, bool inputMonitorOn)
+Channel* create(ChannelType type, int bufferSize, bool inputMonitorOn, size_t column)
 {
 	if (type == ChannelType::SAMPLE)
-		return new SampleChannel(inputMonitorOn, bufferSize);
+		return new SampleChannel(inputMonitorOn, bufferSize, column);
 	else
-		return new MidiChannel(bufferSize);
+		return new MidiChannel(bufferSize, column);
 }
 
 
@@ -242,7 +239,7 @@ void readPatch(Channel* ch, const patch::channel_t& pch)
 /* -------------------------------------------------------------------------- */
 
 
-void readPatch(SampleChannel* ch, const string& basePath, const patch::channel_t& pch)
+void readPatch(SampleChannel* ch, const std::string& basePath, const patch::channel_t& pch)
 {
 	ch->mode              = static_cast<ChannelMode>(pch.mode);
 	ch->readActions       = pch.readActions;

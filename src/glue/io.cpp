@@ -37,6 +37,8 @@
 #include "../utils/gui.h"
 #include "../utils/log.h"
 #include "../utils/math.h"
+#include "../core/render/render.h"
+#include "../core/render/data.h"
 #include "../core/recorder.h"
 #include "../core/conf.h"
 #include "../core/recManager.h"
@@ -66,7 +68,11 @@ namespace io
 {
 void keyPress(m::Channel* ch, bool ctrl, bool shift, int velocity)
 {
+	const std::shared_ptr<m::render::Data> data = m::render::get();
+	ch = data->getChannel(ch);
+
 	/* Everything occurs on frame 0 here: they are all user-generated events. */
+	
 	if (ctrl)
 		c::channel::toggleMute(ch);
 	else

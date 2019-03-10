@@ -25,25 +25,42 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef G_V_DISPATCHER_H
-#define G_V_DISPATCHER_H
+#ifndef G_RENDER_H
+#define G_RENDER_H
 
 
-#include <functional>
+#include <memory>
+#include <atomic>
+#include "data.h"
 
 
 namespace giada {
-namespace m 
+namespace m {
+namespace render
 {
-class Channel;
-}
-namespace v {
-namespace dispatcher
-{
-void dispatchKey(int event);
-void dispatchTouch(m::Channel* ch, bool status);
-void setSignalCallback(std::function<void()> f);
-}}} // giada::v::dispatcher
+const std::shared_ptr<Data> get();
+
+/* clone
+Returns a copy of the current data. Call this when you want to modify the 
+current render data model. */
+
+std::shared_ptr<Data> clone();
+
+/* swap
+Atomically swaps current data with the new one provided. */
+
+void swap(std::shared_ptr<Data> data);
+
+/* changed
+Marks if the model has changed and requires UI update. */
+
+extern std::atomic<bool> changed;
+
+
+// TODO extern FIFO<Message, 1024> midiQueue;
+
+
+}}} // giada::m::render::
 
 
 #endif

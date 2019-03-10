@@ -46,7 +46,7 @@ struct channel_t;
 }
 namespace channelManager
 {
-Channel* create(ChannelType type, int bufferSize, bool inputMonitorOn);
+Channel* create(ChannelType type, int bufferSize, bool inputMonitorOn, size_t column);
 
 int  writePatch(const Channel* ch, bool isProject);
 void writePatch(const SampleChannel* ch, bool isProject, int index);

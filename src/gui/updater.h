@@ -25,25 +25,16 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef G_V_DISPATCHER_H
-#define G_V_DISPATCHER_H
-
-
-#include <functional>
+#ifndef G_V_UPDATER_H
+#define G_V_UPDATER_H
 
 
 namespace giada {
-namespace m 
-{
-class Channel;
-}
 namespace v {
-namespace dispatcher
+namespace updater
 {
-void dispatchKey(int event);
-void dispatchTouch(m::Channel* ch, bool status);
-void setSignalCallback(std::function<void()> f);
-}}} // giada::v::dispatcher
+void update(void* p);
+}}} // giada::v::updater
 
 
 #endif
