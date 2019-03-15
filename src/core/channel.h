@@ -211,6 +211,7 @@ public:
 	ChannelStatus recStatus;
 
 	size_t column;
+	size_t index;
 
 	/* previewMode
 	Whether the channel is in audio preview mode or not. */
@@ -218,13 +219,12 @@ public:
 	PreviewMode previewMode;
 
 	float       pan;
-	float       volume;   // global volume
-	bool        armed;
+	std::atomic<float> volume;   // global volume
+	std::atomic<bool> armed;
 	std::string name;
-	int         index;    // unique id
-	int         key;      // keyboard button
-	bool        mute;     // global mute
-	bool        solo;
+	int         key;
+	std::atomic<bool> mute;
+	std::atomic<bool> solo;
 
 	/* volume_*
 	Internal volume variables: volume_i for envelopes, volume_d keeps track of

@@ -53,7 +53,7 @@ m::Channel* addChannel(size_t column, ChannelType type, int size);
 /* loadChannel
 Fills an existing channel with a wave. */
 
-int loadChannel(m::SampleChannel* ch, const std::string& fname);
+int loadChannel(size_t chanIndex, const std::string& fname);
 
 /* deleteChannel
 Removes a channel from Mixer. */
@@ -70,16 +70,16 @@ Makes an exact copy of Channel *ch. */
 
 int cloneChannel(m::Channel* ch);
 
-/* toggle/set*
-Toggles or set several channel properties. If gui == true the signal comes from 
-a manual interaction on the GUI, otherwise it's a MIDI/Jack/external signal. */
+/* set*
+Sets several channel properties. If gui == true the signal comes from a manual 
+interaction on the GUI, otherwise it's a MIDI/Jack/external signal. */
 
-void toggleArm(m::Channel* ch, bool gui=true);
+void setArm(size_t chanIndex, bool value, bool gui=true);
 void toggleInputMonitor(m::Channel* ch);
 void kill(m::Channel* ch);
-void toggleMute(m::Channel* ch, bool gui=true);
-void toggleSolo(m::Channel* ch, bool gui=true);
-void setVolume(m::Channel* ch, float v, bool gui=true, bool editor=false);
+void setMute(size_t chanIndex, bool value, bool gui=true);
+void setSolo(size_t chanIndex, bool value, bool gui=true);
+void setVolume(size_t chanIndex, float v, bool gui=true, bool editor=false);
 void setName(m::Channel* ch, const std::string& name);
 void setPitch(m::SampleChannel* ch, float val);
 void setPanning(m::SampleChannel* ch, float val);

@@ -92,7 +92,7 @@ public:
 	int getIndex();
 	void setIndex(int i);
 	bool isEmpty();   
-  int countChannels();
+	int countChannels();
 };
 
 

@@ -25,7 +25,8 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "core/render/render.h"
+#include <cassert>
+#include "core/model/model.h"
 #include "core/sampleChannel.h"
 #include "glue/transport.h"
 #include "glue/io.h"
@@ -92,7 +93,7 @@ void geKeyboard::init()
 
 void geKeyboard::rebuild()
 {
-	const std::vector<m::Channel*>& channels = m::render::get()->channels;
+	const std::vector<m::Channel*>& channels = m::model::get()->channels;
 
 	emptyColumns();
 
@@ -373,6 +374,23 @@ void geKeyboard::emptyColumns()
 {
 	for (geColumn* column : columns)
 		column->clear();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+geChannel* geKeyboard::getChannel(size_t chanIndex)
+{
+	/* TODO - temporary, raw, naive and laughable. To be changed soon! */
+	for (geColumn* column : columns)
+		for (int i=1; i<column->children(); i++) {
+			geChannel* gch = static_cast<geChannel*>(column->child(i));
+			if (gch->ch->index == chanIndex)
+				return gch;
+		}
+	assert(false);
+	return nullptr;
 }
 
 }} // giada::v::

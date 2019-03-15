@@ -137,6 +137,11 @@ public:
 
 	int getColumnWidth(int i);
 
+	/* getChannel
+	Given a chanIndex returns the UI channel it belongs to. */
+
+	geChannel* getChannel(size_t chanIndex);
+
 private:
 
 	static const int COLUMN_GAP = 16;
@@ -158,9 +163,6 @@ private:
 	static int indexColumn;
 
 	geButton* addColumnBtn;
-
-	/* columns
-	 * a vector of columns which in turn contain channels. */
 
 	std::vector<geColumn*> columns;
 

@@ -49,9 +49,9 @@ Adds a new channel of type 'type' into the channels stack. */
 Channel* addChannel(ChannelType type, size_t column);
 
 /* loadChannel
-Loads a new Wave inside SampleChannel 'ch'. */
+Loads a new Wave inside a Sample Channel. */
 
-int loadChannel(SampleChannel* ch, const std::string& fname);
+int loadChannel(size_t chanIndex, const std::string& fname);
 
 /* deleteChannel
 Completely removes a channel from the stack. */

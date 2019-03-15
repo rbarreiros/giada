@@ -47,8 +47,8 @@
 #include "utils/gui.h"
 #include "utils/fs.h"
 #include "utils/log.h"
-#include "core/render/render.h"
-#include "core/render/data.h"
+#include "core/model/model.h"
+#include "core/model/data.h"
 #include "core/kernelAudio.h"
 #include "core/mixerHandler.h"
 #include "core/mixer.h"
@@ -76,14 +76,14 @@ namespace giada {
 namespace c     {
 namespace channel 
 {
-int loadChannel(m::SampleChannel* ch, const string& fname)
+int loadChannel(size_t chanIndex, const string& fname)
 {
 	/* Save the patch and take the last browser's dir in order to re-use it the 
 	next time. */
 
 	m::conf::samplePath = gu_dirname(fname);
 
-	return m::mh::loadChannel(ch, fname);
+	return m::mh::loadChannel(chanIndex, fname);
 }
 
 
@@ -147,11 +147,14 @@ void freeChannel(m::Channel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-void toggleArm(m::Channel* ch, bool gui)
+void setArm(size_t chanIndex, bool value, bool gui)
 {
-	ch->armed = !ch->armed;
-	if (!gui)
-		ch->guiChannel->arm->value(ch->armed);
+	m::model::get()->channels[chanIndex]->armed.store(value);
+	if (!gui) {
+		Fl::lock();
+		G_MainWin->keyboard->getChannel(chanIndex)->arm->value(value);
+		Fl::unlock();
+	}
 }
 
 
@@ -190,14 +193,13 @@ int cloneChannel(m::Channel* src)
 /* -------------------------------------------------------------------------- */
 
 
-void setVolume(m::Channel* ch, float v, bool gui, bool editor)
+void setVolume(size_t chanIndex, float value, bool gui, bool editor)
 {
-	m::render::get()->getChannel(ch)->volume = v;
+	m::model::get()->channels[chanIndex]->volume.store(value);
 
-#if 0
 	/* Changing channel volume? Update wave editor (if it's shown). */
 
-	if (!editor) {
+	if (editor) {
 		gdSampleEditor* gdEditor = static_cast<gdSampleEditor*>(u::gui::getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
 		if (gdEditor) {
 			Fl::lock();
@@ -208,10 +210,9 @@ void setVolume(m::Channel* ch, float v, bool gui, bool editor)
 
 	if (!gui) {
 		Fl::lock();
-		ch->guiChannel->vol->value(v);
+		G_MainWin->keyboard->getChannel(chanIndex)->vol->value(value);
 		Fl::unlock();
 	}
-#endif
 }
 
 
@@ -248,12 +249,12 @@ void setPanning(m::SampleChannel* ch, float val)
 /* -------------------------------------------------------------------------- */
 
 
-void toggleMute(m::Channel* ch, bool gui)
+void setMute(size_t chanIndex, bool value, bool gui)
 {
-	ch->setMute(!ch->mute);
+	m::model::get()->channels[chanIndex]->setMute(value);
 	if (!gui) {
 		Fl::lock();
-		ch->guiChannel->mute->value(ch->mute);
+		G_MainWin->keyboard->getChannel(chanIndex)->mute->value(value);
 		Fl::unlock();
 	}
 }
@@ -262,12 +263,12 @@ void toggleMute(m::Channel* ch, bool gui)
 /* -------------------------------------------------------------------------- */
 
 
-void toggleSolo(m::Channel* ch, bool gui)
+void setSolo(size_t chanIndex, bool value, bool gui)
 {
-	ch->setSolo(!ch->solo);
+	m::model::get()->channels[chanIndex]->setSolo(value);
 	if (!gui) {
 		Fl::lock();
-		ch->guiChannel->solo->value(ch->solo);
+		G_MainWin->keyboard->getChannel(chanIndex)->solo->value(value);
 		Fl::unlock();
 	}
 }

@@ -191,7 +191,7 @@ void MidiChannel::empty()
 
 void MidiChannel::sendMidi(const Action* a, int localFrame)
 {
-	if (isPlaying() && !mute) {
+	if (isPlaying() && mute.load() == false) {
 		if (midiOut) {
 			MidiEvent event = a->event;
 			event.setChannel(midiOutChan);
@@ -212,7 +212,7 @@ void MidiChannel::receiveMidi(const MidiEvent& midiEvent)
 	namespace mrh = m::recorderHandler;
 	namespace mr  = m::recorder;
 
-	if (!armed)
+	if (armed.load() == false)
 		return;
 
 	/* Now all messages are turned into Channel-0 messages. Giada doesn't care 

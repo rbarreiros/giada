@@ -398,7 +398,7 @@ void SampleChannel::empty()
 	begin      = 0;
 	end        = 0;
 	tracker    = 0;
-	volume     = G_DEFAULT_VOL;
+	volume.store(G_DEFAULT_VOL);
 	boost      = G_DEFAULT_BOOST;
 	hasActions = false;
 	wave.reset(nullptr);
@@ -424,7 +424,7 @@ void SampleChannel::pushWave(std::unique_ptr<Wave>&& w)
 
 bool SampleChannel::canInputRec() const
 {
-	return wave == nullptr && armed;
+	return wave == nullptr && armed.load() == true;
 }
 
 

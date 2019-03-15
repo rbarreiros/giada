@@ -92,7 +92,7 @@ void geVolumeTool::cb_setVolume()
 {
   using namespace giada;
 
-  c::channel::setVolume(ch, dial->value(), false, true);
+  c::channel::setVolume(ch->index, dial->value(), false, true);
   refresh();
 }
 
@@ -105,6 +105,6 @@ void geVolumeTool::cb_setVolumeNum()
   using namespace giada;
 
   float value = pow(10, (atof(input->value()) / 20)); // linear = 10^(dB/20)
-  c::channel::setVolume(ch, value, false, true);
+  c::channel::setVolume(ch->index, value, false, true);
   dial->value(ch->guiChannel->vol->value());
 }

@@ -198,7 +198,7 @@ void processData_(SampleChannel* ch, m::AudioBuffer& out, const m::AudioBuffer& 
 	pluginHost::processStack, so that you would record "clean" audio 
 	(i.e. not plugin-processed). */
 
-	if (ch->armed && in.isAllocd() && ch->inputMonitor) {
+	if (ch->armed.load() == true && in.isAllocd() && ch->inputMonitor) {
 		for (int i=0; i<ch->buffer.countFrames(); i++)
 			for (int j=0; j<ch->buffer.countChannels(); j++)
 				ch->buffer[i][j] += in[i][j];   // add, don't overwrite
@@ -211,9 +211,9 @@ void processData_(SampleChannel* ch, m::AudioBuffer& out, const m::AudioBuffer& 
 	for (int i=0; i<out.countFrames(); i++) {
 		if (running)
 			ch->calcVolumeEnvelope();
-		if (!ch->mute)
+		if (ch->mute.load() == false)
 			for (int j=0; j<out.countChannels(); j++)
-				out[i][j] += ch->buffer[i][j] * ch->volume * ch->volume_i * ch->calcPanning(j) * ch->boost;	
+				out[i][j] += ch->buffer[i][j] * ch->volume.load() * ch->volume_i * ch->calcPanning(j) * ch->boost;	
 	}
 }
 
@@ -246,7 +246,7 @@ void processPreview_(SampleChannel* ch, m::AudioBuffer& out)
 
 	for (int i=0; i<out.countFrames(); i++)
 		for (int j=0; j<out.countChannels(); j++)
-			out[i][j] += ch->bufferPreview[i][j] * ch->volume * ch->calcPanning(j) * ch->boost;	
+			out[i][j] += ch->bufferPreview[i][j] * ch->volume.load() * ch->calcPanning(j) * ch->boost;	
 }
 }; // {anonymous}
 
@@ -305,7 +305,7 @@ void stopInputRec(SampleChannel* ch, int globalFrame)
 	recording stuff and not yet in play. They are also started in force mode, i.e.
 	they must start playing right away at the current global frame, not at the 
 	next first beat. */
-	if (ch->isAnyLoopMode() && ch->status == ChannelStatus::OFF && ch->armed) {
+	if (ch->isAnyLoopMode() && ch->status == ChannelStatus::OFF && ch->armed.load() == true) {
 		ch->status  = ChannelStatus::PLAY;
 		ch->tracker = globalFrame;	
 	}
@@ -357,7 +357,7 @@ void rewindBySeq(SampleChannel* ch)
 
 void setMute(SampleChannel* ch, bool value)
 {
-	ch->mute = value;
+	ch->mute.store(value);
 
 	// This is for processing playing_inaudible
 	ch->sendMidiLstatus();	
@@ -371,7 +371,7 @@ void setMute(SampleChannel* ch, bool value)
 
 void setSolo(SampleChannel* ch, bool value)
 {
-	ch->solo = value;
+	ch->solo.store(value);
 	m::mh::updateSoloCount();
 
 	// This is for processing playing_inaudible

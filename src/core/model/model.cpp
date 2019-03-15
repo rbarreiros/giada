@@ -25,12 +25,12 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "render.h"
+#include "model.h"
 
 
 namespace giada {
 namespace m {
-namespace render
+namespace model
 {
 std::atomic<bool> changed(false);
 std::shared_ptr<Data> data_ = std::make_shared<Data>();
@@ -50,7 +50,7 @@ const std::shared_ptr<Data> get()
 
 std::shared_ptr<Data> clone()
 {
-    return std::make_shared<render::Data>(*render::data_);
+    return std::make_shared<Data>(*data_);
 }
 
 
@@ -64,4 +64,4 @@ void swap(std::shared_ptr<Data> newData)
     changed.store(true);
 }
 
-}}} // giada::m::render::
+}}} // giada::m::model::

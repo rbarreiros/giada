@@ -125,14 +125,14 @@ void rewindBySeq(MidiChannel* ch)
 
 void setMute(MidiChannel* ch, bool v)
 {
-	ch->mute = v;
-	if (ch->mute) {
+	ch->mute.store(v);
+	if (v) {
 		if (ch->midiOut)
 			kernelMidi::send(MIDI_ALL_NOTES_OFF);
 	#ifdef WITH_VST
 			ch->addVstMidiEvent(MIDI_ALL_NOTES_OFF, 0);
 	#endif		
-		}
+	}
 
 	// This is for processing playing_inaudible
 	ch->sendMidiLstatus();	
@@ -146,7 +146,7 @@ void setMute(MidiChannel* ch, bool v)
 
 void setSolo(MidiChannel* ch, bool v)
 {
-	ch->solo = v;
+	ch->solo.store(v);
 	m::mh::updateSoloCount();
 
 	// This is for processing playing_inaudible

@@ -25,42 +25,48 @@
  * -------------------------------------------------------------------------- */
 
 
-#ifndef G_RENDER_H
-#define G_RENDER_H
+#ifndef G_RENDER_DATA_H
+#define G_RENDER_DATA_H
 
 
 #include <memory>
-#include <atomic>
-#include "data.h"
+#include <vector>
+#include "core/recorder.h"
+#include "core/plugin.h"
 
 
 namespace giada {
-namespace m {
-namespace render
+namespace m
 {
-const std::shared_ptr<Data> get();
-
-/* clone
-Returns a copy of the current data. Call this when you want to modify the 
-current render data model. */
-
-std::shared_ptr<Data> clone();
-
-/* swap
-Atomically swaps current data with the new one provided. */
-
-void swap(std::shared_ptr<Data> data);
-
-/* changed
-Marks if the model has changed and requires UI update. */
-
-extern std::atomic<bool> changed;
+class AudioBuffer;
+class Channel;
 
 
-// TODO extern FIFO<Message, 1024> midiQueue;
+namespace model
+{
+class Data
+{
+public:
 
+    Data();
+    Data(const Data& o);
+    // TODO - Data(Data&& o);
+    ~Data();
 
-}}} // giada::m::render::
+    Channel* getChannel(const Channel* c) const;
 
+    void render(AudioBuffer& out, const AudioBuffer& in, AudioBuffer& inToOut);
+
+    recorder::ActionMap actions;
+    std::vector<Channel*> channels;
+    std::vector<std::unique_ptr<Plugin>> masterOutPlugins;
+    std::vector<std::unique_ptr<Plugin>> masterInPlugins;
+    
+private:
+
+    void parseEvents(Frame f);
+};
+
+}}} // giada::m::model::
 
 #endif

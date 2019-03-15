@@ -35,7 +35,7 @@
 #include <vector>
 #include "recorder.h"
 #include "types.h"
-#include "../deps/rtaudio-mod/RtAudio.h"
+#include "deps/rtaudio-mod/RtAudio.h"
 
 
 namespace giada {

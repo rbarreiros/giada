@@ -34,8 +34,8 @@
 #include "utils/vector.h"
 #include "glue/main.h"
 #include "glue/channel.h"
-#include "core/render/render.h"
-#include "core/render/data.h"
+#include "core/model/model.h"
+#include "core/model/data.h"
 #include "core/kernelMidi.h"
 #include "core/mixer.h"
 #include "core/const.h"
@@ -90,12 +90,12 @@ int readPatchPlugins_(const std::vector<patch::plugin_t>& list, pluginHost::Stac
 
 /* -------------------------------------------------------------------------- */
 
-
+#if 0
 int getNewChanIndex()
 {
 	/* Always skip last channel: it's the last one just added. */
 
-	const std::vector<Channel*>& channels = render::get()->channels;
+	const std::vector<Channel*>& channels = model::get()->channels;
 	
 	if (channels.size() == 1)
 		return 0;
@@ -108,7 +108,7 @@ int getNewChanIndex()
 	index += 1;
 	return index;
 }
-
+#endif
 
 }; // {anonymous}
 
@@ -139,11 +139,11 @@ Channel* addChannel(ChannelType type, size_t column)
 	Channel* ch = channelManager::create(type, kernelAudio::getRealBufSize(), 
 		conf::inputMonitorDefaultOn, column);
 
-	std::shared_ptr<render::Data> data = render::clone();
+	std::shared_ptr<model::Data> data = model::clone();
+	ch->index = data->channels.size();
 	data->channels.push_back(ch);
-	render::swap(data);
+	model::swap(data);
 
-	ch->index = getNewChanIndex();
 	gu_log("[addChannel] channel index=%d added, type=%d, total=%d\n",
 		ch->index, ch->type, mixer::channels.size());
 	return ch;
@@ -153,7 +153,7 @@ Channel* addChannel(ChannelType type, size_t column)
 /* -------------------------------------------------------------------------- */
 
 
-int loadChannel(SampleChannel* ch, const std::string& fname)
+int loadChannel(size_t chanIndex, const std::string& fname)
 {
 	waveManager::Result res = waveManager::createFromFile(fname); 
 
@@ -168,9 +168,9 @@ int loadChannel(SampleChannel* ch, const std::string& fname)
 			return res.status;
 	}
 
-	std::shared_ptr<render::Data> data = render::clone();
-	static_cast<SampleChannel*>(data->getChannel(ch))->pushWave(std::move(res.wave));
-	render::swap(data);
+	std::shared_ptr<model::Data> data = model::clone();
+	static_cast<SampleChannel*>(data->channels[chanIndex])->pushWave(std::move(res.wave));
+	model::swap(data);
 
 	return res.status;
 }
@@ -221,7 +221,7 @@ void stopSequencer()
 void updateSoloCount()
 {
 	for (const Channel* ch : mixer::channels)
-		if (ch->solo) {
+		if (ch->solo.load() == true) {
 			mixer::hasSolos = true;
 			return;
 		}

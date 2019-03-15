@@ -26,33 +26,33 @@
 
 
 #include <FL/Fl.H>
-#include "../gui/dialogs/mainWindow.h"
-#include "../gui/dialogs/warnings.h"
-#include "../gui/elems/basics/button.h"
-#include "../gui/elems/mainWindow/mainTransport.h"
-#include "../gui/elems/mainWindow/mainTimer.h"
-#include "../gui/elems/mainWindow/keyboard/keyboard.h"
-#include "../gui/elems/mainWindow/keyboard/channel.h"
-#include "../gui/elems/mainWindow/keyboard/sampleChannel.h"
-#include "../utils/gui.h"
-#include "../utils/log.h"
-#include "../utils/math.h"
-#include "../core/render/render.h"
-#include "../core/render/data.h"
-#include "../core/recorder.h"
-#include "../core/conf.h"
-#include "../core/recManager.h"
-#include "../core/kernelAudio.h"
-#include "../core/channel.h"
-#include "../core/mixer.h"
-#include "../core/mixerHandler.h"
-#include "../core/wave.h"
-#include "../core/midiDispatcher.h"
-#include "../core/channel.h"
-#include "../core/clock.h"
-#include "../core/sampleChannel.h"
-#include "../core/midiChannel.h"
-#include "../core/recorderHandler.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/mainWindow/mainTransport.h"
+#include "gui/elems/mainWindow/mainTimer.h"
+#include "gui/elems/mainWindow/keyboard/keyboard.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
+#include "gui/elems/mainWindow/keyboard/sampleChannel.h"
+#include "utils/gui.h"
+#include "utils/log.h"
+#include "utils/math.h"
+#include "core/model/model.h"
+#include "core/model/data.h"
+#include "core/recorder.h"
+#include "core/conf.h"
+#include "core/recManager.h"
+#include "core/kernelAudio.h"
+#include "core/channel.h"
+#include "core/mixer.h"
+#include "core/mixerHandler.h"
+#include "core/wave.h"
+#include "core/midiDispatcher.h"
+#include "core/channel.h"
+#include "core/clock.h"
+#include "core/sampleChannel.h"
+#include "core/midiChannel.h"
+#include "core/recorderHandler.h"
 #include "main.h"
 #include "channel.h"
 #include "transport.h"
@@ -68,13 +68,10 @@ namespace io
 {
 void keyPress(m::Channel* ch, bool ctrl, bool shift, int velocity)
 {
-	const std::shared_ptr<m::render::Data> data = m::render::get();
-	ch = data->getChannel(ch);
-
 	/* Everything occurs on frame 0 here: they are all user-generated events. */
 	
 	if (ctrl)
-		c::channel::toggleMute(ch);
+		c::channel::setMute(ch->index, !ch->mute.load());
 	else
 	if (shift) {
 		if (ch->recordKill())

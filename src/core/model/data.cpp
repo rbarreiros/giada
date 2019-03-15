@@ -36,7 +36,7 @@
 
 namespace giada {
 namespace m {
-namespace render
+namespace model
 {
 Data::Data()
 {
@@ -110,13 +110,13 @@ void Data::parseEvents(Frame f)
 /* -------------------------------------------------------------------------- */
 
 
-Channel* Data::getChannel(const Channel* c)
+Channel* Data::getChannel(const Channel* c) const
 {
 	for (Channel* channel : channels)
-		if (channel->index == c->index)
+		if (channel == c)
 			return channel;
 	assert(false);
 	return nullptr;
 }
 
-}}} // giada::m::render::
+}}} // giada::m::model::

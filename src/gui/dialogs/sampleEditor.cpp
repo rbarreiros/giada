@@ -303,7 +303,7 @@ void gdSampleEditor::cb_reload()
   if (!gdConfirmWin("Warning", "Reload sample: are you sure?"))
     return;
 
-  if (channel::loadChannel(ch, ch->wave->getPath()) != G_RES_OK)
+  if (channel::loadChannel(ch->index, ch->wave->getPath()) != G_RES_OK)
     return;
 
   channel::setBoost(ch, G_DEFAULT_BOOST);

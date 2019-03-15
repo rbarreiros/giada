@@ -95,13 +95,13 @@ Channel::Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t 
 void Channel::copy(const Channel* src, pthread_mutex_t* pluginMutex)
 {
 	key             = src->key;
-	volume          = src->volume;
+	volume.store(src->volume.load());
 	volume_i        = src->volume_i;
 	volume_d        = src->volume_d;
 	name            = src->name;
 	pan             = src->pan;
-	mute            = src->mute;
-	solo            = src->solo;
+	mute.store(src->mute.load());
+	solo.store(src->solo.load());
 	hasActions      = src->hasActions;
 	recStatus       = src->recStatus;
 	midiIn          = src->midiIn;
@@ -163,7 +163,7 @@ void Channel::sendMidiLmute()
 {
 	if (!midiOutL || midiOutLmute == 0x0)
 		return;
-	if (mute)
+	if (mute.load() == true)
 		kernelMidi::sendMidiLightning(midiOutLmute, midimap::muteOn);
 	else
 		kernelMidi::sendMidiLightning(midiOutLmute, midimap::muteOff);
@@ -177,7 +177,7 @@ void Channel::sendMidiLsolo()
 {
 	if (!midiOutL || midiOutLsolo == 0x0)
 		return;
-	if (solo)
+	if (solo.load() == true)
 		kernelMidi::sendMidiLightning(midiOutLsolo, midimap::soloOn);
 	else
 		kernelMidi::sendMidiLightning(midiOutLsolo, midimap::soloOff);
@@ -202,7 +202,7 @@ void Channel::sendMidiLstatus()
 			kernelMidi::sendMidiLightning(midiOutLplaying, midimap::stopping);
 			break;
 		case ChannelStatus::PLAY:
-			if ((mixer::isChannelAudible(this) && !(this->mute)) || 
+			if ((mixer::isChannelAudible(this) && !mute.load()) || 
 				!midimap::isDefined(midimap::playing_inaudible))
 				kernelMidi::sendMidiLightning(midiOutLplaying, midimap::playing);
 			else

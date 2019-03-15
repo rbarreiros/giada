@@ -50,8 +50,8 @@ using namespace giada;
 
 
 geChannel::geChannel(int X, int Y, int W, int H, giada::m::Channel* ch)
-: Fl_Group    (X, Y, W, H, nullptr),
-  ch          (ch)
+: Fl_Group(X, Y, W, H, nullptr),
+  ch      (ch)
 {
 }
 
@@ -73,7 +73,7 @@ void geChannel::cb_openFxWindow(Fl_Widget* v, void* p) { ((geChannel*)p)->cb_ope
 
 void geChannel::cb_arm()
 {
-	//c::channel::toggleArm(ch, true);
+	c::channel::setArm(ch->index, arm->value());
 }
 
 
@@ -82,7 +82,7 @@ void geChannel::cb_arm()
 
 void geChannel::cb_mute()
 {
-	//c::channel::toggleMute(ch);
+	c::channel::setMute(ch->index, mute->value());
 }
 
 
@@ -91,7 +91,7 @@ void geChannel::cb_mute()
 
 void geChannel::cb_solo()
 {
-	//c::channel::toggleSolo(ch);
+	c::channel::setSolo(ch->index, solo->value());
 }
 
 
@@ -100,7 +100,7 @@ void geChannel::cb_solo()
 
 void geChannel::cb_changeVol()
 {
-	//c::channel::setVolume(ch, vol->value());
+	c::channel::setVolume(ch->index, vol->value());
 }
 
 

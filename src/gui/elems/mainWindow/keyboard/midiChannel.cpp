@@ -26,28 +26,28 @@
 
 
 #include <FL/Fl_Menu_Button.H>
-#include "../../../../core/const.h"
-#include "../../../../core/graphics.h"
-#include "../../../../core/midiChannel.h"
-#include "../../../../core/recorder.h"
-#include "../../../../utils/gui.h"
-#include "../../../../utils/string.h"
-#include "../../../../glue/channel.h"
-#include "../../../../glue/io.h"
-#include "../../../../glue/recorder.h"
-#include "../../../dispatcher.h"
-#include "../../../dialogs/mainWindow.h"
-#include "../../../dialogs/channelNameInput.h"
-#include "../../../dialogs/warnings.h"
-#include "../../../dialogs/keyGrabber.h"
-#include "../../../dialogs/pluginList.h"
-#include "../../../dialogs/actionEditor/midiActionEditor.h"
-#include "../../../dialogs/midiIO/midiInputChannel.h"
-#include "../../../dialogs/midiIO/midiOutputMidiCh.h"
-#include "../../basics/boxtypes.h"
-#include "../../basics/button.h"
-#include "../../basics/statusButton.h"
-#include "../../basics/dial.h"
+#include "core/const.h"
+#include "core/graphics.h"
+#include "core/midiChannel.h"
+#include "core/recorder.h"
+#include "utils/gui.h"
+#include "utils/string.h"
+#include "glue/channel.h"
+#include "glue/io.h"
+#include "glue/recorder.h"
+#include "gui/dispatcher.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/channelNameInput.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/dialogs/keyGrabber.h"
+#include "gui/dialogs/pluginList.h"
+#include "gui/dialogs/actionEditor/midiActionEditor.h"
+#include "gui/dialogs/midiIO/midiInputChannel.h"
+#include "gui/dialogs/midiIO/midiOutputMidiCh.h"
+#include "gui/elems/basics/boxtypes.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/basics/statusButton.h"
+#include "gui/elems/basics/dial.h"
 #include "column.h"
 #include "midiChannelButton.h"
 #include "midiChannel.h"
@@ -57,7 +57,6 @@ extern gdMainWindow* G_MainWin;
 
 
 using namespace giada;
-using std::string;
 
 
 namespace
@@ -294,7 +293,7 @@ void geMidiChannel::update()
 {
 	const m::MidiChannel* mch = static_cast<const m::MidiChannel*>(ch);
 
-	string label; 
+	std::string label; 
 	if (mch->name.empty())
 		label = "-- MIDI --";
 	else

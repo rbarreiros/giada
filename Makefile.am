@@ -76,10 +76,10 @@ sourcesCore =                              \
 	src/core/midiChannelProc.cpp           \
 	src/core/recManager.h                  \
 	src/core/recManager.cpp                \
-	src/core/render/render.h               \
-	src/core/render/render.cpp             \
-	src/core/render/data.h                 \
-	src/core/render/data.cpp               \
+	src/core/model/model.h                 \
+	src/core/model/model.cpp               \
+	src/core/model/data.h                  \
+	src/core/model/data.cpp                \
 	src/glue/main.h                        \
 	src/glue/main.cpp                      \
 	src/glue/io.h                          \

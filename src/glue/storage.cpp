@@ -394,8 +394,7 @@ void loadSample(void* data)
 	if (fullPath.empty())
 		return;
 
-	int res = c::channel::loadChannel(static_cast<m::SampleChannel*>(browser->getChannel()), 
-		fullPath);
+	int res = c::channel::loadChannel(browser->getChannel()->index, fullPath);
 
 	if (res == G_RES_OK) {
 		m::conf::samplePath = gu_dirname(fullPath);

@@ -211,7 +211,7 @@ void menuCallback(Fl_Widget* w, void* v)
 /* -------------------------------------------------------------------------- */
 
 
-geSampleChannel::geSampleChannel(int X, int Y, int W, int H, m::SampleChannel* ch)
+geSampleChannel::geSampleChannel(int X, int Y, int W, int H, giada::m::SampleChannel* ch)
 	: geChannel(X, Y, W, H, ch)
 {
 	begin();
@@ -325,9 +325,7 @@ void geSampleChannel::cb_openMenu()
 		{0}
 	};
 
-	if (ch->status == ChannelStatus::EMPTY || 
-		  ch->status == ChannelStatus::MISSING) 
-	{
+	if (ch->status == ChannelStatus::EMPTY || ch->status == ChannelStatus::MISSING) {
 		rclick_menu[(int) Menu::EXPORT_SAMPLE].deactivate();
 		rclick_menu[(int) Menu::EDIT_SAMPLE].deactivate();
 		rclick_menu[(int) Menu::FREE_CHANNEL].deactivate();

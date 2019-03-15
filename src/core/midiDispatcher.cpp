@@ -118,7 +118,7 @@ void processChannels_(const MidiEvent& midiEvent)
 		}
 		else if (pure == ch->midiInMute) {
 			gu_log("  >>> mute ch=%d (pure=0x%X)\n", ch->index, pure);
-			c::channel::toggleMute(ch, false);
+			c::channel::setMute(ch->index, !ch->mute.load(), false);
 		}		
 		else if (pure == ch->midiInKill) {
 			gu_log("  >>> kill ch=%d (pure=0x%X)\n", ch->index, pure);
@@ -126,17 +126,17 @@ void processChannels_(const MidiEvent& midiEvent)
 		}		
 		else if (pure == ch->midiInArm) {
 			gu_log("  >>> arm ch=%d (pure=0x%X)\n", ch->index, pure);
-			c::channel::toggleArm(ch, false);
+			c::channel::setArm(ch->index, ch->armed.load(), false);
 		}
 		else if (pure == ch->midiInSolo) {
 			gu_log("  >>> solo ch=%d (pure=0x%X)\n", ch->index, pure);
-			c::channel::toggleSolo(ch, false);
+			c::channel::setSolo(ch->index, !ch->solo.load(), false);
 		}
 		else if (pure == ch->midiInVolume) {
 			float vf = midiEvent.getVelocity() / 127.0f; // TODO: u::math::map
 			gu_log("  >>> volume ch=%d (pure=0x%X, value=%d, float=%f)\n",
 				ch->index, pure, midiEvent.getVelocity(), vf);
-			c::channel::setVolume(ch, vf, false);
+			c::channel::setVolume(ch->index, vf, false);
 		}
 		else {
 			SampleChannel* sch = static_cast<SampleChannel*>(ch);

@@ -113,7 +113,7 @@ int geColumn::handle(int e)
 				// TODO - c::channel::addAndLoad(...)
 				m::SampleChannel* c = static_cast<m::SampleChannel*>(c::channel::addChannel(
 					m_index, ChannelType::SAMPLE, G_GUI_CHANNEL_H_1));
-				result = c::channel::loadChannel(c, gu_stripFileUrl(path));
+				result = c::channel::loadChannel(c->index, gu_stripFileUrl(path));
 				if (result != G_RES_OK) {
 					deleteChannel(c->guiChannel);
 					fails = true;

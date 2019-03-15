@@ -30,8 +30,8 @@
 #include "deps/rtaudio-mod/RtAudio.h"
 #include "utils/log.h"
 #include "utils/math.h"
-#include "render/render.h"
-#include "render/data.h"
+#include "model/model.h"
+#include "model/data.h"
 #include "wave.h"
 #include "kernelAudio.h"
 #include "recorder.h"
@@ -370,7 +370,7 @@ int masterPlay(void* outBuf, void* inBuf, unsigned bufferSize,
 
 	//pthread_mutex_lock(&mutex);
 
-	m::render::get()->render(out, in, vChanInToOut_);
+	m::model::get()->render(out, in, vChanInToOut_);
 
 	if (clock::isActive()) {
 		for (unsigned j=0; j<bufferSize; j++) {

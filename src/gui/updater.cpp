@@ -27,7 +27,7 @@
 
 #include <FL/Fl.H>
 #include "core/const.h"
-#include "core/render/render.h"
+#include "core/model/model.h"
 #include "utils/gui.h"
 #include "updater.h"
 
@@ -38,10 +38,10 @@ namespace updater
 {
 void update(void* p)
 {
-    if (m::render::changed.load() == true) {
+    if (m::model::changed.load() == true) {
         puts("REBUILD!");
         u::gui::rebuild();
-        m::render::changed.store(false);
+        m::model::changed.store(false);
     }
     else
         u::gui::refresh();
