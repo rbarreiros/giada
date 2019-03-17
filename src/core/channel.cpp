@@ -92,8 +92,50 @@ Channel::Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t 
 /* -------------------------------------------------------------------------- */
 
 
+Channel::Channel(const Channel& o)
+{
+	key             = o.key;
+	volume.store(o.volume.load());
+	volume_i        = o.volume_i;
+	volume_d        = o.volume_d;
+	name            = o.name;
+	pan.store(o.pan.load());
+	mute.store(o.mute.load());
+	solo.store(o.solo.load());
+	hasActions      = o.hasActions;
+	recStatus       = o.recStatus;
+	midiIn          = o.midiIn;
+	midiInKeyPress  = o.midiInKeyPress;
+	midiInKeyRel    = o.midiInKeyRel;
+	midiInKill      = o.midiInKill;
+	midiInArm       = o.midiInArm;
+	midiInVolume    = o.midiInVolume;
+	midiInMute      = o.midiInMute;
+	midiInSolo      = o.midiInSolo;
+	midiOutL        = o.midiOutL;
+	midiOutLplaying = o.midiOutLplaying;
+	midiOutLmute    = o.midiOutLmute;
+	midiOutLsolo    = o.midiOutLsolo;
+
+#ifdef WITH_VST
+
+	/* TODO */
+	//for (const std::unique_ptr<Plugin>& plugin : o.plugins)
+	//	pluginHost::addPlugin(pluginManager::makePlugin(*plugin.get()), 
+	//		pluginHost::StackType::CHANNEL, pluginMutex, this);
+
+#endif
+
+	hasActions = recorderHandler::cloneActions(o.index, index);	
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void Channel::copy(const Channel* src, pthread_mutex_t* pluginMutex)
 {
+/*
 	key             = src->key;
 	volume.store(src->volume.load());
 	volume_i        = src->volume_i;
@@ -126,6 +168,7 @@ void Channel::copy(const Channel* src, pthread_mutex_t* pluginMutex)
 #endif
 
 	hasActions = recorderHandler::cloneActions(src->index, index);
+*/
 }
 
 
@@ -229,18 +272,18 @@ bool Channel::isMidiInAllowed(int c) const
 void Channel::setPan(float v)
 {
 	if (v > 1.0f)
-		pan = 1.0f;
+		pan.store(1.0f);
 	else 
 	if (v < 0.0f)
-		pan = 0.0f;
+		pan.store(0.0f);
 	else
-		pan = v;
+		pan.store(v);
 }
 
 
 float Channel::getPan() const
 {
-	return pan;
+	return pan.load();
 }
 
 
@@ -248,13 +291,14 @@ float Channel::getPan() const
 
 
 float Channel::calcPanning(int ch) const
-{
-	if (pan == 0.5f) // center: nothing to do
+{	
+	float p = pan.load();
+	if (p  == 0.5f) // center: nothing to do
 		return 1.0;
 	if (ch == 0)
-		return 1.0 - pan;
+		return 1.0 - p;
 	else  // channel 1
-		return pan; 
+		return p; 
 }
 
 

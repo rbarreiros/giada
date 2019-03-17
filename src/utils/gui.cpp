@@ -85,8 +85,7 @@ void refresh()
 
 	/* Compute timer for blinker. */
 
-	if (blinker_++ > 12)
-		blinker_ = 0;
+	blinker_ = (blinker_ + 1) % 12;
 
 	/* If Sample Editor is open, repaint it (for dynamic play head). */
 

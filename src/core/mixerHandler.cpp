@@ -176,18 +176,26 @@ int loadChannel(size_t chanIndex, const std::string& fname)
 }
 
 
-/* ------------------------------------------------------------------------- */
+/* -------------------------------------------------------------------------- */
 
 
-void deleteChannel(Channel* target)
+void freeChannel(size_t chanIndex)
 {
-	int index = u::vector::indexOf(mixer::channels, target);
-	assert(index != -1);
-	
-	pthread_mutex_lock(&mixer::mutex);
-	delete mixer::channels.at(index);
-	mixer::channels.erase(mixer::channels.begin() + index);
-	pthread_mutex_unlock(&mixer::mutex);
+	std::shared_ptr<model::Data> data = model::clone();
+	static_cast<SampleChannel*>(data->channels[chanIndex])->empty();
+	model::swap(data);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void deleteChannel(size_t chanIndex)
+{
+	std::shared_ptr<model::Data> data = model::clone();
+	delete data->channels[chanIndex];
+	data->channels.erase(data->channels.begin() + chanIndex);
+	model::swap(data);
 }
 
 

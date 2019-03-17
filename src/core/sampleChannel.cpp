@@ -41,21 +41,21 @@ namespace giada {
 namespace m 
 {
 SampleChannel::SampleChannel(bool inputMonitor, int bufferSize, size_t column)
-	: Channel          (ChannelType::SAMPLE, ChannelStatus::EMPTY, bufferSize, column),
-	  mode             (ChannelMode::SINGLE_BASIC),
-	  wave             (nullptr),
-	  tracker          (0),
-	  trackerPreview   (0),
-	  shift            (0),
-	  quantizing       (false),
-	  inputMonitor     (inputMonitor),
-	  boost            (G_DEFAULT_BOOST),
-	  pitch            (G_DEFAULT_PITCH),
-	  begin            (0),
-	  end              (0),
-	  midiInReadActions(0x0),
-	  midiInPitch      (0x0),
-	  rsmp_state       (nullptr)
+: Channel          (ChannelType::SAMPLE, ChannelStatus::EMPTY, bufferSize, column),
+  mode             (ChannelMode::SINGLE_BASIC),
+  wave             (nullptr),
+  tracker          (0),
+  trackerPreview   (0),
+  shift            (0),
+  quantizing       (false),
+  inputMonitor     (inputMonitor),
+  boost            (G_DEFAULT_BOOST),
+  pitch            (G_DEFAULT_PITCH),
+  begin            (0),
+  end              (0),
+  midiInReadActions(0x0),
+  midiInPitch      (0x0),
+  rsmp_state       (nullptr)
 {
 	rsmp_state = src_new(SRC_LINEAR, G_MAX_IO_CHANS, nullptr);
 	if (rsmp_state == nullptr) {
@@ -63,6 +63,25 @@ SampleChannel::SampleChannel(bool inputMonitor, int bufferSize, size_t column)
 		throw std::bad_alloc();
 	}
 	bufferPreview.alloc(bufferSize, G_MAX_IO_CHANS);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+SampleChannel::SampleChannel(const SampleChannel& o)
+: Channel     (o),
+  mode        (o.mode),
+  tracker     (o.tracker),
+  quantizing  (o.quantizing),
+  inputMonitor(o.inputMonitor.load()),
+  boost       (o.boost.load()),
+  begin       (o.begin),
+  end         (o.end)
+{
+	setPitch(o.pitch);
+	if (o.wave)
+		pushWave(std::make_unique<Wave>(*o.wave)); // invoke Wave's copy constructor	
 }
 
 
@@ -81,6 +100,7 @@ SampleChannel::~SampleChannel()
 
 void SampleChannel::copy(const Channel* src_, pthread_mutex_t* pluginMutex)
 {
+/*
 	Channel::copy(src_, pluginMutex);
 	const SampleChannel* src = static_cast<const SampleChannel*>(src_);
 	tracker         = src->tracker;
@@ -93,6 +113,7 @@ void SampleChannel::copy(const Channel* src_, pthread_mutex_t* pluginMutex)
 
 	if (src->wave)
 		pushWave(std::make_unique<Wave>(*src->wave)); // invoke Wave's copy constructor
+*/
 }
 
 
@@ -374,18 +395,18 @@ int SampleChannel::getPosition() const
 void SampleChannel::setBoost(float v)
 {
 	if (v > G_MAX_BOOST_DB)
-		boost = G_MAX_BOOST_DB;
+		boost.store(G_MAX_BOOST_DB);
 	else 
 	if (v < 0.0f)
-		boost = 0.0f;
+		boost.store(0.0f);
 	else
-		boost = v;
+		boost.store(v);
 }
 
 
 float SampleChannel::getBoost() const
 {
-	return boost;
+	return boost.load();
 }
 
 
@@ -399,7 +420,7 @@ void SampleChannel::empty()
 	end        = 0;
 	tracker    = 0;
 	volume.store(G_DEFAULT_VOL);
-	boost      = G_DEFAULT_BOOST;
+	boost.store(G_DEFAULT_BOOST);
 	hasActions = false;
 	wave.reset(nullptr);
 	sendMidiLstatus();

@@ -69,14 +69,11 @@
 extern gdMainWindow* G_MainWin;
 
 
-using std::string;
-
-
 namespace giada {
-namespace c     {
+namespace c {
 namespace channel 
 {
-int loadChannel(size_t chanIndex, const string& fname)
+int loadChannel(size_t chanIndex, const std::string& fname)
 {
 	/* Save the patch and take the last browser's dir in order to re-use it the 
 	next time. */
@@ -99,48 +96,26 @@ m::Channel* addChannel(size_t column, ChannelType type, int size)
 /* -------------------------------------------------------------------------- */
 
 
-void deleteChannel(m::Channel* ch)
+void deleteChannel(size_t chanIndex)
 {
-	using namespace giada::m;
-
 	if (!gdConfirmWin("Warning", "Delete channel: are you sure?"))
 		return;
-	recorder::clearChannel(ch->index);
-	ch->hasActions = false;
-#ifdef WITH_VST
-	pluginHost::freeStack(pluginHost::StackType::CHANNEL, &mixer::mutex, ch);
-#endif
-	Fl::lock();
-	G_MainWin->keyboard->deleteChannel(ch->guiChannel);
-	Fl::unlock();
-	mh::deleteChannel(ch);
 	u::gui::closeAllSubwindows();
+	m::recorder::clearChannel(chanIndex);
+	m::mh::deleteChannel(chanIndex);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void freeChannel(m::Channel* ch)
+void freeChannel(size_t chanIndex)
 {
-	if (ch->isPlaying()) {
-		if (!gdConfirmWin("Warning", "This action will stop the channel: are you sure?"))
-			return;
-	}
-	else
 	if (!gdConfirmWin("Warning", "Free channel: are you sure?"))
 		return;
-
-	G_MainWin->keyboard->freeChannel(ch->guiChannel);
-	m::recorder::clearChannel(ch->index);
-	ch->empty();
-
-	/* delete any related subwindow */
-	/** TODO - use gu_closeAllSubwindows()   */
-	G_MainWin->delSubWindow(WID_FILE_BROWSER);
-	G_MainWin->delSubWindow(WID_ACTION_EDITOR);
-	G_MainWin->delSubWindow(WID_SAMPLE_EDITOR);
-	G_MainWin->delSubWindow(WID_FX_LIST);
+	u::gui::closeAllSubwindows();
+	m::recorder::clearChannel(chanIndex);
+	m::mh::freeChannel(chanIndex);
 }
 
 
@@ -161,17 +136,16 @@ void setArm(size_t chanIndex, bool value, bool gui)
 /* -------------------------------------------------------------------------- */
 
 
-void toggleInputMonitor(m::Channel* ch)
+void setInputMonitor(size_t chanIndex, bool value)
 {
-	m::SampleChannel* sch = static_cast<m::SampleChannel*>(ch);
-	sch->inputMonitor = !sch->inputMonitor;
+	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex])->inputMonitor.store(value);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-int cloneChannel(m::Channel* src)
+int cloneChannel(size_t chanIndex)
 {
 	assert(false);
 #if 0
@@ -202,9 +176,9 @@ void setVolume(size_t chanIndex, float value, bool gui, bool editor)
 	if (editor) {
 		gdSampleEditor* gdEditor = static_cast<gdSampleEditor*>(u::gui::getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
 		if (gdEditor) {
-			Fl::lock();
+			if (!gui) Fl::lock();
 			gdEditor->volumeTool->refresh();
-			Fl::unlock();
+			if (!gui) Fl::unlock();
 		}
 	}
 
@@ -219,14 +193,15 @@ void setVolume(size_t chanIndex, float value, bool gui, bool editor)
 /* -------------------------------------------------------------------------- */
 
 
-void setPitch(m::SampleChannel* ch, float val)
+void setPitch(size_t chanIndex, float val, bool gui)
 {
-	ch->setPitch(val);
+	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex])->setPitch(val);
+
 	gdSampleEditor* gdEditor = static_cast<gdSampleEditor*>(u::gui::getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
 	if (gdEditor) {
-		Fl::lock();
+		if (!gui) Fl::lock();
 		gdEditor->pitchTool->refresh();
-		Fl::unlock();
+		if (!gui) Fl::unlock();
 	}
 }
 
@@ -234,14 +209,15 @@ void setPitch(m::SampleChannel* ch, float val)
 /* -------------------------------------------------------------------------- */
 
 
-void setPanning(m::SampleChannel* ch, float val)
+void setPan(size_t chanIndex, float val, bool gui)
 {
-	ch->setPan(val);
+	m::model::get()->channels[chanIndex]->setPan(val);
+
 	gdSampleEditor* gdEditor = static_cast<gdSampleEditor*>(u::gui::getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
 	if (gdEditor) {
-		Fl::lock();
+		if (!gui) Fl::lock();
 		gdEditor->panTool->refresh();
-		Fl::unlock();
+		if (!gui) Fl::unlock();
 	}
 }
 
@@ -277,23 +253,24 @@ void setSolo(size_t chanIndex, bool value, bool gui)
 /* -------------------------------------------------------------------------- */
 
 
-void kill(m::Channel* ch)
+void kill(size_t chanIndex)
 {
-	ch->kill(0); // on frame 0: it's a user-generated event
+	m::model::get()->channels[chanIndex]->kill(0); // on frame 0: it's a user-generated event
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void setBoost(m::SampleChannel* ch, float val)
+void setBoost(size_t chanIndex, float val, bool gui)
 {
-	ch->setBoost(val);
-	gdSampleEditor *gdEditor = static_cast<gdSampleEditor*>(u::gui::getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
+	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex])->setBoost(val);
+
+	gdSampleEditor* gdEditor = static_cast<gdSampleEditor*>(u::gui::getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
 	if (gdEditor) {
-		Fl::lock();
+		if (!gui) Fl::lock();
 		gdEditor->boostTool->refresh();
-		Fl::unlock();
+		if (!gui) Fl::unlock();
 	}
 }
 
@@ -301,18 +278,19 @@ void setBoost(m::SampleChannel* ch, float val)
 /* -------------------------------------------------------------------------- */
 
 
-void setName(m::Channel* ch, const string& name)
+void setName(size_t chanIndex, const std::string& name)
 {
-	ch->name = name;
-	ch->guiChannel->update();
+	m::model::get()->channels[chanIndex]->name = name;
+	G_MainWin->keyboard->getChannel(chanIndex)->update();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void toggleReadingActions(m::Channel* ch, bool gui)
+void toggleReadingActions(size_t chanIndex, bool gui)
 {
+	const m::Channel* ch = m::model::get()->channels[chanIndex];
 
 	/* When you call startReadingRecs with conf::treatRecsAsLoops, the
 	member value ch->readActions actually is not set to true immediately, because
@@ -323,24 +301,23 @@ void toggleReadingActions(m::Channel* ch, bool gui)
 	then you press 'R' again to undo the status. */
 
 	if (ch->readActions || (!ch->readActions && ch->recStatus == ChannelStatus::WAIT))
-		stopReadingActions(ch, gui);
+		stopReadingActions(chanIndex, gui);
 	else
-		startReadingActions(ch, gui);
+		startReadingActions(chanIndex, gui);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void startReadingActions(m::Channel* ch, bool gui)
+void startReadingActions(size_t chanIndex, bool gui)
 {
-	using namespace giada::m;
-
-	ch->startReadingActions(conf::treatRecsAsLoops, conf::recsStopOnChanHalt); 
+	m::model::get()->channels[chanIndex]->startReadingActions(m::conf::treatRecsAsLoops, 
+		m::conf::recsStopOnChanHalt); 
 
 	if (!gui) {
 		Fl::lock();
-		static_cast<geSampleChannel*>(ch->guiChannel)->readActions->value(1);
+		static_cast<geSampleChannel*>(G_MainWin->keyboard->getChannel(chanIndex))->readActions->value(1);
 		Fl::unlock();
 	}
 }
@@ -349,16 +326,14 @@ void startReadingActions(m::Channel* ch, bool gui)
 /* -------------------------------------------------------------------------- */
 
 
-void stopReadingActions(m::Channel* ch, bool gui)
+void stopReadingActions(size_t chanIndex, bool gui)
 {
-	using namespace giada::m;
-
-	ch->stopReadingActions(clock::isRunning(), conf::treatRecsAsLoops, 
-		conf::recsStopOnChanHalt);
+	m::model::get()->channels[chanIndex]->stopReadingActions(m::clock::isRunning(), 
+		m::conf::treatRecsAsLoops, m::conf::recsStopOnChanHalt);
 
 	if (!gui) {
 		Fl::lock();
-		static_cast<geSampleChannel*>(ch->guiChannel)->readActions->value(0);
+		static_cast<geSampleChannel*>(G_MainWin->keyboard->getChannel(chanIndex))->readActions->value(0);
 		Fl::unlock();
 	}
 }

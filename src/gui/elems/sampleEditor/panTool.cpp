@@ -104,7 +104,7 @@ void gePanTool::cb_panReset(Fl_Widget* w, void* p) { ((gePanTool*)p)->cb_panRese
 
 void gePanTool::cb_panning()
 {
-  c::channel::setPanning(ch, dial->value());
+  c::channel::setPan(ch->index, dial->value());
 }
 
 
@@ -113,5 +113,5 @@ void gePanTool::cb_panning()
 
 void gePanTool::cb_panReset()
 {
-  c::channel::setPanning(ch, 0.5f);
+  c::channel::setPan(ch->index, 0.5f);
 }

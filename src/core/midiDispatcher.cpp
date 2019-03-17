@@ -122,7 +122,7 @@ void processChannels_(const MidiEvent& midiEvent)
 		}		
 		else if (pure == ch->midiInKill) {
 			gu_log("  >>> kill ch=%d (pure=0x%X)\n", ch->index, pure);
-			c::channel::kill(ch);
+			c::channel::kill(ch->index);
 		}		
 		else if (pure == ch->midiInArm) {
 			gu_log("  >>> arm ch=%d (pure=0x%X)\n", ch->index, pure);
@@ -144,12 +144,12 @@ void processChannels_(const MidiEvent& midiEvent)
 				float vf = midiEvent.getVelocity() / (127/4.0f); // [0-127] ~> [0.0-4.0] TODO: u::math::map
 				gu_log("  >>> pitch ch=%d (pure=0x%X, value=%d, float=%f)\n",
 					sch->index, pure, midiEvent.getVelocity(), vf);
-				c::channel::setPitch(sch, vf);
+				c::channel::setPitch(sch->index, vf);
 			}
 			else 
 			if (pure == sch->midiInReadActions) {
 				gu_log("  >>> toggle read actions ch=%d (pure=0x%X)\n", sch->index, pure);
-				c::channel::toggleReadingActions(sch, false);
+				c::channel::toggleReadingActions(sch->index, false);
 			}
 		}
 

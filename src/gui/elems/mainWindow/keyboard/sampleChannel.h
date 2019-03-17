@@ -29,8 +29,13 @@
 #define GE_SAMPLE_CHANNEL_H
 
 
-#include "core/sampleChannel.h"
 #include "channel.h"
+
+
+namespace giada { 
+namespace m { 
+class SampleChannel; 
+}}
 
 
 class geChannelMode;
@@ -39,15 +44,6 @@ class geButton;
 
 class geSampleChannel : public geChannel
 {
-private:
-
-	static void cb_button(Fl_Widget* v, void* p);
-	static void cb_openMenu(Fl_Widget* v, void* p);
-	static void cb_readActions(Fl_Widget* v, void* p);
-	void cb_button();
-	void cb_openMenu();
-	void cb_readActions();
-
 public:
 
 	geSampleChannel(int x, int y, int w, int h, giada::m::SampleChannel* ch);
@@ -67,6 +63,15 @@ public:
 
 	geChannelMode* modeBox;
 	geButton*      readActions;
+
+private:
+
+	static void cb_button(Fl_Widget* v, void* p);
+	static void cb_openMenu(Fl_Widget* v, void* p);
+	static void cb_readActions(Fl_Widget* v, void* p);
+	void cb_button();
+	void cb_openMenu();
+	void cb_readActions();
 };
 
 

@@ -45,22 +45,22 @@ using std::string;
 using namespace giada;
 
 
-geVolumeTool::geVolumeTool(int X, int Y, m::SampleChannel* ch)
-  : Fl_Group(X, Y, 150, 20),
-    ch      (ch)
+geVolumeTool::geVolumeTool(int X, int Y, const m::SampleChannel* ch)
+: Fl_Group(X, Y, 150, 20),
+	ch      (ch)
 {
-  begin();
-    label = new geBox  (x(), y(), u::gui::getStringWidth("Volume"), 20, "Volume", FL_ALIGN_RIGHT);
-    dial  = new geDial (label->x()+label->w()+4, y(), 20, 20);
-    input = new geInput(dial->x()+dial->w()+4, y(), 70, 20);
-  end();
+	begin();
+		label = new geBox  (x(), y(), u::gui::getStringWidth("Volume"), 20, "Volume", FL_ALIGN_RIGHT);
+		dial  = new geDial (label->x()+label->w()+4, y(), 20, 20);
+		input = new geInput(dial->x()+dial->w()+4, y(), 70, 20);
+	end();
 
-  dial->range(0.0f, 1.0f);
-  dial->callback(cb_setVolume, (void*)this);
+	dial->range(0.0f, 1.0f);
+	dial->callback(cb_setVolume, (void*)this);
 
-  input->callback(cb_setVolumeNum, (void*)this);
+	input->callback(cb_setVolumeNum, (void*)this);
 
-  refresh();
+	refresh();
 }
 
 
@@ -69,12 +69,12 @@ geVolumeTool::geVolumeTool(int X, int Y, m::SampleChannel* ch)
 
 void geVolumeTool::refresh()
 {
-  string tmp;
-  float dB = u::math::linearToDB(ch->volume);
-  if (dB > -INFINITY) tmp = u::string::fToString(dB, 2);  // 2 digits
-  else                tmp = "-inf";
-  input->value(tmp.c_str());
-  dial->value(ch->guiChannel->vol->value());
+	string tmp;
+	float dB = u::math::linearToDB(ch->volume);
+	if (dB > -INFINITY) tmp = u::string::fToString(dB, 2);  // 2 digits
+	else                tmp = "-inf";
+	input->value(tmp.c_str());
+	dial->value(ch->guiChannel->vol->value());
 }
 
 
@@ -90,10 +90,10 @@ void geVolumeTool::cb_setVolumeNum(Fl_Widget* w, void* p) { ((geVolumeTool*)p)->
 
 void geVolumeTool::cb_setVolume()
 {
-  using namespace giada;
+	using namespace giada;
 
-  c::channel::setVolume(ch->index, dial->value(), false, true);
-  refresh();
+	c::channel::setVolume(ch->index, dial->value(), false, true);
+	refresh();
 }
 
 
@@ -102,9 +102,9 @@ void geVolumeTool::cb_setVolume()
 
 void geVolumeTool::cb_setVolumeNum()
 {
-  using namespace giada;
+	using namespace giada;
 
-  float value = pow(10, (atof(input->value()) / 20)); // linear = 10^(dB/20)
-  c::channel::setVolume(ch->index, value, false, true);
-  dial->value(ch->guiChannel->vol->value());
+	float value = pow(10, (atof(input->value()) / 20)); // linear = 10^(dB/20)
+	c::channel::setVolume(ch->index, value, false, true);
+	dial->value(ch->guiChannel->vol->value());
 }

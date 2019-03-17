@@ -47,6 +47,7 @@ class SampleChannel : public Channel
 public:
 
 	SampleChannel(bool inputMonitor, int bufferSize, size_t column);
+	SampleChannel(const SampleChannel& o);
 	~SampleChannel();
 
 	void copy(const Channel* src, pthread_mutex_t* pluginMutex) override;
@@ -125,8 +126,8 @@ public:
 	int   trackerPreview;  // chan position for audio preview
 	int   shift;
 	bool  quantizing;      // quantization in progress
-	bool  inputMonitor;  
-	float boost;
+	std::atomic<bool> inputMonitor;  
+	std::atomic<float> boost;
 	float pitch;
 
 	/* begin, end

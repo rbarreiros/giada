@@ -40,9 +40,15 @@ class geBox;
 
 class geBoostTool : public Fl_Group
 {
+public:
+
+	geBoostTool(int x, int y, const giada::m::SampleChannel* ch);
+
+	void refresh();
+
 private:
 
-	giada::m::SampleChannel* ch;
+	const giada::m::SampleChannel* ch;
 
 	geBox*    label;
 	geDial*   dial;
@@ -55,12 +61,6 @@ private:
 	void cb_setBoost();
 	void cb_setBoostNum();
 	void cb_normalize();
-
-public:
-
-	geBoostTool(int x, int y, giada::m::SampleChannel* ch);
-
-	void refresh();
 };
 
 

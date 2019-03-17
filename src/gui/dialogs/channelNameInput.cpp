@@ -49,8 +49,8 @@ gdChannelNameInput::gdChannelNameInput(m::Channel* ch)
 
 	set_modal();
 
-	m_name = new geInput(G_GUI_OUTER_MARGIN, G_GUI_OUTER_MARGIN, w() - (G_GUI_OUTER_MARGIN * 2), G_GUI_UNIT);
-	m_ok = new geButton(w() - 70 - G_GUI_OUTER_MARGIN, m_name->y()+m_name->h() + G_GUI_OUTER_MARGIN, 70, G_GUI_UNIT, "Ok");
+	m_name   = new geInput(G_GUI_OUTER_MARGIN, G_GUI_OUTER_MARGIN, w() - (G_GUI_OUTER_MARGIN * 2), G_GUI_UNIT);
+	m_ok     = new geButton(w() - 70 - G_GUI_OUTER_MARGIN, m_name->y()+m_name->h() + G_GUI_OUTER_MARGIN, 70, G_GUI_UNIT, "Ok");
 	m_cancel = new geButton(m_ok->x() - 70 - G_GUI_OUTER_MARGIN, m_ok->y(), 70, G_GUI_UNIT, "Cancel");
 	end();
 
@@ -98,6 +98,6 @@ void gdChannelNameInput::cb_cancel()
 
 void gdChannelNameInput::cb_update()
 {
-	c::channel::setName(m_ch, m_name->value());
+	c::channel::setName(m_ch->index, m_name->value());
 	do_callback();
 }

@@ -306,9 +306,9 @@ void gdSampleEditor::cb_reload()
   if (channel::loadChannel(ch->index, ch->wave->getPath()) != G_RES_OK)
     return;
 
-  channel::setBoost(ch, G_DEFAULT_BOOST);
-  channel::setPitch(ch, G_DEFAULT_PITCH);
-  channel::setPanning(ch, 0.5f);
+  channel::setBoost(ch->index, G_DEFAULT_BOOST);
+  channel::setPitch(ch->index, G_DEFAULT_PITCH);
+  channel::setPan(ch->index, 0.5f);
 
   panTool->refresh();
   boostTool->refresh();

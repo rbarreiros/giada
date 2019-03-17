@@ -53,10 +53,15 @@ Loads a new Wave inside a Sample Channel. */
 
 int loadChannel(size_t chanIndex, const std::string& fname);
 
+/* freeChannel
+Unloads existing Wave from a Sample Channel. */
+
+void freeChannel(size_t chanIndex);
+
 /* deleteChannel
 Completely removes a channel from the stack. */
 
-void deleteChannel(Channel* ch);
+void deleteChannel(size_t chanIndex);
 
 /* getChannelByIndex
 Returns channel with given index 'i'. */

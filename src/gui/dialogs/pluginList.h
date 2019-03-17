@@ -54,7 +54,7 @@ public:
 	giada::m::Channel* ch;      // ch == nullptr ? masterOut
 	giada::m::pluginHost::StackType stackType;
 
-	gdPluginList(giada::m::pluginHost::StackType t, giada::m::Channel* ch=nullptr);
+	gdPluginList(giada::m::pluginHost::StackType t, const giada::m::Channel* ch=nullptr);
 	~gdPluginList();
 
 	/* special callback, passed to browser. When closed (i.e. plugin

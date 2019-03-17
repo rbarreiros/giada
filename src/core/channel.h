@@ -218,7 +218,7 @@ public:
 
 	PreviewMode previewMode;
 
-	float       pan;
+	std::atomic<float> pan;
 	std::atomic<float> volume;   // global volume
 	std::atomic<bool> armed;
 	std::string name;
@@ -269,6 +269,7 @@ public:
 protected:
 
 	Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t column);
+	Channel(const Channel& o);
 
 #ifdef WITH_VST
 

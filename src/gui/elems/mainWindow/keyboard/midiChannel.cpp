@@ -108,10 +108,10 @@ void menuCallback(Fl_Widget* w, void* v)
 			c::recorder::clearAllActions(gch);
 			break;
 		case Menu::SETUP_KEYBOARD_INPUT:
-			u::gui::openSubWindow(G_MainWin, new gdKeyGrabber(gch->ch), 0);
+			u::gui::openSubWindow(G_MainWin, new gdKeyGrabber(ch), 0);
 			break;
 		case Menu::SETUP_MIDI_INPUT:
-			u::gui::openSubWindow(G_MainWin, new gdMidiInputChannel(gch->ch), 0);
+			u::gui::openSubWindow(G_MainWin, new gdMidiInputChannel(ch), 0);
 			break;
 		case Menu::SETUP_MIDI_OUTPUT:
 			u::gui::openSubWindow(G_MainWin, new gdMidiOutputMidiCh(ch), 0);
@@ -133,13 +133,13 @@ void menuCallback(Fl_Widget* w, void* v)
 			static_cast<geColumn*>(gch->parent())->repositionChannels();
 			break;
 		case Menu::CLONE_CHANNEL:
-			c::channel::cloneChannel(gch->ch);
+			c::channel::cloneChannel(ch->index);
 			break;		
 		case Menu::RENAME_CHANNEL:
-			u::gui::openSubWindow(G_MainWin, new gdChannelNameInput(gch->ch), WID_SAMPLE_NAME);
+			u::gui::openSubWindow(G_MainWin, new gdChannelNameInput(ch), WID_SAMPLE_NAME);
 			break;
 		case Menu::DELETE_CHANNEL:
-			c::channel::deleteChannel(gch->ch);
+			c::channel::deleteChannel(ch->index);
 			break;
 	}
 }

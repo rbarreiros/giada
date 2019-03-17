@@ -50,12 +50,12 @@
 extern gdMainWindow* G_MainWin;
 
 
-using std::string;
 using namespace giada;
 
 
-gdPluginList::gdPluginList(m::pluginHost::StackType t, m::Channel* ch)
-	: gdWindow(468, 204), ch(ch), stackType(t)
+/* TODO const_cast */
+gdPluginList::gdPluginList(m::pluginHost::StackType t, const m::Channel* ch)
+	: gdWindow(468, 204), ch(const_cast<m::Channel*>(ch)), stackType(t)
 {
 	using namespace giada::m;
 
@@ -85,7 +85,7 @@ gdPluginList::gdPluginList(m::pluginHost::StackType t, m::Channel* ch)
 	if (stackType == pluginHost::StackType::MASTER_IN)
 		label("Master In Plugins");
 	else {
-		string l = "Channel " + u::string::iToString(ch->index+1) + " Plugins";
+		std::string l = "Channel " + u::string::iToString(ch->index+1) + " Plugins";
 		copy_label(l.c_str());
 	}
 

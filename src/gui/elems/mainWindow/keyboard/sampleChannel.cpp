@@ -110,29 +110,29 @@ void menuCallback(Fl_Widget* w, void* v)
 
 	switch (selectedItem) {
 		case Menu::INPUT_MONITOR: {
-			c::channel::toggleInputMonitor(gch->ch);
+			c::channel::setInputMonitor(ch->index, false/* TODO ??????????*/);
 			break;
 		}
 		case Menu::LOAD_SAMPLE: {
 			gdWindow *w = new gdBrowserLoad(m::conf::browserX, m::conf::browserY,
 				m::conf::browserW, m::conf::browserH, "Browse sample",
-				m::conf::samplePath.c_str(), c::storage::loadSample, gch->ch);
+				m::conf::samplePath.c_str(), c::storage::loadSample, ch);
 			u::gui::openSubWindow(G_MainWin, w, WID_FILE_BROWSER);
 			break;
 		}
 		case Menu::EXPORT_SAMPLE: {
 			gdWindow *w = new gdBrowserSave(m::conf::browserX, m::conf::browserY,
 				m::conf::browserW, m::conf::browserH, "Save sample",
-				m::conf::samplePath.c_str(), "", c::storage::saveSample, gch->ch);
+				m::conf::samplePath.c_str(), "", c::storage::saveSample, ch);
 			u::gui::openSubWindow(G_MainWin, w, WID_FILE_BROWSER);
 			break;
 		}
 		case Menu::SETUP_KEYBOARD_INPUT: {
-			new gdKeyGrabber(gch->ch); // FIXME - use gu_openSubWindow
+			new gdKeyGrabber(ch); // FIXME - use gu_openSubWindow
 			break;
 		}
 		case Menu::SETUP_MIDI_INPUT: {
-			u::gui::openSubWindow(G_MainWin, new gdMidiInputChannel(gch->ch), 0);
+			u::gui::openSubWindow(G_MainWin, new gdMidiInputChannel(ch), 0);
 			break;
 		}
 		case Menu::SETUP_MIDI_OUTPUT: {
@@ -185,19 +185,19 @@ void menuCallback(Fl_Widget* w, void* v)
 			break;
 		}
 		case Menu::CLONE_CHANNEL: {
-			c::channel::cloneChannel(gch->ch);
+			c::channel::cloneChannel(ch->index);
 			break;
 		}
 		case Menu::RENAME_CHANNEL: {
-			u::gui::openSubWindow(G_MainWin, new gdChannelNameInput(gch->ch), WID_SAMPLE_NAME);
+			u::gui::openSubWindow(G_MainWin, new gdChannelNameInput(ch), WID_SAMPLE_NAME);
 			break;
 		}
 		case Menu::FREE_CHANNEL: {
-			c::channel::freeChannel(gch->ch);
+			c::channel::freeChannel(ch->index);
 			break;
 		}
 		case Menu::DELETE_CHANNEL: {
-			c::channel::deleteChannel(gch->ch);
+			c::channel::deleteChannel(ch->index);
 			break;
 		}
 	}
@@ -360,8 +360,7 @@ void geSampleChannel::cb_openMenu()
 
 void geSampleChannel::cb_readActions()
 {
-	using namespace giada::c::channel;
-	toggleReadingActions(static_cast<m::SampleChannel*>(ch));
+	c::channel::toggleReadingActions(ch->index);
 }
 
 

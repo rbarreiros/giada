@@ -40,39 +40,39 @@ class geBox;
 
 class gePitchTool : public Fl_Group
 {
-private:
-
-  giada::m::SampleChannel* ch;
-
-  geBox*    label;
-  geDial*   dial;
-  geInput*  input;
-  geButton* pitchToBar;
-  geButton* pitchToSong;
-  geButton* pitchHalf;
-  geButton* pitchDouble;
-  geButton* pitchReset;
-
-  static void cb_setPitch      (Fl_Widget* w, void* p);
-  static void cb_setPitchToBar (Fl_Widget* w, void* p);
-  static void cb_setPitchToSong(Fl_Widget* w, void* p);
-  static void cb_setPitchHalf  (Fl_Widget* w, void* p);
-  static void cb_setPitchDouble(Fl_Widget* w, void* p);
-  static void cb_resetPitch    (Fl_Widget* w, void* p);
-  static void cb_setPitchNum   (Fl_Widget* w, void* p);
-  void cb_setPitch();
-  void cb_setPitchToBar();
-  void cb_setPitchToSong();
-  void cb_setPitchHalf();
-  void cb_setPitchDouble();
-  void cb_resetPitch();
-  void cb_setPitchNum();
-
 public:
 
-  gePitchTool(int x, int y, giada::m::SampleChannel* ch);
+	gePitchTool(int x, int y, const giada::m::SampleChannel* ch);
 
-  void refresh();
+	void refresh();
+
+private:
+
+	const giada::m::SampleChannel* ch;
+
+	geBox*    label;
+	geDial*   dial;
+	geInput*  input;
+	geButton* pitchToBar;
+	geButton* pitchToSong;
+	geButton* pitchHalf;
+	geButton* pitchDouble;
+	geButton* pitchReset;
+
+	static void cb_setPitch      (Fl_Widget* w, void* p);
+	static void cb_setPitchToBar (Fl_Widget* w, void* p);
+	static void cb_setPitchToSong(Fl_Widget* w, void* p);
+	static void cb_setPitchHalf  (Fl_Widget* w, void* p);
+	static void cb_setPitchDouble(Fl_Widget* w, void* p);
+	static void cb_resetPitch    (Fl_Widget* w, void* p);
+	static void cb_setPitchNum   (Fl_Widget* w, void* p);
+	void cb_setPitch();
+	void cb_setPitchToBar();
+	void cb_setPitchToSong();
+	void cb_setPitchHalf();
+	void cb_setPitchDouble();
+	void cb_resetPitch();
+	void cb_setPitchNum();
 };
 
 

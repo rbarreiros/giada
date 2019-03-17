@@ -410,8 +410,8 @@ int masterPlay(void* outBuf, void* inBuf, unsigned bufferSize,
 void close()
 {
 	clock::setStatus(ClockStatus::STOPPED);
-	while (channels.size() > 0)
-		mh::deleteChannel(channels.at(0));
+	//while (channels.size() > 0)
+	//	mh::deleteChannel(channels.at(0)->index);
 	pthread_mutex_destroy(&mutex);
 }
 
