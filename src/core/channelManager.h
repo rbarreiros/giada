@@ -46,7 +46,15 @@ struct channel_t;
 }
 namespace channelManager
 {
+/* create (1)
+Creates a new Channel from scratch. */
+
 Channel* create(ChannelType type, int bufferSize, bool inputMonitorOn, size_t column);
+
+/* create (2)
+Creates a new Channel given an existing one (i.e. clone). */
+
+Channel* create(const Channel* ch);
 
 int  writePatch(const Channel* ch, bool isProject);
 void writePatch(const SampleChannel* ch, bool isProject, int index);

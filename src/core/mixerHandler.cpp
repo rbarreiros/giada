@@ -179,6 +179,18 @@ int loadChannel(size_t chanIndex, const std::string& fname)
 /* -------------------------------------------------------------------------- */
 
 
+void cloneChannel(size_t chanIndex)
+{
+	std::shared_ptr<model::Data> data = model::clone();
+	data->channels.push_back(channelManager::create(data->channels[chanIndex]));
+	data->channels.back()->index = data->channels.size() - 1;
+	model::swap(data);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void freeChannel(size_t chanIndex)
 {
 	std::shared_ptr<model::Data> data = model::clone();

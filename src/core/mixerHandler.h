@@ -63,6 +63,8 @@ Completely removes a channel from the stack. */
 
 void deleteChannel(size_t chanIndex);
 
+void cloneChannel(size_t chanIndex);
+
 /* getChannelByIndex
 Returns channel with given index 'i'. */
 

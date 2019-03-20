@@ -58,11 +58,6 @@ public:
 
 	virtual ~Channel() {};
 
-	/* copy
-	Makes a shallow copy (no internal buffers allocation) of another channel. */
-
-	virtual void copy(const Channel* src, pthread_mutex_t* pluginMutex) = 0;
-
 	/* parseEvents
 	Prepares channel for rendering. This is called on each frame. */
 

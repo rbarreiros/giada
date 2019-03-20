@@ -34,9 +34,6 @@
 #include "sampleChannel.h"
 
 
-using std::string;
-
-
 namespace giada {
 namespace m 
 {
@@ -70,18 +67,24 @@ SampleChannel::SampleChannel(bool inputMonitor, int bufferSize, size_t column)
 
 
 SampleChannel::SampleChannel(const SampleChannel& o)
-: Channel     (o),
-  mode        (o.mode),
-  tracker     (o.tracker),
-  quantizing  (o.quantizing),
-  inputMonitor(o.inputMonitor.load()),
-  boost       (o.boost.load()),
-  begin       (o.begin),
-  end         (o.end)
+: Channel          (o),
+  mode             (o.mode),
+  tracker          (o.tracker),
+  trackerPreview   (0),
+  shift            (o.shift),
+  quantizing       (o.quantizing),
+  inputMonitor     (o.inputMonitor.load()),
+  boost            (o.boost.load()),
+  pitch            (o.pitch),
+  begin            (o.begin),
+  end              (o.end),
+  midiInReadActions(o.midiInReadActions),
+  midiInPitch      (o.midiInPitch)
 {
-	setPitch(o.pitch);
 	if (o.wave)
 		pushWave(std::make_unique<Wave>(*o.wave)); // invoke Wave's copy constructor	
+
+	bufferPreview.alloc(o.bufferPreview.countFrames(), G_MAX_IO_CHANS);
 }
 
 
@@ -92,28 +95,6 @@ SampleChannel::~SampleChannel()
 {
 	if (rsmp_state != nullptr)
 		src_delete(rsmp_state);
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void SampleChannel::copy(const Channel* src_, pthread_mutex_t* pluginMutex)
-{
-/*
-	Channel::copy(src_, pluginMutex);
-	const SampleChannel* src = static_cast<const SampleChannel*>(src_);
-	tracker         = src->tracker;
-	begin           = src->begin;
-	end             = src->end;
-	boost           = src->boost;
-	mode            = src->mode;
-	quantizing      = src->quantizing;
-	setPitch(src->pitch);
-
-	if (src->wave)
-		pushWave(std::make_unique<Wave>(*src->wave)); // invoke Wave's copy constructor
-*/
 }
 
 
@@ -262,7 +243,7 @@ void SampleChannel::process(AudioBuffer& out, const AudioBuffer& in,
 /* -------------------------------------------------------------------------- */
 
 
-void SampleChannel::readPatch(const string& basePath, const patch::channel_t& pch)
+void SampleChannel::readPatch(const std::string& basePath, const patch::channel_t& pch)
 {
 	Channel::readPatch("", pch);
 	channelManager::readPatch(this, basePath, pch);

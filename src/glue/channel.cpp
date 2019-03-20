@@ -147,20 +147,7 @@ void setInputMonitor(size_t chanIndex, bool value)
 
 int cloneChannel(size_t chanIndex)
 {
-	assert(false);
-#if 0
-	using namespace giada::m;
-
-	Channel* ch    = mh::addChannel(src->type);
-	geChannel* gch = G_MainWin->keyboard->addChannel(src->guiChannel->getColumnIndex(), 
-		ch, src->guiChannel->getSize());
-
-	ch->guiChannel = gch;
-	ch->copy(src, &mixer::mutex);
-
-	G_MainWin->keyboard->updateChannel(ch->guiChannel);
-	return true;
-#endif
+	m::mh::cloneChannel(chanIndex);
 }
 
 

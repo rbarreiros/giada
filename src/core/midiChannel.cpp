@@ -42,16 +42,13 @@
 #include "midiChannel.h"
 
 
-using std::string;
-
-
 namespace giada {
 namespace m 
 {
 MidiChannel::MidiChannel(int bufferSize, size_t column)
-	: Channel      (ChannelType::MIDI, ChannelStatus::OFF, bufferSize, column),
-		midiOut    (false),
-		midiOutChan(G_MIDI_CHANS[0])
+: Channel    (ChannelType::MIDI, ChannelStatus::OFF, bufferSize, column),
+  midiOut    (false),
+  midiOutChan(G_MIDI_CHANS[0])
 {
 }
 
@@ -59,12 +56,11 @@ MidiChannel::MidiChannel(int bufferSize, size_t column)
 /* -------------------------------------------------------------------------- */
 
 
-void MidiChannel::copy(const Channel* src_, pthread_mutex_t* pluginMutex)
+MidiChannel::MidiChannel(const MidiChannel& o)
+: Channel    (o),
+  midiOut    (o.midiOut),
+  midiOutChan(o.midiOutChan)
 {
-	Channel::copy(src_, pluginMutex);
-	const MidiChannel* src = static_cast<const MidiChannel*>(src_);
-	midiOut     = src->midiOut;
-	midiOutChan = src->midiOutChan;
 }
 
 
@@ -143,7 +139,7 @@ void MidiChannel::setSolo(bool value)
 /* -------------------------------------------------------------------------- */
 
 
-void MidiChannel::readPatch(const string& basePath, const patch::channel_t& pch)
+void MidiChannel::readPatch(const std::string& basePath, const patch::channel_t& pch)
 {
 	Channel::readPatch("", pch);
 	channelManager::readPatch(this, pch);

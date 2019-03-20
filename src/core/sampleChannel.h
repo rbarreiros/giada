@@ -50,7 +50,6 @@ public:
 	SampleChannel(const SampleChannel& o);
 	~SampleChannel();
 
-	void copy(const Channel* src, pthread_mutex_t* pluginMutex) override;
 	void prepareBuffer(bool running) override;
 	void parseEvents(mixer::FrameEvents fe) override;
 	void process(AudioBuffer& out, const AudioBuffer& in, bool audible, bool running) override;

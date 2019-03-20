@@ -43,8 +43,8 @@ class MidiChannel : public Channel
 public:
 
 	MidiChannel(int bufferSize, size_t column);
+	MidiChannel(const MidiChannel& o);
 
-	void copy(const Channel* src, pthread_mutex_t* pluginMutex) override;
 	void parseEvents(mixer::FrameEvents fe) override;
 	void process(AudioBuffer& out, const AudioBuffer& in, bool audible, bool running) override;
 	void start(int frame, bool doQuantize, int velocity) override;

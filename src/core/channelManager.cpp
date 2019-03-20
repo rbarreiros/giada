@@ -129,6 +129,18 @@ Channel* create(ChannelType type, int bufferSize, bool inputMonitorOn, size_t co
 /* -------------------------------------------------------------------------- */
 
 
+Channel* create(const Channel* ch)
+{
+	if (ch->type == ChannelType::SAMPLE)
+		return new SampleChannel(*static_cast<const SampleChannel*>(ch));
+	else
+		return new MidiChannel(*static_cast<const MidiChannel*>(ch));
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 int writePatch(const Channel* ch, bool isProject)
 {
 	patch::channel_t pch;
