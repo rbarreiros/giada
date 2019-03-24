@@ -64,7 +64,7 @@ void freeChannel(size_t chanIndex);
 /* cloneChannel
 Makes an exact copy of Channel *ch. */
 
-int cloneChannel(size_t chanIndex);
+void cloneChannel(size_t chanIndex);
 
 /* set*
 Sets several channel properties. If gui == true the signal comes from a manual 

@@ -58,7 +58,7 @@ public:
     void render(AudioBuffer& out, const AudioBuffer& in, AudioBuffer& inToOut);
 
     recorder::ActionMap actions;
-    std::vector<Channel*> channels;
+    std::vector<std::unique_ptr<Channel>> channels;
     std::vector<std::unique_ptr<Plugin>> masterOutPlugins;
     std::vector<std::unique_ptr<Plugin>> masterInPlugins;
     

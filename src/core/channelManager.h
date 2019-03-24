@@ -29,6 +29,7 @@
 #define G_CHANNEL_MANAGER_H
 
 
+#include <memory>
 #include <string>
 #include "types.h"
 
@@ -49,12 +50,12 @@ namespace channelManager
 /* create (1)
 Creates a new Channel from scratch. */
 
-Channel* create(ChannelType type, int bufferSize, bool inputMonitorOn, size_t column);
+std::unique_ptr<Channel> create(ChannelType type, int bufferSize, bool inputMonitorOn, size_t column);
 
 /* create (2)
 Creates a new Channel given an existing one (i.e. clone). */
 
-Channel* create(const Channel* ch);
+std::unique_ptr<Channel> create(const Channel& ch);
 
 int  writePatch(const Channel* ch, bool isProject);
 void writePatch(const SampleChannel* ch, bool isProject, int index);

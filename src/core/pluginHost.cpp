@@ -77,6 +77,8 @@ a channel index is also required. */
 std::vector<std::unique_ptr<Plugin>>& getStack_(std::shared_ptr<model::Data> data, 
 	StackType stack, size_t chanIndex=0)
 {
+printf("chanIndex=%ld, data->channels.size=%ld\n", chanIndex, data->channels.size());
+
 	switch(stack) {
 		case StackType::MASTER_OUT:
 			return data->masterOutPlugins; break;
@@ -304,7 +306,7 @@ void freeAllStacks()
 {
 	freeStack(StackType::MASTER_OUT, 0);
 	freeStack(StackType::MASTER_IN, 0);
-	for (const Channel* c : model::get()->channels)
+	for (const std::unique_ptr<Channel>& c : model::get()->channels)
 		freeStack(StackType::CHANNEL, c->index);
 }
 

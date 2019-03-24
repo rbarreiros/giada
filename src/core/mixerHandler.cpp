@@ -136,17 +136,15 @@ bool uniqueSamplePath(const SampleChannel* skip, const std::string& path)
 
 Channel* addChannel(ChannelType type, size_t column)
 {
-	Channel* ch = channelManager::create(type, kernelAudio::getRealBufSize(), 
-		conf::inputMonitorDefaultOn, column);
-
 	std::shared_ptr<model::Data> data = model::clone();
+
+	std::unique_ptr<Channel> ch = channelManager::create(type, 
+		kernelAudio::getRealBufSize(), conf::inputMonitorDefaultOn, column);
 	ch->index = data->channels.size();
-	data->channels.push_back(ch);
+	data->channels.push_back(std::move(ch));
 	model::swap(data);
 
-	gu_log("[addChannel] channel index=%d added, type=%d, total=%d\n",
-		ch->index, ch->type, mixer::channels.size());
-	return ch;
+	return data->channels.back().get();
 }
 
 
@@ -169,7 +167,7 @@ int loadChannel(size_t chanIndex, const std::string& fname)
 	}
 
 	std::shared_ptr<model::Data> data = model::clone();
-	static_cast<SampleChannel*>(data->channels[chanIndex])->pushWave(std::move(res.wave));
+	static_cast<SampleChannel*>(data->channels[chanIndex].get())->pushWave(std::move(res.wave));
 	model::swap(data);
 
 	return res.status;
@@ -182,7 +180,7 @@ int loadChannel(size_t chanIndex, const std::string& fname)
 void cloneChannel(size_t chanIndex)
 {
 	std::shared_ptr<model::Data> data = model::clone();
-	data->channels.push_back(channelManager::create(data->channels[chanIndex]));
+	data->channels.push_back(channelManager::create(*data->channels[chanIndex]));
 	data->channels.back()->index = data->channels.size() - 1;
 	model::swap(data);
 }
@@ -194,7 +192,7 @@ void cloneChannel(size_t chanIndex)
 void freeChannel(size_t chanIndex)
 {
 	std::shared_ptr<model::Data> data = model::clone();
-	static_cast<SampleChannel*>(data->channels[chanIndex])->empty();
+	static_cast<SampleChannel*>(data->channels[chanIndex].get())->empty();
 	model::swap(data);
 }
 
@@ -205,7 +203,6 @@ void freeChannel(size_t chanIndex)
 void deleteChannel(size_t chanIndex)
 {
 	std::shared_ptr<model::Data> data = model::clone();
-	delete data->channels[chanIndex];
 	data->channels.erase(data->channels.begin() + chanIndex);
 	model::swap(data);
 }

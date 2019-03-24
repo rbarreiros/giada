@@ -28,8 +28,8 @@
 #include <cmath>
 #include <sndfile.h>
 #include <samplerate.h>
-#include "../utils/log.h"
-#include "../utils/fs.h"
+#include "utils/log.h"
+#include "utils/fs.h"
 #include "const.h"
 #include "wave.h"
 #include "waveFx.h"

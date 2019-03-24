@@ -94,6 +94,7 @@ Channel::Channel(const Channel& o)
   status         (o.status),
   recStatus      (o.recStatus),
   column         (o.column),
+  index          (o.index + 1),
   previewMode    (o.previewMode),
   pan            (o.pan.load()),
   volume         (o.volume.load()),
@@ -123,10 +124,8 @@ Channel::Channel(const Channel& o)
 
 #ifdef WITH_VST
 
-	/* TODO */
-	//for (const std::unique_ptr<Plugin>& plugin : o.plugins)
-	//	pluginHost::addPlugin(pluginManager::makePlugin(*plugin.get()), 
-	//		pluginHost::StackType::CHANNEL, pluginMutex, this);
+	for (const std::unique_ptr<Plugin>& plugin : o.plugins)
+		pluginHost::addPlugin(pluginManager::makePlugin(*plugin.get()), pluginHost::StackType::CHANNEL, index);
 
 #endif
 

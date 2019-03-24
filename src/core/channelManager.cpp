@@ -25,8 +25,8 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../gui/elems/mainWindow/keyboard/channel.h"
-#include "../utils/fs.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
+#include "utils/fs.h"
 #include "const.h"
 #include "channel.h"
 #include "patch.h"
@@ -117,24 +117,24 @@ void readPlugins_(Channel* ch, const patch::channel_t& pch)
 /* -------------------------------------------------------------------------- */
 
 
-Channel* create(ChannelType type, int bufferSize, bool inputMonitorOn, size_t column)
+std::unique_ptr<Channel> create(ChannelType type, int bufferSize, bool inputMonitorOn, size_t column)
 {
 	if (type == ChannelType::SAMPLE)
-		return new SampleChannel(inputMonitorOn, bufferSize, column);
+		return std::make_unique<SampleChannel>(inputMonitorOn, bufferSize, column);
 	else
-		return new MidiChannel(bufferSize, column);
+		return std::make_unique<MidiChannel>(bufferSize, column);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-Channel* create(const Channel* ch)
+std::unique_ptr<Channel> create(const Channel& ch)
 {
-	if (ch->type == ChannelType::SAMPLE)
-		return new SampleChannel(*static_cast<const SampleChannel*>(ch));
+	if (ch.type == ChannelType::SAMPLE)
+		return std::make_unique<SampleChannel>(static_cast<const SampleChannel&>(ch));
 	else
-		return new MidiChannel(*static_cast<const MidiChannel*>(ch));
+		return std::make_unique<MidiChannel>(static_cast<const MidiChannel&>(ch));
 }
 
 

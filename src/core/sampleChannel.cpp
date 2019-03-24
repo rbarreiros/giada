@@ -79,8 +79,15 @@ SampleChannel::SampleChannel(const SampleChannel& o)
   begin            (o.begin),
   end              (o.end),
   midiInReadActions(o.midiInReadActions),
-  midiInPitch      (o.midiInPitch)
+  midiInPitch      (o.midiInPitch),
+  rsmp_state       (nullptr)
 {
+	rsmp_state = src_new(SRC_LINEAR, G_MAX_IO_CHANS, nullptr);
+	if (rsmp_state == nullptr) {
+		gu_log("[SampleChannel] unable to alloc memory for SRC_STATE!\n");
+		throw std::bad_alloc();
+	}
+		
 	if (o.wave)
 		pushWave(std::make_unique<Wave>(*o.wave)); // invoke Wave's copy constructor	
 

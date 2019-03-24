@@ -93,7 +93,7 @@ void geKeyboard::init()
 
 void geKeyboard::rebuild()
 {
-	const std::vector<m::Channel*>& channels = m::model::get()->channels;
+	const std::vector<std::unique_ptr<m::Channel>>& channels = m::model::get()->channels;
 
 	emptyColumns();
 
@@ -101,8 +101,8 @@ void geKeyboard::rebuild()
 /* TODO - temporary const_cast: remove it and make everything immutable */
 /* TODO - temporary const_cast: remove it and make everything immutable */
 
-	for (const m::Channel* c : channels)
-		columns[c->column]->addChannel(const_cast<m::Channel*>(c), G_GUI_CHANNEL_H_1);
+	for (const std::unique_ptr<m::Channel>& c : channels)
+		columns[c->column]->addChannel(const_cast<m::Channel*>(c.get()), G_GUI_CHANNEL_H_1);
 }
 
 

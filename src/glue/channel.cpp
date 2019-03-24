@@ -138,14 +138,14 @@ void setArm(size_t chanIndex, bool value, bool gui)
 
 void setInputMonitor(size_t chanIndex, bool value)
 {
-	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex])->inputMonitor.store(value);
+	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex].get())->inputMonitor.store(value);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-int cloneChannel(size_t chanIndex)
+void cloneChannel(size_t chanIndex)
 {
 	m::mh::cloneChannel(chanIndex);
 }
@@ -182,7 +182,7 @@ void setVolume(size_t chanIndex, float value, bool gui, bool editor)
 
 void setPitch(size_t chanIndex, float val, bool gui)
 {
-	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex])->setPitch(val);
+	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex].get())->setPitch(val);
 
 	gdSampleEditor* gdEditor = static_cast<gdSampleEditor*>(u::gui::getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
 	if (gdEditor) {
@@ -251,7 +251,7 @@ void kill(size_t chanIndex)
 
 void setBoost(size_t chanIndex, float val, bool gui)
 {
-	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex])->setBoost(val);
+	static_cast<m::SampleChannel*>(m::model::get()->channels[chanIndex].get())->setBoost(val);
 
 	gdSampleEditor* gdEditor = static_cast<gdSampleEditor*>(u::gui::getSubwindow(G_MainWin, WID_SAMPLE_EDITOR));
 	if (gdEditor) {
@@ -277,7 +277,7 @@ void setName(size_t chanIndex, const std::string& name)
 
 void toggleReadingActions(size_t chanIndex, bool gui)
 {
-	const m::Channel* ch = m::model::get()->channels[chanIndex];
+	const m::Channel* ch = m::model::get()->channels[chanIndex].get();
 
 	/* When you call startReadingRecs with conf::treatRecsAsLoops, the
 	member value ch->readActions actually is not set to true immediately, because

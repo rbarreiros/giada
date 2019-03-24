@@ -31,6 +31,7 @@
 #include "core/mixer.h"
 #include "core/audioBuffer.h"
 #include "core/pluginHost.h"
+#include "core/channelManager.h"
 #include "data.h"
 
 
@@ -47,13 +48,19 @@ Data::Data()
 
 
 Data::Data(const Data& o)
-: channels(o.channels)
 {
+printf("DATA: %p\n", (void*)this);
+
+	for (const std::unique_ptr<Channel>& c : o.channels)
+		channels.push_back(channelManager::create(*c));
+
 	for (const std::unique_ptr<Plugin>& p : o.masterOutPlugins)
 		masterOutPlugins.push_back(std::make_unique<Plugin>(*p));
 	
 	for (const std::unique_ptr<Plugin>& p : o.masterInPlugins)
 		masterInPlugins.push_back(std::make_unique<Plugin>(*p));
+
+	// TODO - actionMap
 }
 
 
@@ -62,7 +69,7 @@ Data::Data(const Data& o)
 
 Data::~Data()
 {
-	puts("~Data");
+printf("~DATA: %p\n", (void*)this);
 }
 
 
@@ -71,15 +78,15 @@ Data::~Data()
 
 void Data::render(AudioBuffer& out, const AudioBuffer& in, AudioBuffer& inToOut)
 {
-	for (Channel* channel : channels)
+	for (std::unique_ptr<Channel>& channel : channels)
 		channel->prepareBuffer(clock::isRunning());
 
 	if (clock::isRunning())
 		for (Frame i=0; i<out.countFrames(); i++)
 			parseEvents(i);
 
-	for (Channel* channel : channels)
-		channel->process(out, in, mixer::isChannelAudible(channel), clock::isRunning());
+	for (std::unique_ptr<Channel>& channel : channels)
+		channel->process(out, in, mixer::isChannelAudible(channel.get()), clock::isRunning());
 
 #ifdef WITH_VST
 	pluginHost::processStack(out,     pluginHost::StackType::MASTER_OUT, 0);
@@ -102,7 +109,7 @@ void Data::parseEvents(Frame f)
 	fe.quantoPassed = clock::quantoHasPassed();
 	fe.actions      = recorder::getActionsOnFrame(clock::getCurrentFrame());
 
-	for (Channel* channel : channels)
+	for (std::unique_ptr<Channel>& channel : channels)
 		channel->parseEvents(fe);   
 }
 
@@ -112,9 +119,9 @@ void Data::parseEvents(Frame f)
 
 Channel* Data::getChannel(const Channel* c) const
 {
-	for (Channel* channel : channels)
-		if (channel == c)
-			return channel;
+	for (const std::unique_ptr<Channel>& channel : channels)
+		if (channel.get() == c)
+			return channel.get();
 	assert(false);
 	return nullptr;
 }
