@@ -165,7 +165,7 @@ void shutdownAudio_()
 {
 #ifdef WITH_VST
 
-	pluginHost::freeAllStacks(&mixer::channels, &mixer::mutex);
+	pluginHost::freeAllStacks();
 	pluginHost::close();
 	gu_log("[init] PluginHost cleaned up\n");
 

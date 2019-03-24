@@ -184,7 +184,7 @@ void gdMidiInputChannel::addChannelLearners()
 
 void gdMidiInputChannel::addPluginLearners()
 {
-	vector<Plugin*> plugins = pluginHost::getStack(pluginHost::StackType::CHANNEL, ch);
+	vector<Plugin*> plugins = pluginHost::getStack(pluginHost::StackType::CHANNEL, ch->index);
 
 	int i = 0;
 	for (Plugin* plugin : plugins) {

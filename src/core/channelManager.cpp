@@ -53,7 +53,7 @@ void writePlugins_(const Channel* ch, patch::channel_t& pch)
 {
 #ifdef WITH_VST
 
-	pluginHost::forEachPlugin(pluginHost::StackType::CHANNEL, ch, [&] (const Plugin* p) {
+	pluginHost::forEachPlugin(pluginHost::StackType::CHANNEL, ch->index, [&] (const Plugin* p) {
 		patch::plugin_t pp;
 		pp.path   = p->getUniqueId();
 		pp.bypass = p->isBypassed();

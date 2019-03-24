@@ -235,7 +235,7 @@ void resetToInitState(bool resetGui, bool createColumns)
 	recorder::init(&mixer::mutex);
 
 #ifdef WITH_VST
-	pluginHost::freeAllStacks(&mixer::channels, &mixer::mutex);
+	pluginHost::freeAllStacks();
 	pluginManager::init(conf::samplerate, kernelAudio::getRealBufSize());
 #endif
 

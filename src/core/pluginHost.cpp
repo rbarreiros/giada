@@ -55,14 +55,14 @@ std::vector<std::unique_ptr<Plugin>> masterIn_;
 /* -------------------------------------------------------------------------- */
 
 
-void processPlugin_(Plugin& p, Channel* ch)
+void processPlugin_(Plugin& p, size_t chanIndex)
 {
 	if (p.isSuspended() || p.isBypassed())
 		return;
 
 	juce::MidiBuffer events;
-	if (ch != nullptr)
-		events = ch->getPluginMidiEvents();
+	if (p.stackType == StackType::CHANNEL)
+		events = model::get()->channels[chanIndex]->getPluginMidiEvents();
 
 	p.process(audioBuffer_, events);
 }
@@ -70,27 +70,12 @@ void processPlugin_(Plugin& p, Channel* ch)
 
 /* -------------------------------------------------------------------------- */
 
-/* getStack_DEPR_
+/* getStack_
 Returns a vector of unique_ptr's given the stackType. If stackType == CHANNEL
-a pointer to Channel is also required. */
+a channel index is also required. */
 
-std::vector<std::unique_ptr<Plugin>>& getStack_DEPR_(StackType t, Channel* ch=nullptr)
-{
-	switch(t) {
-		case StackType::MASTER_OUT:
-			return masterOut_;
-		case StackType::MASTER_IN:
-			return masterIn_;
-		case StackType::CHANNEL:
-			return ch->plugins;
-		default:
-			assert(false);
-	}
-}
-
-
-std::vector<std::unique_ptr<Plugin>>& getStack_(const std::shared_ptr<model::Data>&& data, 
-	StackType stack, size_t chanIndex)
+std::vector<std::unique_ptr<Plugin>>& getStack_(std::shared_ptr<model::Data> data, 
+	StackType stack, size_t chanIndex=0)
 {
 	switch(stack) {
 		case StackType::MASTER_OUT:
@@ -98,6 +83,7 @@ std::vector<std::unique_ptr<Plugin>>& getStack_(const std::shared_ptr<model::Dat
 		case StackType::MASTER_IN:
 			return data->masterInPlugins; break;
 		case StackType::CHANNEL:
+			assert(chanIndex < data->channels.size());
 			return data->channels[chanIndex]->plugins; break;
 		default:
 			assert(false);
@@ -140,24 +126,15 @@ void init(int buffersize)
 /* -------------------------------------------------------------------------- */
 
 
-void addPlugin(std::unique_ptr<Plugin> p, StackType stack, size_t chanIndex)
+void addPlugin(std::unique_ptr<Plugin> p, StackType type, size_t chanIndex)
 {
 	std::shared_ptr<model::Data> data = model::clone();
-	switch(stack) {
-		case StackType::MASTER_OUT:
-			p->index     = data->masterOutPlugins.size();
-			p->stackType = stack;
-			data->masterOutPlugins.push_back(std::move(p)); break;
-		case StackType::MASTER_IN:
-			p->index     = data->masterInPlugins.size();
-			p->stackType = stack;
-			data->masterInPlugins.push_back(std::move(p)); break;
-		case StackType::CHANNEL:
-			p->index     = data->channels[chanIndex]->plugins.size();
-			p->stackType = stack;
-			p->chanIndex = chanIndex;
-			data->channels[chanIndex]->plugins.push_back(std::move(p)); break;
-	}
+
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(data, type, chanIndex);
+	p->index     = stack.size();
+	p->stackType = type;
+	stack.push_back(std::move(p));
+
 	model::swap(data);	
 }
 
@@ -165,9 +142,9 @@ void addPlugin(std::unique_ptr<Plugin> p, StackType stack, size_t chanIndex)
 /* -------------------------------------------------------------------------- */
 
 
-std::vector<Plugin*> getStack(StackType t, Channel* ch)
+std::vector<Plugin*> getStack(StackType type, size_t chanIndex)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, ch);
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(model::get(), type, chanIndex);
 
 	std::vector<Plugin*> out;
 	for (const std::unique_ptr<Plugin>& p : stack)
@@ -180,36 +157,33 @@ std::vector<Plugin*> getStack(StackType t, Channel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-int countPlugins(StackType t, Channel* ch)
+int countPlugins(StackType type, size_t chanIndex)
 {
-	return getStack_DEPR_(t, ch).size();
+	return getStack_(model::get(), type, chanIndex).size();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void freeStack(StackType t, pthread_mutex_t* mixerMutex, Channel* ch)
+void freeStack(StackType type, size_t chanIndex)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, ch);
-
-	if (stack.size() == 0)
-		return;
-
-	pthread_mutex_lock(mixerMutex);
+	std::shared_ptr<model::Data> data = model::clone();
+	
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(data, type, chanIndex);
 	stack.clear();
-	pthread_mutex_unlock(mixerMutex);
-
-	gu_log("[pluginHost::freeStack] stack type=%d freed\n", t);
+	
+	model::swap(data);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void processStack(AudioBuffer& outBuf, StackType t, Channel* ch)
+void processStack(AudioBuffer& outBuf, StackType stackType,size_t chanIndex)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, ch);
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(model::get(), 
+		stackType, chanIndex);
 
 	if (stack.size() == 0)
 		return;
@@ -220,7 +194,7 @@ void processStack(AudioBuffer& outBuf, StackType t, Channel* ch)
 	Sample channels and Master in/out want audio data instead: let's convert the 
 	internal buffer from Giada to Juce. */
 
-	if (ch != nullptr && ch->type == ChannelType::MIDI) 
+	if (stackType == StackType::CHANNEL && model::get()->channels[chanIndex]->type == ChannelType::MIDI) 
 		audioBuffer_.clear();
 	else
 		for (int i=0; i<outBuf.countFrames(); i++)
@@ -237,16 +211,11 @@ void processStack(AudioBuffer& outBuf, StackType t, Channel* ch)
 	channel::clearMidiBuffer()! 
 	TODO - that's why we need a proper queue for MIDI events in input... */
 
-	if (ch != nullptr)
-		pthread_mutex_lock(&mutex);
-
 	for (std::unique_ptr<Plugin>& plugin : stack)
-		processPlugin_(*plugin.get(), ch);
+		processPlugin_(*plugin.get(), chanIndex);
 
-	if (ch != nullptr) {
-		ch->clearMidiBuffer();
-		pthread_mutex_unlock(&mutex);
-	}
+	if (stackType == StackType::CHANNEL)
+		model::get()->channels[chanIndex]->clearMidiBuffer();
 
 	/* Converting buffer from Juce to Giada. A note for the future: if we 
 	overwrite (=) (as we do now) it's SEND, if we add (+) it's INSERT. */
@@ -262,49 +231,32 @@ void processStack(AudioBuffer& outBuf, StackType t, Channel* ch)
 
 Plugin* getPluginByIndex(size_t pluginIndex, StackType stack, size_t chanIndex)
 {
-	//return getStack_(m::model::get(), stack, chanIndex)[pluginIndex].get();
-	switch(stack) {
-		case StackType::MASTER_OUT:
-			return m::model::get()->masterOutPlugins[pluginIndex].get();
-		case StackType::MASTER_IN:
-			return m::model::get()->masterInPlugins[pluginIndex].get();
-		case StackType::CHANNEL:
-			return m::model::get()->channels[chanIndex]->plugins[pluginIndex].get();
-		default:
-			assert(false);
-	}
+	return getStack_(model::get(), stack, chanIndex)[pluginIndex].get();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-int getPluginIndex(int id, StackType t, Channel* ch)
-{
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, ch);
-	return u::vector::indexOf(stack, [&](const std::unique_ptr<Plugin>& p) 
-	{ 
-		return p->getId() == id;
-	});
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType stack, 
+void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType type, 
     size_t chanIndex)
 {
+	size_t stackSize = getStack_(model::get(), type, chanIndex).size();
+
+	/* Nothing to do if there's only one plugin or on edges. */
+	
+printf("%ld %ld\n", pluginIndex1, pluginIndex2);
+
+	if (stackSize == 1 || pluginIndex2 < 0 || pluginIndex2 >= stackSize)
+		return;
+
 	std::shared_ptr<model::Data> data = model::clone();
-	switch(stack) {
-		case StackType::MASTER_OUT:
-			std::swap(data->masterOutPlugins.at(pluginIndex1), data->masterOutPlugins.at(pluginIndex2)); break;
-		case StackType::MASTER_IN:
-			std::swap(data->masterInPlugins.at(pluginIndex1), data->masterInPlugins.at(pluginIndex2)); break;
-		case StackType::CHANNEL:
-			std::swap(data->channels[chanIndex]->plugins.at(pluginIndex1), data->channels[chanIndex]->plugins.at(pluginIndex2)); break;
-		default: break;
-	}
+	
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(data, type, chanIndex);
+	std::swap(stack.at(pluginIndex1), stack.at(pluginIndex2));
+	stack.at(pluginIndex1)->index = pluginIndex2;
+	stack.at(pluginIndex2)->index = pluginIndex1;
+	
 	model::swap(data);
 }
 
@@ -312,23 +264,13 @@ void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType stack,
 /* -------------------------------------------------------------------------- */
 
 
-void freePlugin(size_t pluginIndex, StackType stack, size_t chanIndex)
+void freePlugin(size_t pluginIndex, StackType type, size_t chanIndex)
 {
 	std::shared_ptr<model::Data> data = model::clone();
-	switch(stack) {
-		case StackType::MASTER_OUT: {
-			auto it = data->masterOutPlugins.begin() + pluginIndex;
-			data->masterOutPlugins.erase(it); break;
-		}
-		case StackType::MASTER_IN: {
-			auto it = data->masterInPlugins.begin() + pluginIndex;
-			data->masterInPlugins.erase(it); break;
-		}	
-		case StackType::CHANNEL: {
-			auto it = data->channels[chanIndex]->plugins.begin() + pluginIndex;
-			data->channels[chanIndex]->plugins.erase(it); break;
-		}
-	}
+	
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(data, type, chanIndex);
+	stack.erase(stack.begin() + pluginIndex); 
+	
 	model::swap(data);
 }
 
@@ -336,17 +278,20 @@ void freePlugin(size_t pluginIndex, StackType stack, size_t chanIndex)
 /* -------------------------------------------------------------------------- */
 
 
-void setParameter(size_t pluginIndex, int paramIndex, float value, StackType stack, 
+void setPluginParameter(size_t pluginIndex, int paramIndex, float value, StackType type, 
     size_t chanIndex)
 {
-	switch(stack) {
-		case StackType::MASTER_OUT:
-			m::model::get()->masterOutPlugins[pluginIndex]->setParameter(paramIndex, value); break;
-		case StackType::MASTER_IN:
-			m::model::get()->masterInPlugins[pluginIndex]->setParameter(paramIndex, value); break;
-		case StackType::CHANNEL:
-			m::model::get()->channels[chanIndex]->plugins[pluginIndex]->setParameter(paramIndex, value); break;
-	}
+	getStack_(model::get(), type, chanIndex)[pluginIndex]->setParameter(paramIndex, value);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void setPluginProgram(size_t pluginIndex, int programIndex, StackType type, 
+    size_t chanIndex)
+{
+	getStack_(model::get(), type, chanIndex)[pluginIndex]->setCurrentProgram(programIndex);
 }
 
 
@@ -362,21 +307,21 @@ void runDispatchLoop()
 /* -------------------------------------------------------------------------- */
 
 
-void freeAllStacks(std::vector<Channel*>* channels, pthread_mutex_t* mixerMutex)
+void freeAllStacks()
 {
-	freeStack(StackType::MASTER_OUT, mixerMutex);
-	freeStack(StackType::MASTER_IN, mixerMutex);
-	for (Channel* c : *channels)
-		freeStack(StackType::CHANNEL, mixerMutex, c);
+	freeStack(StackType::MASTER_OUT, 0);
+	freeStack(StackType::MASTER_IN, 0);
+	for (const Channel* c : model::get()->channels)
+		freeStack(StackType::CHANNEL, c->index);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void forEachPlugin(StackType t, const Channel* ch, std::function<void(const Plugin* p)> f)
+void forEachPlugin(StackType type, size_t chanIndex, std::function<void(const Plugin* p)> f)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, const_cast<Channel*>(ch));
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(model::get(), type, chanIndex);
 	for (const std::unique_ptr<Plugin>& p : stack)
 		f(p.get());
 }

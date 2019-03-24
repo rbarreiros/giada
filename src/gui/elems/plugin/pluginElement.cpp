@@ -106,18 +106,7 @@ void gePluginElement::cb_setProgram      (Fl_Widget* v, void* p) { ((gePluginEle
 
 void gePluginElement::cb_shiftUp()
 {
-	/*nothing to do if there's only one plugin */
-
-	if (m::pluginHost::countPlugins(m_parentWin->stackType, m_parentWin->ch) == 1)
-		return;
-
-	int pluginIndex = m::pluginHost::getPluginIndex(m_plugin->getId(),
-		m_parentWin->stackType, m_parentWin->ch);
-
-	if (pluginIndex == 0)  // first of the stack, do nothing
-		return;
-
-	c::plugin::swapPlugins(pluginIndex, pluginIndex-1, m_parentWin->stackType,
+	c::plugin::swapPlugins(m_plugin->index, m_plugin->index - 1, m_parentWin->stackType,
 		m_parentWin->ch->index);
 	m_parentWin->refreshList();
 }
@@ -128,18 +117,7 @@ void gePluginElement::cb_shiftUp()
 
 void gePluginElement::cb_shiftDown()
 {
-	/*nothing to do if there's only one plugin */
-
-	if (m::pluginHost::countPlugins(m_parentWin->stackType, m_parentWin->ch) == 1)
-		return;
-
-	int pluginIndex = m::pluginHost::getPluginIndex(m_plugin->getId(), m_parentWin->stackType, m_parentWin->ch);
-	int stackSize   = m::pluginHost::getStack(m_parentWin->stackType, m_parentWin->ch).size();
-
-	if (pluginIndex == stackSize-1)  // last one in the stack, do nothing
-		return;
-
-	c::plugin::swapPlugins(pluginIndex, pluginIndex+1, m_parentWin->stackType,
+	c::plugin::swapPlugins(m_plugin->index, m_plugin->index + 1, m_parentWin->stackType,
 		m_parentWin->ch->index);
 	m_parentWin->refreshList();
 }
@@ -206,7 +184,8 @@ void gePluginElement::cb_setBypass()
 
 void gePluginElement::cb_setProgram()
 {
-	c::plugin::setProgram(m_plugin, program->value());
+	c::plugin::setProgram(m_plugin->index, program->value(), m_plugin->stackType,
+		m_plugin->chanIndex);
 }
 
 

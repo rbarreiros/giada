@@ -205,7 +205,7 @@ void processData_(SampleChannel* ch, m::AudioBuffer& out, const m::AudioBuffer& 
 	}
 
 #ifdef WITH_VST
-	pluginHost::processStack(ch->buffer, pluginHost::StackType::CHANNEL, ch);
+	pluginHost::processStack(ch->buffer, pluginHost::StackType::CHANNEL, ch->index);
 #endif
 
 	for (int i=0; i<out.countFrames(); i++) {

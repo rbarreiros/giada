@@ -57,7 +57,8 @@ void freePlugin(size_t pluginIndex, m::pluginHost::StackType stack, size_t chanI
 void setParameter(size_t pluginIndex, int paramIndex, float value, 
     m::pluginHost::StackType stack, size_t chanIndex, bool gui=true); 
 
-void setProgram(m::Plugin* p, int index);
+void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackType stack, 
+    size_t chanIndex);
 
 /* setPluginPathCb
 Callback attached to the DirBrowser for adding new Plug-in search paths in the

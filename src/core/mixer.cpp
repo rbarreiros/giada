@@ -216,8 +216,8 @@ void renderIO_(AudioBuffer& outBuf, const AudioBuffer& inBuf)
 		channel->process(outBuf, inBuf, isChannelAudible(channel), clock::isRunning());
 
 #ifdef WITH_VST
-	pluginHost::processStack(outBuf, pluginHost::StackType::MASTER_OUT);
-	pluginHost::processStack(vChanInToOut_, pluginHost::StackType::MASTER_IN);
+	pluginHost::processStack(outBuf, pluginHost::StackType::MASTER_OUT, 0);
+	pluginHost::processStack(vChanInToOut_, pluginHost::StackType::MASTER_IN, 0);
 #endif
 }
 

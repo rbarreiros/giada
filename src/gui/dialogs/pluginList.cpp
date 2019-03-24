@@ -30,18 +30,18 @@
 
 #include <string>
 #include <FL/Fl_Scroll.H>
-#include "../../utils/gui.h"
-#include "../../core/conf.h"
-#include "../../core/const.h"
-#include "../../core/pluginHost.h"
-#include "../../core/channel.h"
-#include "../../utils/string.h"
-#include "../elems/basics/boxtypes.h"
-#include "../elems/basics/button.h"
-#include "../elems/basics/statusButton.h"
-#include "../elems/mainWindow/mainIO.h"
-#include "../elems/mainWindow/keyboard/channel.h"
-#include "../elems/plugin/pluginElement.h"
+#include "core/conf.h"
+#include "core/const.h"
+#include "core/pluginHost.h"
+#include "core/channel.h"
+#include "utils/string.h"
+#include "utils/gui.h"
+#include "gui/elems/basics/boxtypes.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/basics/statusButton.h"
+#include "gui/elems/mainWindow/mainIO.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
+#include "gui/elems/plugin/pluginElement.h"
 #include "pluginChooser.h"
 #include "mainWindow.h"
 #include "pluginList.h"
@@ -168,7 +168,7 @@ void gdPluginList::refreshList()
 	 * the 'add new' button. Warning: if ch == nullptr we are working with
 	 * master in/master out stacks. */
 
-	int numPlugins = pluginHost::countPlugins(stackType, ch);
+	int numPlugins = pluginHost::countPlugins(stackType, ch->index);
 	int i = 0;
 
 	while (i<numPlugins) {
@@ -200,14 +200,14 @@ void gdPluginList::refreshList()
 	gdPluginListMaster */
 
 	if (stackType == pluginHost::StackType::MASTER_OUT) {
-		G_MainWin->mainIO->setMasterFxOutFull(pluginHost::countPlugins(stackType, ch) > 0);
+		G_MainWin->mainIO->setMasterFxOutFull(pluginHost::countPlugins(stackType, ch->index) > 0);
 	}
 	else
 	if (stackType == pluginHost::StackType::MASTER_IN) {
-		G_MainWin->mainIO->setMasterFxInFull(pluginHost::countPlugins(stackType, ch) > 0);
+		G_MainWin->mainIO->setMasterFxInFull(pluginHost::countPlugins(stackType, ch->index) > 0);
 	}
 	else {
-		ch->guiChannel->fx->status = pluginHost::countPlugins(stackType, ch) > 0;
+		ch->guiChannel->fx->status = pluginHost::countPlugins(stackType, ch->index) > 0;
 		ch->guiChannel->fx->redraw();
 	}
 }

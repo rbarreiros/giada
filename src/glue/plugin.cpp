@@ -113,13 +113,16 @@ void freePlugin(size_t pluginIndex, m::pluginHost::StackType stack, size_t chanI
 /* -------------------------------------------------------------------------- */
 
 
-void setProgram(Plugin* p, int index)
+void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackType stack, 
+	size_t chanIndex)
 {
-	p->setCurrentProgram(index);
+	pluginHost::setPluginProgram(pluginIndex, programIndex, stack, chanIndex); 
 
 	/* No need to update plug-in editor if it has one: the plug-in's editor takes
 	care of it on its own. Conversely, update the specific parameter for UI-less 
 	plug-ins. */
+
+	Plugin* p = pluginHost::getPluginByIndex(pluginIndex, stack, chanIndex);
 
 	if (p->hasEditor())
 		return;
@@ -138,7 +141,7 @@ void setProgram(Plugin* p, int index)
 void setParameter(size_t pluginIndex, int paramIndex, float value, 
     m::pluginHost::StackType stack, size_t chanIndex, bool gui)
 {
-	pluginHost::setParameter(pluginIndex, paramIndex, value, stack, chanIndex); 
+	pluginHost::setPluginParameter(pluginIndex, paramIndex, value, stack, chanIndex); 
 
 	/* No need to update plug-in editor if it has one: the plug-in's editor takes
 	care of it on its own. Conversely, update the specific parameter for UI-less 
