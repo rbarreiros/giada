@@ -47,10 +47,16 @@ class Channel;
 namespace c {
 namespace plugin 
 {
-void addPlugin(m::Channel* ch, int index, m::pluginHost::StackType t);
-void swapPlugins(m::Channel* ch, int indexP1, int indexP2, m::pluginHost::StackType t);
-void freePlugin(m::Channel* ch, int index, m::pluginHost::StackType t);
-void setParameter(m::Plugin* p, int index, float value, bool gui=true); 
+void addPlugin(int pluginIndex, m::pluginHost::StackType stack, size_t chanIndex);
+
+void swapPlugins(size_t pluginIndex1, size_t pluginIndex2, m::pluginHost::StackType t,
+    size_t chanIndex);
+
+void freePlugin(size_t pluginIndex, m::pluginHost::StackType stack, size_t chanIndex);
+
+void setParameter(size_t pluginIndex, int paramIndex, float value, 
+    m::pluginHost::StackType stack, size_t chanIndex, bool gui=true); 
+
 void setProgram(m::Plugin* p, int index);
 
 /* setPluginPathCb

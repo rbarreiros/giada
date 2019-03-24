@@ -28,25 +28,23 @@
 #ifdef WITH_VST
 
 
-#include "../../../core/plugin.h"
-#include "../../../core/const.h"
-#include "../../../glue/plugin.h"
-#include "../basics/boxtypes.h"
-#include "../basics/box.h"
-#include "../basics/slider.h"
+#include "core/plugin.h"
+#include "core/const.h"
+#include "glue/plugin.h"
+#include "gui/elems/basics/boxtypes.h"
+#include "gui/elems/basics/box.h"
+#include "gui/elems/basics/slider.h"
 #include "pluginParameter.h"
 
 
-using std::string;
 using namespace giada;
-using namespace giada::c;
 
 
 gePluginParameter::gePluginParameter(int paramIndex, m::Plugin* p, int X, int Y, 
 	int W, int labelWidth)
-	: Fl_Group    (X, Y, W, G_GUI_UNIT), 
-	  m_paramIndex(paramIndex), 
-	  m_plugin    (p)
+: Fl_Group    (X, Y, W, G_GUI_UNIT), 
+  m_paramIndex(paramIndex), 
+  m_plugin    (p)
 {
 	begin();
 
@@ -80,7 +78,8 @@ void gePluginParameter::cb_setValue(Fl_Widget* v, void* p)  { ((gePluginParamete
 
 void gePluginParameter::cb_setValue()
 {
-	plugin::setParameter(m_plugin, m_paramIndex, m_slider->value());
+	c::plugin::setParameter(m_plugin->index, m_paramIndex, m_slider->value(), 
+		m_plugin->stackType, m_plugin->chanIndex, /*gui=*/true);
 }
 
 
@@ -89,7 +88,7 @@ void gePluginParameter::cb_setValue()
 
 void gePluginParameter::update(bool changeSlider)
 {
-	string v = m_plugin->getParameterText(m_paramIndex) + " " +
+	std::string v = m_plugin->getParameterText(m_paramIndex) + " " +
 			m_plugin->getParameterLabel(m_paramIndex);
 	m_value->copy_label(v.c_str());
 	if (changeSlider)

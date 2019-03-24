@@ -56,8 +56,7 @@ void close();
 /* addPlugin
 Adds a new plugin to 'stackType'. */
 
-void addPlugin(std::unique_ptr<Plugin> p, StackType t, pthread_mutex_t* mutex, 
-    Channel* ch=nullptr);
+void addPlugin(std::unique_ptr<Plugin> p, StackType type, size_t chanIndex);
 
 /* countPlugins
 Returns the size of 'stackType'. */
@@ -82,7 +81,7 @@ std::vector<Plugin*> getStack(StackType t, Channel* ch=nullptr);
 
 /* getPluginByIndex */
 
-Plugin* getPluginByIndex(int index, StackType t, Channel* ch=nullptr);
+Plugin* getPluginByIndex(size_t pluginIndex, StackType t, size_t channelIndex);
 
 /* getPluginIndex */
 
@@ -90,13 +89,16 @@ int getPluginIndex(int id, StackType t, Channel* ch=nullptr);
 
 /* swapPlugin */
 
-void swapPlugin(int indexA, int indexB, StackType t, pthread_mutex_t* mutex, 
-    Channel* ch=nullptr);
+void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType t, 
+    size_t chanIndex);
 
 /* freePlugin.
 Returns the internal stack index of the deleted plugin. */
 
-int freePlugin(int id, StackType t, pthread_mutex_t* mutex, Channel* ch=nullptr);
+void freePlugin(size_t pluginIndex, StackType stack, size_t chanIndex);
+
+void setParameter(size_t pluginIndex, int paramIndex, float value, StackType stack, 
+    size_t chanIndex); 
 
 /* runDispatchLoop
 Wakes up plugins' GUI manager for N milliseconds. */

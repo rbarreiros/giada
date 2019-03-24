@@ -172,7 +172,7 @@ void gdPluginList::refreshList()
 	int i = 0;
 
 	while (i<numPlugins) {
-		Plugin*          plugin = pluginHost::getPluginByIndex(i, stackType, ch);
+		Plugin*          plugin = pluginHost::getPluginByIndex(i, stackType, ch->index);
 		gePluginElement* gdpe   = new gePluginElement(this, plugin, list->x(), 
 			list->y()-list->yposition()+(i*24), 800);
 		list->add(gdpe);

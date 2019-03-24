@@ -28,16 +28,16 @@
 #ifdef WITH_VST
 
 
-#include "../../glue/plugin.h"
-#include "../../utils/gui.h"
-#include "../../core/channel.h"
-#include "../../core/conf.h"
-#include "../../core/pluginManager.h"
-#include "../../core/pluginHost.h"
-#include "../elems/plugin/pluginBrowser.h"
-#include "../elems/basics/button.h"
-#include "../elems/basics/choice.h"
-#include "../elems/basics/box.h"
+#include "glue/plugin.h"
+#include "utils/gui.h"
+#include "core/channel.h"
+#include "core/conf.h"
+#include "core/pluginManager.h"
+#include "core/pluginHost.h"
+#include "gui/elems/plugin/pluginBrowser.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/basics/choice.h"
+#include "gui/elems/basics/box.h"
 #include "pluginChooser.h"
 
 
@@ -133,7 +133,7 @@ void gdPluginChooser::cb_add()
   int index = browser->value() - 3; // subtract header lines
   if (index < 0)
     return;
-  plugin::addPlugin(ch, index, stackType);
+  c::plugin::addPlugin(index, stackType, ch->index);
   do_callback();
 }
 

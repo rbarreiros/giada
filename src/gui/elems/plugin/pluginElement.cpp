@@ -29,25 +29,25 @@
 
 
 #include <string>
-#include "../../../core/graphics.h"
-#include "../../../core/pluginHost.h"
-#include "../../../core/plugin.h"
-#include "../../../utils/gui.h"
-#include "../../../utils/log.h"
-#include "../../../glue/plugin.h"
-#include "../../elems/basics/button.h"
-#include "../../elems/basics/choice.h"
-#include "../../dialogs/mainWindow.h"
-#include "../../dialogs/pluginList.h"
-#include "../../dialogs/pluginWindowGUI.h"
-#include "../../dialogs/pluginWindow.h"
+#include "core/graphics.h"
+#include "core/pluginHost.h"
+#include "core/plugin.h"
+#include "core/channel.h"
+#include "utils/gui.h"
+#include "utils/log.h"
+#include "glue/plugin.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/basics/choice.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/pluginList.h"
+#include "gui/dialogs/pluginWindowGUI.h"
+#include "gui/dialogs/pluginWindow.h"
 #include "pluginElement.h"
 
 
 extern gdMainWindow* G_MainWin;
 
 
-using std::string;
 using namespace giada;
 
 
@@ -117,7 +117,8 @@ void gePluginElement::cb_shiftUp()
 	if (pluginIndex == 0)  // first of the stack, do nothing
 		return;
 
-	c::plugin::swapPlugins(m_parentWin->ch, pluginIndex, pluginIndex-1, m_parentWin->stackType);
+	c::plugin::swapPlugins(pluginIndex, pluginIndex-1, m_parentWin->stackType,
+		m_parentWin->ch->index);
 	m_parentWin->refreshList();
 }
 
@@ -138,7 +139,8 @@ void gePluginElement::cb_shiftDown()
 	if (pluginIndex == stackSize-1)  // last one in the stack, do nothing
 		return;
 
-	c::plugin::swapPlugins(m_parentWin->ch, pluginIndex, pluginIndex+1, m_parentWin->stackType);
+	c::plugin::swapPlugins(pluginIndex, pluginIndex+1, m_parentWin->stackType,
+		m_parentWin->ch->index);
 	m_parentWin->refreshList();
 }
 
@@ -153,7 +155,7 @@ void gePluginElement::cb_removePlugin()
 	window 'add plugin' (i.e. this).*/
 	
 	m_parentWin->delSubWindow(m_plugin->getId() + 1);
-	c::plugin::freePlugin(m_parentWin->ch, m_plugin->getId(), m_parentWin->stackType);
+	c::plugin::freePlugin(m_plugin->index, m_parentWin->stackType, m_parentWin->ch->index);
 	m_parentWin->refreshList();
 }
 

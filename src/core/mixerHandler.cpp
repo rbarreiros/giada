@@ -76,7 +76,7 @@ int readPatchPlugins_(const std::vector<patch::plugin_t>& list, pluginHost::Stac
 			p->setBypass(ppl.bypass);
 			for (unsigned j=0; j<ppl.params.size(); j++)
 				p->setParameter(j, ppl.params.at(j));
-			pluginHost::addPlugin(std::move(p), t, &mixer::mutex, nullptr);
+			pluginHost::addPlugin(std::move(p), t, 0);
 			ret &= 1;
 		}
 		else

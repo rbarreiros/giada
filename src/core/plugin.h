@@ -31,7 +31,8 @@
 #define G_PLUGIN_H
 
 
-#include "../deps/juce-config.h"
+#include "deps/juce-config.h"
+#include "pluginHost.h"
 #include "const.h"
 
 
@@ -93,6 +94,10 @@ public:
 	A list of midiIn hex values for parameter automation. */
 
 	std::vector<uint32_t> midiInParams;
+
+	size_t index;
+	size_t chanIndex;
+	pluginHost::StackType stackType;
 
 private:
 

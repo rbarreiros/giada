@@ -28,6 +28,7 @@
 #ifdef WITH_VST
 
 
+#include <cassert>
 #include <FL/Fl.H>
 #include "../core/pluginManager.h"
 #include "../core/pluginHost.h"
@@ -80,32 +81,32 @@ gdPluginWindow* getPluginWindow(const Plugin* p)
 /* -------------------------------------------------------------------------- */
 
 
-void addPlugin(Channel* ch, int index, m::pluginHost::StackType t)
+void addPlugin(int pluginIndex, m::pluginHost::StackType stack, size_t chanIndex)
 {
-	if (index >= pluginManager::countAvailablePlugins())
+	if (pluginIndex >= pluginManager::countAvailablePlugins())
 		return;
-	std::unique_ptr<Plugin> p = pluginManager::makePlugin(index);
+	std::unique_ptr<Plugin> p = pluginManager::makePlugin(pluginIndex);
 	if (p != nullptr)
-		pluginHost::addPlugin(std::move(p), t, &mixer::mutex, ch);
+		pluginHost::addPlugin(std::move(p), stack, chanIndex);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void swapPlugins(Channel* ch, int index1, int index2, m::pluginHost::StackType t)
+void swapPlugins(size_t pluginIndex1, size_t pluginIndex2, m::pluginHost::StackType t,
+    size_t chanIndex)
 {
-  pluginHost::swapPlugin(index1, index2, t, &mixer::mutex,
-    ch);
+	pluginHost::swapPlugin(pluginIndex1, pluginIndex2, t, chanIndex);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void freePlugin(Channel* ch, int index, m::pluginHost::StackType t)
+void freePlugin(size_t pluginIndex, m::pluginHost::StackType stack, size_t chanIndex)
 {
-  pluginHost::freePlugin(index, t, &mixer::mutex, ch);
+	pluginHost::freePlugin(pluginIndex, stack, chanIndex);
 }
 
 
@@ -134,13 +135,16 @@ void setProgram(Plugin* p, int index)
 /* -------------------------------------------------------------------------- */
 
 
-void setParameter(Plugin* p, int index, float value, bool gui)
+void setParameter(size_t pluginIndex, int paramIndex, float value, 
+    m::pluginHost::StackType stack, size_t chanIndex, bool gui)
 {
-	p->setParameter(index, value);
+	pluginHost::setParameter(pluginIndex, paramIndex, value, stack, chanIndex); 
 
 	/* No need to update plug-in editor if it has one: the plug-in's editor takes
 	care of it on its own. Conversely, update the specific parameter for UI-less 
 	plug-ins. */
+
+	Plugin* p = pluginHost::getPluginByIndex(pluginIndex, stack, chanIndex);
 
 	if (p->hasEditor())
 		return;
@@ -150,7 +154,7 @@ void setParameter(Plugin* p, int index, float value, bool gui)
 		return;
 
 	Fl::lock();
-	child->updateParameter(index, !gui);
+	child->updateParameter(paramIndex, !gui);
 	Fl::unlock();
 }
 

@@ -29,8 +29,10 @@
 
 
 #include <cassert>
-#include "../utils/log.h"
-#include "../utils/vector.h"
+#include "utils/log.h"
+#include "utils/vector.h"
+#include "core/model/model.h"
+#include "core/model/data.h"
 #include "const.h"
 #include "channel.h"
 #include "plugin.h"
@@ -68,11 +70,11 @@ void processPlugin_(Plugin& p, Channel* ch)
 
 /* -------------------------------------------------------------------------- */
 
-/* getStack_
+/* getStack_DEPR_
 Returns a vector of unique_ptr's given the stackType. If stackType == CHANNEL
 a pointer to Channel is also required. */
 
-std::vector<std::unique_ptr<Plugin>>& getStack_(StackType t, Channel* ch=nullptr)
+std::vector<std::unique_ptr<Plugin>>& getStack_DEPR_(StackType t, Channel* ch=nullptr)
 {
 	switch(t) {
 		case StackType::MASTER_OUT:
@@ -81,6 +83,22 @@ std::vector<std::unique_ptr<Plugin>>& getStack_(StackType t, Channel* ch=nullptr
 			return masterIn_;
 		case StackType::CHANNEL:
 			return ch->plugins;
+		default:
+			assert(false);
+	}
+}
+
+
+std::vector<std::unique_ptr<Plugin>>& getStack_(const std::shared_ptr<model::Data>&& data, 
+	StackType stack, size_t chanIndex)
+{
+	switch(stack) {
+		case StackType::MASTER_OUT:
+			return data->masterOutPlugins; break;
+		case StackType::MASTER_IN:
+			return data->masterInPlugins; break;
+		case StackType::CHANNEL:
+			return data->channels[chanIndex]->plugins; break;
 		default:
 			assert(false);
 	}
@@ -122,17 +140,25 @@ void init(int buffersize)
 /* -------------------------------------------------------------------------- */
 
 
-void addPlugin(std::unique_ptr<Plugin> p, StackType t, pthread_mutex_t* mixerMutex, 
-	Channel* ch)
+void addPlugin(std::unique_ptr<Plugin> p, StackType stack, size_t chanIndex)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, ch);
-
-	gu_log("[pluginHost::addPlugin] load plugin (%s), stack type=%d, stack size=%d\n",
-		p->getName().c_str(), t, stack.size());
-
-	pthread_mutex_lock(mixerMutex);
-	stack.push_back(std::move(p));
-	pthread_mutex_unlock(mixerMutex);
+	std::shared_ptr<model::Data> data = model::clone();
+	switch(stack) {
+		case StackType::MASTER_OUT:
+			p->index     = data->masterOutPlugins.size();
+			p->stackType = stack;
+			data->masterOutPlugins.push_back(std::move(p)); break;
+		case StackType::MASTER_IN:
+			p->index     = data->masterInPlugins.size();
+			p->stackType = stack;
+			data->masterInPlugins.push_back(std::move(p)); break;
+		case StackType::CHANNEL:
+			p->index     = data->channels[chanIndex]->plugins.size();
+			p->stackType = stack;
+			p->chanIndex = chanIndex;
+			data->channels[chanIndex]->plugins.push_back(std::move(p)); break;
+	}
+	model::swap(data);	
 }
 
 
@@ -141,7 +167,7 @@ void addPlugin(std::unique_ptr<Plugin> p, StackType t, pthread_mutex_t* mixerMut
 
 std::vector<Plugin*> getStack(StackType t, Channel* ch)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, ch);
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, ch);
 
 	std::vector<Plugin*> out;
 	for (const std::unique_ptr<Plugin>& p : stack)
@@ -156,7 +182,7 @@ std::vector<Plugin*> getStack(StackType t, Channel* ch)
 
 int countPlugins(StackType t, Channel* ch)
 {
-	return getStack_(t, ch).size();
+	return getStack_DEPR_(t, ch).size();
 }
 
 
@@ -165,7 +191,7 @@ int countPlugins(StackType t, Channel* ch)
 
 void freeStack(StackType t, pthread_mutex_t* mixerMutex, Channel* ch)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, ch);
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, ch);
 
 	if (stack.size() == 0)
 		return;
@@ -183,7 +209,7 @@ void freeStack(StackType t, pthread_mutex_t* mixerMutex, Channel* ch)
 
 void processStack(AudioBuffer& outBuf, StackType t, Channel* ch)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, ch);
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, ch);
 
 	if (stack.size() == 0)
 		return;
@@ -234,11 +260,19 @@ void processStack(AudioBuffer& outBuf, StackType t, Channel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-Plugin* getPluginByIndex(int index, StackType t, Channel* ch)
+Plugin* getPluginByIndex(size_t pluginIndex, StackType stack, size_t chanIndex)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, ch);
-	assert((size_t) index < stack.size());
-	return stack.at(index).get();
+	//return getStack_(m::model::get(), stack, chanIndex)[pluginIndex].get();
+	switch(stack) {
+		case StackType::MASTER_OUT:
+			return m::model::get()->masterOutPlugins[pluginIndex].get();
+		case StackType::MASTER_IN:
+			return m::model::get()->masterInPlugins[pluginIndex].get();
+		case StackType::CHANNEL:
+			return m::model::get()->channels[chanIndex]->plugins[pluginIndex].get();
+		default:
+			assert(false);
+	}
 }
 
 
@@ -247,7 +281,7 @@ Plugin* getPluginByIndex(int index, StackType t, Channel* ch)
 
 int getPluginIndex(int id, StackType t, Channel* ch)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, ch);
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, ch);
 	return u::vector::indexOf(stack, [&](const std::unique_ptr<Plugin>& p) 
 	{ 
 		return p->getId() == id;
@@ -258,38 +292,61 @@ int getPluginIndex(int id, StackType t, Channel* ch)
 /* -------------------------------------------------------------------------- */
 
 
-void swapPlugin(int indexA, int indexB, StackType t, pthread_mutex_t* mixerMutex, 
-	Channel* ch)
+void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType stack, 
+    size_t chanIndex)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, ch);
-
-	pthread_mutex_lock(mixerMutex);
-	std::swap(stack.at(indexA), stack.at(indexB));
-	pthread_mutex_unlock(mixerMutex);
-
-	gu_log("[pluginHost::swapPlugin] plugin at index %d and %d swapped\n", indexA, indexB);
+	std::shared_ptr<model::Data> data = model::clone();
+	switch(stack) {
+		case StackType::MASTER_OUT:
+			std::swap(data->masterOutPlugins.at(pluginIndex1), data->masterOutPlugins.at(pluginIndex2)); break;
+		case StackType::MASTER_IN:
+			std::swap(data->masterInPlugins.at(pluginIndex1), data->masterInPlugins.at(pluginIndex2)); break;
+		case StackType::CHANNEL:
+			std::swap(data->channels[chanIndex]->plugins.at(pluginIndex1), data->channels[chanIndex]->plugins.at(pluginIndex2)); break;
+		default: break;
+	}
+	model::swap(data);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-int freePlugin(int id, StackType t, pthread_mutex_t* mixerMutex, Channel* ch)
+void freePlugin(size_t pluginIndex, StackType stack, size_t chanIndex)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, ch);
+	std::shared_ptr<model::Data> data = model::clone();
+	switch(stack) {
+		case StackType::MASTER_OUT: {
+			auto it = data->masterOutPlugins.begin() + pluginIndex;
+			data->masterOutPlugins.erase(it); break;
+		}
+		case StackType::MASTER_IN: {
+			auto it = data->masterInPlugins.begin() + pluginIndex;
+			data->masterInPlugins.erase(it); break;
+		}	
+		case StackType::CHANNEL: {
+			auto it = data->channels[chanIndex]->plugins.begin() + pluginIndex;
+			data->channels[chanIndex]->plugins.erase(it); break;
+		}
+	}
+	model::swap(data);
+}
 
-	int index = u::vector::indexOf(stack, [&](const std::unique_ptr<Plugin>& p) 
-	{ 
-		return p->getId() == id; 
-	});
-	assert(index != -1);
 
-	pthread_mutex_lock(mixerMutex);
-	stack.erase(stack.begin() + index);
-	pthread_mutex_unlock(mixerMutex);	
+/* -------------------------------------------------------------------------- */
 
-	gu_log("[pluginHost::freePlugin] plugin id=%d removed\n", id);
-	return index;
+
+void setParameter(size_t pluginIndex, int paramIndex, float value, StackType stack, 
+    size_t chanIndex)
+{
+	switch(stack) {
+		case StackType::MASTER_OUT:
+			m::model::get()->masterOutPlugins[pluginIndex]->setParameter(paramIndex, value); break;
+		case StackType::MASTER_IN:
+			m::model::get()->masterInPlugins[pluginIndex]->setParameter(paramIndex, value); break;
+		case StackType::CHANNEL:
+			m::model::get()->channels[chanIndex]->plugins[pluginIndex]->setParameter(paramIndex, value); break;
+	}
 }
 
 
@@ -319,7 +376,7 @@ void freeAllStacks(std::vector<Channel*>* channels, pthread_mutex_t* mixerMutex)
 
 void forEachPlugin(StackType t, const Channel* ch, std::function<void(const Plugin* p)> f)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(t, const_cast<Channel*>(ch));
+	std::vector<std::unique_ptr<Plugin>>& stack = getStack_DEPR_(t, const_cast<Channel*>(ch));
 	for (const std::unique_ptr<Plugin>& p : stack)
 		f(p.get());
 }

@@ -83,7 +83,7 @@ void processPlugins_(Channel* ch, const MidiEvent& midiEvent)
 			if (pure != midiInParam)
 				continue;
 			float vf = midiEvent.getVelocity() / 127.0f;
-			c::plugin::setParameter(plugin, k, vf, false); // false: not from GUI
+			c::plugin::setParameter(plugin->index, k, vf, pluginHost::StackType::CHANNEL, ch->index, /*gui=*/false);
 			gu_log("  >>> [plugin %d parameter %d] ch=%d (pure=0x%X, value=%d, float=%f)\n",
 				plugin->getId(), k, ch->index, pure, midiEvent.getVelocity(), vf);
 		}

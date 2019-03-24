@@ -105,7 +105,7 @@ void readPlugins_(Channel* ch, const patch::channel_t& pch)
 				plugin->midiInParams.push_back(midiInParam);
 		}
 
-		pluginHost::addPlugin(std::move(plugin), pluginHost::StackType::CHANNEL, &mixer::mutex, ch);
+		pluginHost::addPlugin(std::move(plugin), pluginHost::StackType::CHANNEL, ch->index);
 	}
 
 #endif

@@ -41,6 +41,13 @@ class geSlider;
 
 class gePluginParameter : public Fl_Group
 {
+public:
+
+	gePluginParameter(int paramIndex, giada::m::Plugin* p, int x, int y, int w, 
+		int labelWidth);
+
+	void update(bool changeSlider);
+
 private:
 
 	static const int VALUE_WIDTH = 100;
@@ -54,12 +61,6 @@ private:
 
 	static void cb_setValue(Fl_Widget* v, void* p);
 	void cb_setValue();
-
-public:
-
-	gePluginParameter(int paramIndex, giada::m::Plugin* p, int x, int y, int w, int labelWidth);
-
-	void update(bool changeSlider);
 };
 
 
