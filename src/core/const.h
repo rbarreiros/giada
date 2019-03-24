@@ -192,17 +192,18 @@ constexpr float G_DEFAULT_REC_TRIGGER_LEVEL = -10.0f;
 
 /* -- unique IDs of mainWin's subwindows ------------------------------------ */
 /* -- wid > 0 are reserved by gg_keyboard ----------------------------------- */
-#define WID_BEATS         -1
-#define WID_BPM           -2
-#define WID_ABOUT         -3
-#define WID_FILE_BROWSER  -4
-#define WID_CONFIG        -5
-#define WID_FX_LIST       -6
-#define WID_ACTION_EDITOR -7
-#define WID_SAMPLE_EDITOR -8
-#define WID_FX            -9
-#define WID_KEY_GRABBER   -10
-#define WID_SAMPLE_NAME   -11
+constexpr int WID_BEATS         = -1;
+constexpr int WID_BPM           = -2;
+constexpr int WID_ABOUT         = -3;
+constexpr int WID_FILE_BROWSER  = -4;
+constexpr int WID_CONFIG        = -5;
+constexpr int WID_FX_LIST       = -6;
+constexpr int WID_ACTION_EDITOR = -7;
+constexpr int WID_SAMPLE_EDITOR = -8;
+constexpr int WID_FX            = -9;
+constexpr int WID_KEY_GRABBER   = -10;
+constexpr int WID_SAMPLE_NAME   = -11;
+constexpr int WID_FX_CHOOSER    = -12;
 
 
 

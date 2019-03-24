@@ -25,31 +25,31 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../core/mixer.h"
-#include "../core/mixerHandler.h"
-#include "../core/channel.h"
-#include "../core/recorderHandler.h"
-#include "../core/pluginManager.h"
-#include "../core/pluginHost.h"
-#include "../core/plugin.h"
-#include "../core/conf.h"
-#include "../core/patch.h"
-#include "../core/sampleChannel.h"
-#include "../core/midiChannel.h"
-#include "../core/waveManager.h"
-#include "../core/clock.h"
-#include "../core/wave.h"
-#include "../utils/gui.h"
-#include "../utils/log.h"
-#include "../utils/string.h"
-#include "../utils/fs.h"
-#include "../gui/elems/basics/progress.h"
-#include "../gui/elems/mainWindow/keyboard/column.h"
-#include "../gui/elems/mainWindow/keyboard/keyboard.h"
-#include "../gui/dialogs/mainWindow.h"
-#include "../gui/dialogs/warnings.h"
-#include "../gui/dialogs/browser/browserSave.h"
-#include "../gui/dialogs/browser/browserLoad.h"
+#include "core/mixer.h"
+#include "core/mixerHandler.h"
+#include "core/channel.h"
+#include "core/recorderHandler.h"
+#include "core/pluginManager.h"
+#include "core/pluginHost.h"
+#include "core/plugin.h"
+#include "core/conf.h"
+#include "core/patch.h"
+#include "core/sampleChannel.h"
+#include "core/midiChannel.h"
+#include "core/waveManager.h"
+#include "core/clock.h"
+#include "core/wave.h"
+#include "utils/gui.h"
+#include "utils/log.h"
+#include "utils/string.h"
+#include "utils/fs.h"
+#include "gui/elems/basics/progress.h"
+#include "gui/elems/mainWindow/keyboard/column.h"
+#include "gui/elems/mainWindow/keyboard/keyboard.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/dialogs/browser/browserSave.h"
+#include "gui/dialogs/browser/browserLoad.h"
 #include "main.h"
 #include "channel.h"
 #include "storage.h"
@@ -70,7 +70,7 @@ namespace
 {
 #ifdef WITH_VST
 
-void fillPatchGlobalsPlugins_(vector<m::Plugin*> stack, vector<m::patch::plugin_t>& patch)
+void fillPatchGlobalsPlugins_(vector<const m::Plugin*> stack, vector<m::patch::plugin_t>& patch)
 {
 	using namespace giada::m;
 
@@ -147,9 +147,9 @@ void fillPatchGlobals_(const string& name)
 
 #ifdef WITH_VST
 
-	fillPatchGlobalsPlugins_(pluginHost::getStack(pluginHost::StackType::MASTER_IN),
+	fillPatchGlobalsPlugins_(pluginHost::getStack(pluginHost::StackType::MASTER_IN).plugins,
 			patch::masterInPlugins);
-	fillPatchGlobalsPlugins_(pluginHost::getStack(pluginHost::StackType::MASTER_OUT),
+	fillPatchGlobalsPlugins_(pluginHost::getStack(pluginHost::StackType::MASTER_OUT).plugins,
 			patch::masterOutPlugins);
 
 #endif

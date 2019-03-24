@@ -25,28 +25,27 @@
  * -------------------------------------------------------------------------- */
 
 
+#include <cassert>
 #include <FL/Fl_Pack.H>
-#include "../../../utils/gui.h"
-#include "../../../utils/log.h"
-#include "../../../core/const.h"
-#include "../../../core/conf.h"
-#include "../../../core/sampleChannel.h"
+#include "utils/gui.h"
+#include "utils/log.h"
+#include "core/const.h"
+#include "core/conf.h"
+#include "core/sampleChannel.h"
 #ifdef WITH_VST
-	#include "../../../core/pluginHost.h"
-	#include "../../../core/plugin.h"
+	#include "core/pluginHost.h"
+	#include "core/plugin.h"
 #endif
-#include "../../../utils/string.h"
-#include "../../elems/midiLearner.h"
-#include "../../elems/basics/scroll.h"
-#include "../../elems/basics/box.h"
-#include "../../elems/basics/button.h"
-#include "../../elems/basics/choice.h"
-#include "../../elems/basics/check.h"
+#include "utils/string.h"
+#include "gui/elems/midiLearner.h"
+#include "gui/elems/basics/scroll.h"
+#include "gui/elems/basics/box.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/basics/choice.h"
+#include "gui/elems/basics/check.h"
 #include "midiInputChannel.h"
 
 
-using std::string;
-using std::vector;
 using namespace giada;
 using namespace giada::m;
 
@@ -56,7 +55,7 @@ gdMidiInputChannel::gdMidiInputChannel(Channel* ch)
 			conf::midiInputH, "MIDI Input Setup"),
 		ch(ch)
 {
-	string title = "MIDI Input Setup (channel " + u::string::iToString(ch->index+1) + ")";
+	std::string title = "MIDI Input Setup (channel " + u::string::iToString(ch->index+1) + ")";
 	label(title.c_str());
 	size_range(G_DEFAULT_MIDI_INPUT_UI_W, G_DEFAULT_MIDI_INPUT_UI_H);
 
@@ -184,10 +183,10 @@ void gdMidiInputChannel::addChannelLearners()
 
 void gdMidiInputChannel::addPluginLearners()
 {
-	vector<Plugin*> plugins = pluginHost::getStack(pluginHost::StackType::CHANNEL, ch->index);
+	m::pluginHost::Stack stack = pluginHost::getStack(pluginHost::StackType::CHANNEL, ch->index);
 
 	int i = 0;
-	for (Plugin* plugin : plugins) {
+	for (const Plugin* plugin : stack.plugins) {
 
 		Fl_Pack* pack = new Fl_Pack(container->x() + ((i + 1) * (LEARNER_WIDTH + 8)),
 			container->y(), LEARNER_WIDTH, 200);
@@ -199,7 +198,7 @@ void gdMidiInputChannel::addPluginLearners()
 
 			for (int k=0; k<plugin->getNumParameters(); k++)
 				new geMidiLearner(0, 0, LEARNER_WIDTH, plugin->getParameterName(k).c_str(),
-					cb_learn, &plugin->midiInParams.at(k), ch);
+					cb_learn, const_cast<uint32_t*>(&plugin->midiInParams.at(k)), ch); // TODO const not allowed
 
 		pack->end();
 

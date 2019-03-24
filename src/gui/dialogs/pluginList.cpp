@@ -28,6 +28,7 @@
 #ifdef WITH_VST
 
 
+#include <cassert>
 #include <string>
 #include <FL/Fl_Scroll.H>
 #include "core/conf.h"
@@ -53,10 +54,10 @@ extern gdMainWindow* G_MainWin;
 namespace giada {
 namespace v
 {
-gdPluginList::gdPluginList(m::pluginHost::StackType t, const m::Channel* ch)
+gdPluginList::gdPluginList(m::pluginHost::StackType stackType, size_t chanIndex)
 : gdWindow (468, 204), 
-  ch       (const_cast<m::Channel*>(ch)), /* TODO remove const_cast */
-  stackType(t)
+  stackType(stackType),
+  chanIndex(chanIndex)
 {
 	if (m::conf::pluginListX)
 		resize(m::conf::pluginListX, m::conf::pluginListY, w(), h());
@@ -69,7 +70,7 @@ gdPluginList::gdPluginList(m::pluginHost::StackType t, const m::Channel* ch)
 	list->scrollbar.slider(G_CUSTOM_BORDER_BOX);
 
 	list->begin();
-		refreshList();
+	rebuild();
 	list->end();
 
 	end();
@@ -78,13 +79,13 @@ gdPluginList::gdPluginList(m::pluginHost::StackType t, const m::Channel* ch)
 	/* TODO - awful stuff... we should subclass into gdPluginListChannel and
 	gdPluginListMaster */
 
-	if (stackType == pluginHost::StackType::MASTER_OUT)
-		label("Master Out Plugins");
+	if (stackType == m::pluginHost::StackType::MASTER_OUT)
+		label("Master Out Plug-ins");
 	else
-	if (stackType == pluginHost::StackType::MASTER_IN)
-		label("Master In Plugins");
+	if (stackType == m::pluginHost::StackType::MASTER_IN)
+		label("Master In Plug-ins");
 	else {
-		std::string l = "Channel " + u::string::iToString(ch->index+1) + " Plugins";
+		std::string l = "Channel " + u::string::iToString(chanIndex + 1) + " Plug-ins";
 		copy_label(l.c_str());
 	}
 
@@ -112,22 +113,41 @@ void gdPluginList::cb_addPlugin(Fl_Widget* v, void* p) { ((gdPluginList*)p)->cb_
 /* -------------------------------------------------------------------------- */
 
 
-void gdPluginList::cb_refreshList(Fl_Widget* v, void* p)
+void gdPluginList::rebuild()
 {
-	/* Note: this callback is fired by gdBrowser. Close its window first, by 
-	calling the parent (pluginList) and telling it to delete its subwindow 
-	(i.e. gdBrowser). */
+	m::pluginHost::Stack stack = m::pluginHost::getStack(stackType, chanIndex);
 
-	gdWindow* child = static_cast<gdWindow*>(v);
-	if (child->getParent() != nullptr)
-		(child->getParent())->delSubWindow(child);
+	/* Clear the previous list. */
 
-	/* Finally refresh plugin list: void *p is a pointer to gdPluginList. This 
-	callback works even when you click 'x' to close the window... well, it does
-	not matter. */
+	list->clear();
+	list->scroll_to(0, 0);
 
-	((gdPluginList*)p)->refreshList();
-	((gdPluginList*)p)->redraw();
+	/* Add new plug-ins buttons, as many as the plugin in pluginHost::stack + 1, 
+	then 'add new' button. */
+
+	int i  = 0;
+	int py = 0;
+	for (const m::Plugin* plugin : stack.plugins) {
+		py = (list->y() - list->yposition()) + (i * 24);
+		list->add(new gePluginElement(*this, *plugin, list->x(), py, 800));
+		i++;
+	}
+
+	py = py == 0 ? 90 : py = (list->y() - list->yposition()) + ((i + 1) * 24);
+
+	addPlugin = new geButton(8, py, 452, 20, "-- add new plugin --");
+	addPlugin->callback(cb_addPlugin, (void*)this);
+	list->add(addPlugin);
+
+	/* If num(plugins) > 7 make room for the side scrollbar. 
+	Scrollbar.width = 20 + 4(margin) */
+
+	if (i>7)
+		size(492, h());
+	else
+		size(468, h());
+
+	redraw();	
 }
 
 
@@ -136,80 +156,38 @@ void gdPluginList::cb_refreshList(Fl_Widget* v, void* p)
 
 void gdPluginList::cb_addPlugin()
 {
-	using namespace giada::m;
-
-	/* The usual callback that gdWindow adds to each subwindow in this case is not 
-	enough, because when we close the browser the plugin list must be redrawn. We 
-	have a special callback, cb_refreshList, which we add to gdPluginChooser. 
-	It does exactly what we need. */
-
-	gdPluginChooser* pc = new gdPluginChooser(conf::pluginChooserX,
-			conf::pluginChooserY, conf::pluginChooserW, conf::pluginChooserH,
-			stackType, ch);
-	addSubWindow(pc);
-	pc->callback(cb_refreshList, (void*)this);	// 'this' refers to gdPluginList
+	int wx = m::conf::pluginChooserX;
+	int wy = m::conf::pluginChooserY;
+	int ww = m::conf::pluginChooserW;
+	int wh = m::conf::pluginChooserH;
+	u::gui::openSubWindow(G_MainWin, new v::gdPluginChooser(wx, wy, ww, wh, stackType, chanIndex), 
+		WID_FX_CHOOSER);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
-
+#if 0
 void gdPluginList::refreshList()
 {
-	using namespace giada::m;
 
-	/* delete the previous list */
 
-	list->clear();
-	list->scroll_to(0, 0);
-
-	/* add new buttons, as many as the plugin in pluginHost::stack + 1,
-	 * the 'add new' button. Warning: if ch == nullptr we are working with
-	 * master in/master out stacks. */
-
-	int numPlugins = pluginHost::countPlugins(stackType, ch->index);
-	int i = 0;
-
-	while (i<numPlugins) {
-		Plugin*          plugin = pluginHost::getPluginByIndex(i, stackType, ch->index);
-		gePluginElement* gdpe   = new gePluginElement(*this, *plugin, list->x(), 
-			list->y()-list->yposition()+(i*24), 800);
-		list->add(gdpe);
-		i++;
-	}
-
-	int addPlugY = numPlugins == 0 ? 90 : list->y()-list->yposition()+(i*24);
-	addPlugin = new geButton(8, addPlugY, 452, 20, "-- add new plugin --");
-	addPlugin->callback(cb_addPlugin, (void*)this);
-	list->add(addPlugin);
-
-	/* if num(plugins) > 7 make room for the side scrollbar.
-	 * Scrollbar.width = 20 + 4(margin) */
-
-	if (i>7)
-		size(492, h());
-	else
-		size(468, h());
-
-	redraw();
-
-	/* set 'full' flag to FX button */
-
-	/* TODO - awful stuff... we should subclass into gdPluginListChannel and
-	gdPluginListMaster */
-
-	if (stackType == pluginHost::StackType::MASTER_OUT) {
-		G_MainWin->mainIO->setMasterFxOutFull(pluginHost::countPlugins(stackType, ch->index) > 0);
+/*THESE THINGS MUST BE PERFORMED BY EACH COMPONENT IN THEIR REFRESH() METHODS */
+/* 
+	if (stack.type == pluginHost::StackType::MASTER_OUT) {
+		G_MainWin->mainIO->setMasterFxOutFull(stack.plugins.size() > 0);
 	}
 	else
-	if (stackType == pluginHost::StackType::MASTER_IN) {
-		G_MainWin->mainIO->setMasterFxInFull(pluginHost::countPlugins(stackType, ch->index) > 0);
+	if (stack.type == pluginHost::StackType::MASTER_IN) {
+		G_MainWin->mainIO->setMasterFxInFull(stack.plugins.size() > 0);
 	}
 	else {
-		ch->guiChannel->fx->status = pluginHost::countPlugins(stackType, ch->index) > 0;
+		ch->guiChannel->fx->status = stack.plugins.size();
 		ch->guiChannel->fx->redraw();
 	}
+*/
 }
+#endif
 }} // giada::v::
 
 

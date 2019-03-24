@@ -98,16 +98,9 @@ std::vector<std::unique_ptr<Plugin>>& getStack_(std::shared_ptr<model::Data> dat
 /* -------------------------------------------------------------------------- */
 
 
-pthread_mutex_t mutex;
-
-
-/* -------------------------------------------------------------------------- */
-
-
 void close()
 {
 	messageManager_->deleteInstance();
-	pthread_mutex_destroy(&mutex);
 }
 
 
@@ -118,8 +111,6 @@ void init(int buffersize)
 {
 	messageManager_ = juce::MessageManager::getInstance();
 	audioBuffer_.setSize(G_MAX_IO_CHANS, buffersize);
-
-	pthread_mutex_init(&mutex, nullptr);
 }
 
 
@@ -142,13 +133,15 @@ void addPlugin(std::unique_ptr<Plugin> p, StackType type, size_t chanIndex)
 /* -------------------------------------------------------------------------- */
 
 
-std::vector<Plugin*> getStack(StackType type, size_t chanIndex)
+Stack getStack(StackType type, size_t chanIndex)
 {
 	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(model::get(), type, chanIndex);
 
-	std::vector<Plugin*> out;
+	Stack out;
+	out.type = type;
+	out.chanIndex = chanIndex;
 	for (const std::unique_ptr<Plugin>& p : stack)
-		out.push_back(p.get());
+		out.plugins.push_back(p.get());
 
 	return out;
 }

@@ -39,20 +39,22 @@
 class geChoice;
 class geButton;
 class geButton;
-class gePluginBrowser;
 
+namespace giada {
+namespace v
+{
+class gePluginBrowser;
 
 class gdPluginChooser : public gdWindow
 {
+public:
+
+	gdPluginChooser(int x, int y, int w, int h, m::pluginHost::StackType stackType, 
+		size_t chanIndex);
+
+	~gdPluginChooser();
+
 private:
-
-	giada::m::Channel* ch;      // ch == nullptr ? masterOut
-	giada::m::pluginHost::StackType stackType;
-
-	geChoice*        sortMethod;
-	geButton*        addBtn;
-	geButton*        cancelBtn;
-	gePluginBrowser* browser;
 
 	static void cb_close(Fl_Widget* w, void* p);
 	static void cb_add  (Fl_Widget* w, void* p);
@@ -61,12 +63,15 @@ private:
 	void cb_add  ();
 	void cb_sort ();
 
-public:
+	geChoice*        sortMethod;
+	geButton*        addBtn;
+	geButton*        cancelBtn;
+	gePluginBrowser* browser;
 
-	gdPluginChooser(int x, int y, int w, int h, giada::m::pluginHost::StackType t, 
-		giada::m::Channel* ch=nullptr);
-	~gdPluginChooser();
+	m::pluginHost::StackType stackType;
+	size_t chanIndex;
 };
+}} // giada::v::
 
 
 #endif

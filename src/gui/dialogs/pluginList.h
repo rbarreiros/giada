@@ -47,19 +47,13 @@ class gdPluginList : public gdWindow
 {
 public:
 
-	gdPluginList(giada::m::pluginHost::StackType t, const giada::m::Channel* ch=nullptr);
+	gdPluginList(m::pluginHost::StackType stackType, size_t chanIndex);
 	~gdPluginList();
 
-	/* cb_refreshList
-	Special callback, passed to browser. When closed (i.e. plugin has been 
-	selected) the same browser will refresh this window. */
+	void rebuild() override;
 
-	static void cb_refreshList(Fl_Widget*, void*);
-
-	void refreshList();
-
-	giada::m::Channel* ch;      // ch == nullptr ? masterOut
-	giada::m::pluginHost::StackType stackType;
+	m::pluginHost::StackType stackType;
+	size_t chanIndex;
 
 private:
 
@@ -67,7 +61,7 @@ private:
 	void cb_addPlugin();
 
 	geButton*  addPlugin;
-	Fl_Scroll* list;
+	Fl_Scroll* list;	
 };
 
 }} // giada::v::

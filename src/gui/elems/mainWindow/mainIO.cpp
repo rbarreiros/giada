@@ -25,17 +25,17 @@
 * -------------------------------------------------------------------------- */
 
 
-#include "../../../core/const.h"
-#include "../../../core/graphics.h"
-#include "../../../core/mixer.h"
-#include "../../../core/pluginHost.h"
-#include "../../../glue/main.h"
-#include "../../../utils/gui.h"
-#include "../../elems/soundMeter.h"
-#include "../../elems/basics/statusButton.h"
-#include "../../elems/basics/dial.h"
-#include "../../dialogs/mainWindow.h"
-#include "../../dialogs/pluginList.h"
+#include "core/const.h"
+#include "core/graphics.h"
+#include "core/mixer.h"
+#include "core/pluginHost.h"
+#include "glue/main.h"
+#include "utils/gui.h"
+#include "gui/elems/soundMeter.h"
+#include "gui/elems/basics/statusButton.h"
+#include "gui/elems/basics/dial.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/pluginList.h"
 #include "mainIO.h"
 
 
@@ -120,13 +120,17 @@ void geMainIO::cb_inVol()
 
 void geMainIO::cb_masterFxOut()
 {
-	u::gui::openSubWindow(G_MainWin, new gdPluginList(m::pluginHost::StackType::MASTER_OUT), WID_FX_LIST);
+	m::pluginHost::Stack stack = m::pluginHost::getStack(m::pluginHost::StackType::MASTER_OUT);
+	u::gui::openSubWindow(G_MainWin, new gdPluginList(stack.type, stack.chanIndex), WID_FX_LIST);
 }
+
 
 void geMainIO::cb_masterFxIn()
 {
-	u::gui::openSubWindow(G_MainWin, new gdPluginList(m::pluginHost::StackType::MASTER_IN), WID_FX_LIST);
+	m::pluginHost::Stack stack = m::pluginHost::getStack(m::pluginHost::StackType::MASTER_IN);
+	u::gui::openSubWindow(G_MainWin, new gdPluginList(stack.type, stack.chanIndex), WID_FX_LIST);
 }
+
 
 void geMainIO::cb_inToOut()
 {

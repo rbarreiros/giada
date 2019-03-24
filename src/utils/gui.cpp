@@ -33,24 +33,24 @@
 #elif defined(__linux__)
 	#include <X11/xpm.h>
 #endif
-#include "../core/mixer.h"
-#include "../core/clock.h"
-#include "../core/pluginHost.h"
-#include "../core/channel.h"
-#include "../core/conf.h"
-#include "../core/graphics.h"
-#include "../gui/dialogs/warnings.h"
-#include "../gui/dialogs/mainWindow.h"
-#include "../gui/dialogs/actionEditor/baseActionEditor.h"
-#include "../gui/dialogs/window.h"
-#include "../gui/dialogs/sampleEditor.h"
-#include "../gui/elems/mainWindow/mainIO.h"
-#include "../gui/elems/mainWindow/mainTimer.h"
-#include "../gui/elems/mainWindow/mainTransport.h"
-#include "../gui/elems/mainWindow/beatMeter.h"
-#include "../gui/elems/mainWindow/keyboard/keyboard.h"
-#include "../gui/elems/mainWindow/keyboard/channel.h"
-#include "../gui/elems/sampleEditor/waveTools.h"
+#include "core/mixer.h"
+#include "core/clock.h"
+#include "core/pluginHost.h"
+#include "core/channel.h"
+#include "core/conf.h"
+#include "core/graphics.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/actionEditor/baseActionEditor.h"
+#include "gui/dialogs/window.h"
+#include "gui/dialogs/sampleEditor.h"
+#include "gui/elems/mainWindow/mainIO.h"
+#include "gui/elems/mainWindow/mainTimer.h"
+#include "gui/elems/mainWindow/mainTransport.h"
+#include "gui/elems/mainWindow/beatMeter.h"
+#include "gui/elems/mainWindow/keyboard/keyboard.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
+#include "gui/elems/sampleEditor/waveTools.h"
 #include "log.h"
 #include "string.h"
 #include "gui.h"
@@ -66,6 +66,17 @@ namespace gui
 namespace
 {
 int blinker_ = 0;
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void rebuildWindow_(int wid)
+{
+	gdWindow* w = getSubwindow(G_MainWin, wid);
+	if (w != nullptr)
+		w->rebuild();	
+}
 } // {anonymous}
 
 
@@ -100,7 +111,9 @@ void refresh()
 
 void rebuild()
 {
-	G_MainWin->keyboard->rebuild();	
+	G_MainWin->keyboard->rebuild();	 // TODO - implement gdMainWin::rebuild and call it directly
+
+	rebuildWindow_(WID_FX_LIST);
 }
 
 
@@ -128,8 +141,8 @@ void updateControls()
 
 #ifdef WITH_VST
 
-	G_MainWin->mainIO->setMasterFxOutFull(pluginHost::getStack(pluginHost::StackType::MASTER_OUT).size() > 0);
-	G_MainWin->mainIO->setMasterFxInFull(pluginHost::getStack(pluginHost::StackType::MASTER_IN).size() > 0);
+	G_MainWin->mainIO->setMasterFxOutFull(pluginHost::getStack(pluginHost::StackType::MASTER_OUT).plugins.size() > 0);
+	G_MainWin->mainIO->setMasterFxInFull(pluginHost::getStack(pluginHost::StackType::MASTER_IN).plugins.size() > 0);
 	
 #endif
 

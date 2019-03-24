@@ -108,8 +108,7 @@ void gePluginElement::cb_setProgram      (Fl_Widget* v, void* p) { ((gePluginEle
 void gePluginElement::cb_shiftUp()
 {
 	c::plugin::swapPlugins(m_plugin.index, m_plugin.index - 1, m_parentWin.stackType,
-		m_parentWin.ch->index);
-	m_parentWin.refreshList();
+		m_parentWin.chanIndex);
 }
 
 
@@ -119,8 +118,7 @@ void gePluginElement::cb_shiftUp()
 void gePluginElement::cb_shiftDown()
 {
 	c::plugin::swapPlugins(m_plugin.index, m_plugin.index + 1, m_parentWin.stackType,
-		m_parentWin.ch->index);
-	m_parentWin.refreshList();
+		m_parentWin.chanIndex);
 }
 
 
@@ -134,8 +132,7 @@ void gePluginElement::cb_removePlugin()
 	window 'add plugin' (i.e. this).*/
 	
 	m_parentWin.delSubWindow(m_plugin.getId() + 1);
-	c::plugin::freePlugin(m_plugin.index, m_parentWin.stackType, m_parentWin.ch->index);
-	m_parentWin.refreshList();
+	c::plugin::freePlugin(m_plugin.index, m_parentWin.stackType, m_parentWin.chanIndex);
 }
 
 
@@ -187,8 +184,8 @@ void gePluginElement::cb_setBypass()
 
 void gePluginElement::cb_setProgram()
 {
-	c::plugin::setProgram(m_plugin.index, program->value(), m_plugin.stackType,
-		m_plugin.chanIndex);
+	c::plugin::setProgram(m_plugin.index, program->value(), m_parentWin.stackType,
+		m_parentWin.chanIndex);
 }
 }} // giada::v::
 

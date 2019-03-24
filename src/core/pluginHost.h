@@ -48,7 +48,17 @@ namespace pluginHost
 {
 enum class StackType { MASTER_OUT, MASTER_IN, CHANNEL };
 
-extern pthread_mutex_t mutex;
+
+/* Stack
+A list of plug-ins with their source (master in, master out or channel). */
+
+struct Stack
+{
+    std::vector<const Plugin*> plugins;
+    StackType type;
+    size_t chanIndex;
+};
+
 
 void init(int buffersize);
 void close();
@@ -77,7 +87,7 @@ void processStack(AudioBuffer& outBuf, StackType t, size_t chanIndex=0);
 Returns a vector of Plugin pointers given the stackType. If stackType == CHANNEL
 chanIndex is also required. */
 
-std::vector<Plugin*> getStack(StackType t, size_t chanIndex=0);
+Stack getStack(StackType t, size_t chanIndex=0);
 
 /* getPluginByIndex */
 

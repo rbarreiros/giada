@@ -41,12 +41,6 @@ void __cb_window_closer(Fl_Widget* v, void* p);
 
 class gdWindow : public Fl_Double_Window
 {
-protected:
-
-	std::vector<gdWindow*> subWindows;
-	int id;
-	gdWindow* parent;
-
 public:
 
 	gdWindow(int x, int y, int w, int h, const char* title=0, int id=0);
@@ -54,6 +48,8 @@ public:
 	~gdWindow();
 
 	static void cb_closeChild(Fl_Widget* v, void* p);
+
+	virtual void rebuild() {};
 
 	void addSubWindow(gdWindow* w);
 	void delSubWindow(gdWindow* w);
@@ -71,6 +67,12 @@ public:
 	 * true if the window with id 'id' exists in the stack. */
 
 	bool hasWindow(int id);
+
+protected:
+
+	std::vector<gdWindow*> subWindows;
+	int id;
+	gdWindow* parent;
 };
 
 
