@@ -37,11 +37,11 @@
 #include "pluginParameter.h"
 
 
-using namespace giada;
-
-
-gePluginParameter::gePluginParameter(int paramIndex, m::Plugin* p, int X, int Y, 
-	int W, int labelWidth)
+namespace giada {
+namespace v
+{
+gePluginParameter::gePluginParameter(int paramIndex, const m::Plugin& p, int X, 
+	int Y, int W, int labelWidth)
 : Fl_Group    (X, Y, W, G_GUI_UNIT), 
   m_paramIndex(paramIndex), 
   m_plugin    (p)
@@ -49,12 +49,12 @@ gePluginParameter::gePluginParameter(int paramIndex, m::Plugin* p, int X, int Y,
 	begin();
 
 		m_label = new geBox(x(), y(), labelWidth, G_GUI_UNIT);
-		m_label->copy_label(m_plugin->getParameterName(m_paramIndex).c_str());
+		m_label->copy_label(m_plugin.getParameterName(m_paramIndex).c_str());
 		m_label->align(FL_ALIGN_LEFT | FL_ALIGN_INSIDE);
 
 		m_slider = new geSlider(m_label->x()+m_label->w()+G_GUI_OUTER_MARGIN, y(), 
 			w()-(m_label->x()+m_label->w()+G_GUI_OUTER_MARGIN)-VALUE_WIDTH, G_GUI_UNIT);
-		m_slider->value(m_plugin->getParameter(m_paramIndex));
+		m_slider->value(m_plugin.getParameter(m_paramIndex));
 		m_slider->callback(cb_setValue, (void*)this);
 
 		m_value = new geBox(m_slider->x()+m_slider->w()+G_GUI_OUTER_MARGIN, y(), VALUE_WIDTH, G_GUI_UNIT);
@@ -78,8 +78,8 @@ void gePluginParameter::cb_setValue(Fl_Widget* v, void* p)  { ((gePluginParamete
 
 void gePluginParameter::cb_setValue()
 {
-	c::plugin::setParameter(m_plugin->index, m_paramIndex, m_slider->value(), 
-		m_plugin->stackType, m_plugin->chanIndex, /*gui=*/true);
+	c::plugin::setParameter(m_plugin.index, m_paramIndex, m_slider->value(), 
+		m_plugin.stackType, m_plugin.chanIndex, /*gui=*/true);
 }
 
 
@@ -88,12 +88,16 @@ void gePluginParameter::cb_setValue()
 
 void gePluginParameter::update(bool changeSlider)
 {
-	std::string v = m_plugin->getParameterText(m_paramIndex) + " " +
-			m_plugin->getParameterLabel(m_paramIndex);
+	std::string v = m_plugin.getParameterText(m_paramIndex) + " " +
+	                m_plugin.getParameterLabel(m_paramIndex);
+
 	m_value->copy_label(v.c_str());
+
 	if (changeSlider)
-		m_slider->value(m_plugin->getParameter(m_paramIndex));
+		m_slider->value(m_plugin.getParameter(m_paramIndex));
 }
+
+}} // giada::v::
 
 
 #endif // #ifdef WITH_VST

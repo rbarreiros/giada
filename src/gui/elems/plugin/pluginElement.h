@@ -35,17 +35,28 @@
 #include <FL/Fl_Group.H>
 
 
-class gdPluginList;
 class geChoice;
 class geButton;
 
 
+namespace giada {
+namespace v
+{
+class gdPluginList;
 class gePluginElement : public Fl_Group
 {
-private:
+public:
 
-	gdPluginList*     m_parentWin;
-	giada::m::Plugin* m_plugin;
+	gePluginElement(gdPluginList& gdp, const m::Plugin& p, int x, int y, int w);
+
+	geButton* button;
+	geChoice* program;
+	geButton* bypass;
+	geButton* shiftUp;
+	geButton* shiftDown;
+	geButton* remove;
+
+private:
 
 	static void cb_removePlugin(Fl_Widget* v, void* p);
 	static void cb_openPluginWindow(Fl_Widget* v, void* p);
@@ -60,17 +71,12 @@ private:
 	void cb_shiftDown();
 	void cb_setProgram();
 
-public:
+	gdPluginList& m_parentWin;
 
-	geButton* button;
-	geChoice* program;
-	geButton* bypass;
-	geButton* shiftUp;
-	geButton* shiftDown;
-	geButton* remove;
-
-	gePluginElement(gdPluginList* gdp, giada::m::Plugin* p, int x, int y, int w);
+	const m::Plugin& m_plugin;
 };
+}} // giada::v::
+
 
 #endif
 

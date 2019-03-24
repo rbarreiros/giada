@@ -59,19 +59,19 @@ namespace plugin
 {
 namespace
 {
-/* getPluginWindow
+/* getPluginWindow_
 Returns the plugInWindow (GUI-less one) with the parameter list. It might be 
 nullptr if there is no plug-in window shown on screen. */
 
-gdPluginWindow* getPluginWindow(const Plugin* p)
+v::gdPluginWindow* getPluginWindow_(const Plugin* p)
 {
 	/* Get the parent window first: the plug-in list. Then, if it exists, get
 	the child window - the actual pluginWindow. */
 
-	gdPluginList* parent = static_cast<gdPluginList*>(u::gui::getSubwindow(G_MainWin, WID_FX_LIST));
+	v::gdPluginList* parent = static_cast<v::gdPluginList*>(u::gui::getSubwindow(G_MainWin, WID_FX_LIST));
 	if (parent == nullptr)
 		return nullptr;
-	return static_cast<gdPluginWindow*>(u::gui::getSubwindow(parent, p->getId() + 1));
+	return static_cast<v::gdPluginWindow*>(u::gui::getSubwindow(parent, p->getId() + 1));
 }
 } // {anonymous}
 
@@ -127,7 +127,7 @@ void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackType s
 	if (p->hasEditor())
 		return;
 
-	gdPluginWindow* child = getPluginWindow(p);
+	v::gdPluginWindow* child = getPluginWindow_(p);
 	if (child == nullptr) 
 		return;
 	
@@ -152,7 +152,7 @@ void setParameter(size_t pluginIndex, int paramIndex, float value,
 	if (p->hasEditor())
 		return;
 
-	gdPluginWindow* child = getPluginWindow(p);
+	v::gdPluginWindow* child = getPluginWindow_(p);
 	if (child == nullptr) 
 		return;
 

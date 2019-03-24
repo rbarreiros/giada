@@ -50,17 +50,16 @@
 extern gdMainWindow* G_MainWin;
 
 
-using namespace giada;
-
-
-/* TODO const_cast */
-gdPluginList::gdPluginList(m::pluginHost::StackType t, const m::Channel* ch)
-	: gdWindow(468, 204), ch(const_cast<m::Channel*>(ch)), stackType(t)
+namespace giada {
+namespace v
 {
-	using namespace giada::m;
-
-	if (conf::pluginListX)
-		resize(conf::pluginListX, conf::pluginListY, w(), h());
+gdPluginList::gdPluginList(m::pluginHost::StackType t, const m::Channel* ch)
+: gdWindow (468, 204), 
+  ch       (const_cast<m::Channel*>(ch)), /* TODO remove const_cast */
+  stackType(t)
+{
+	if (m::conf::pluginListX)
+		resize(m::conf::pluginListX, m::conf::pluginListY, w(), h());
 
 	list = new Fl_Scroll(8, 8, 476, 188);
 	list->type(Fl_Scroll::VERTICAL);
@@ -173,7 +172,7 @@ void gdPluginList::refreshList()
 
 	while (i<numPlugins) {
 		Plugin*          plugin = pluginHost::getPluginByIndex(i, stackType, ch->index);
-		gePluginElement* gdpe   = new gePluginElement(this, plugin, list->x(), 
+		gePluginElement* gdpe   = new gePluginElement(*this, *plugin, list->x(), 
 			list->y()-list->yposition()+(i*24), 800);
 		list->add(gdpe);
 		i++;
@@ -211,6 +210,7 @@ void gdPluginList::refreshList()
 		ch->guiChannel->fx->redraw();
 	}
 }
+}} // giada::v::
 
 
 #endif // #ifdef WITH_VST
