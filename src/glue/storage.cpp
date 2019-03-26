@@ -147,10 +147,10 @@ void fillPatchGlobals_(const string& name)
 
 #ifdef WITH_VST
 
-	fillPatchGlobalsPlugins_(pluginHost::getStack(pluginHost::StackType::MASTER_IN).plugins,
-			patch::masterInPlugins);
-	fillPatchGlobalsPlugins_(pluginHost::getStack(pluginHost::StackType::MASTER_OUT).plugins,
-			patch::masterOutPlugins);
+	//fillPatchGlobalsPlugins_(pluginHost::getStack(pluginHost::StackType::MASTER_IN).plugins,
+	//		patch::masterInPlugins);
+	//fillPatchGlobalsPlugins_(pluginHost::getStack(pluginHost::StackType::MASTER_OUT).plugins,
+	//		patch::masterOutPlugins);
 
 #endif
 }

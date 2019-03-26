@@ -27,11 +27,10 @@
 
 #include <cassert>
 #include <cstring>
-#include "../utils/log.h"
-#include "../gui/elems/mainWindow/keyboard/channel.h"
+#include "utils/log.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
 #include "const.h"
 #include "channelManager.h"
-#include "pluginHost.h"
 #include "pluginManager.h"
 #include "plugin.h"
 #include "kernelMidi.h"
@@ -125,7 +124,7 @@ Channel::Channel(const Channel& o)
 #ifdef WITH_VST
 
 	for (const std::unique_ptr<Plugin>& plugin : o.plugins)
-		pluginHost::addPlugin(pluginManager::makePlugin(*plugin.get()), pluginHost::StackType::CHANNEL, index);
+        plugins.push_back(pluginManager::makePlugin(*plugin.get()));
 
 #endif
 

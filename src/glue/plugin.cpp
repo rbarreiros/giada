@@ -81,48 +81,46 @@ v::gdPluginWindow* getPluginWindow_(const Plugin* p)
 /* -------------------------------------------------------------------------- */
 
 
-void addPlugin(int pluginIndex, m::pluginHost::StackType stack, size_t chanIndex)
+void addPlugin(int pluginIndex, m::pluginHost::StackInfo info)
 {
 	if (pluginIndex >= pluginManager::countAvailablePlugins())
 		return;
 	std::unique_ptr<Plugin> p = pluginManager::makePlugin(pluginIndex);
 	if (p != nullptr)
-		pluginHost::addPlugin(std::move(p), stack, chanIndex);
+		pluginHost::addPlugin(std::move(p), info);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void swapPlugins(size_t pluginIndex1, size_t pluginIndex2, m::pluginHost::StackType t,
-    size_t chanIndex)
+void swapPlugins(size_t index1, size_t index2, m::pluginHost::StackInfo info)
 {
-	pluginHost::swapPlugin(pluginIndex1, pluginIndex2, t, chanIndex);
+	pluginHost::swapPlugin(index1, index2, info);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void freePlugin(size_t pluginIndex, m::pluginHost::StackType stack, size_t chanIndex)
+void freePlugin(size_t pluginIndex, m::pluginHost::StackInfo info)
 {
-	pluginHost::freePlugin(pluginIndex, stack, chanIndex);
+	pluginHost::freePlugin(pluginIndex, info);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackType stack, 
-	size_t chanIndex)
+void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackInfo info)
 {
-	pluginHost::setPluginProgram(pluginIndex, programIndex, stack, chanIndex); 
+	pluginHost::setPluginProgram(pluginIndex, programIndex, info); 
 
 	/* No need to update plug-in editor if it has one: the plug-in's editor takes
 	care of it on its own. Conversely, update the specific parameter for UI-less 
 	plug-ins. */
 
-	Plugin* p = pluginHost::getPluginByIndex(pluginIndex, stack, chanIndex);
+	const Plugin* p = pluginHost::getPluginByIndex(pluginIndex, info);
 
 	if (p->hasEditor())
 		return;
@@ -139,15 +137,15 @@ void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackType s
 
 
 void setParameter(size_t pluginIndex, int paramIndex, float value, 
-    m::pluginHost::StackType stack, size_t chanIndex, bool gui)
+    m::pluginHost::StackInfo info, bool gui)
 {
-	pluginHost::setPluginParameter(pluginIndex, paramIndex, value, stack, chanIndex); 
+	pluginHost::setPluginParameter(pluginIndex, paramIndex, value, info); 
 
 	/* No need to update plug-in editor if it has one: the plug-in's editor takes
 	care of it on its own. Conversely, update the specific parameter for UI-less 
 	plug-ins. */
 
-	Plugin* p = pluginHost::getPluginByIndex(pluginIndex, stack, chanIndex);
+	const Plugin* p = pluginHost::getPluginByIndex(pluginIndex, info);
 
 	if (p->hasEditor())
 		return;

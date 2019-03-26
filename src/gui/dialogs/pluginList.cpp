@@ -31,6 +31,8 @@
 #include <cassert>
 #include <string>
 #include <FL/Fl_Scroll.H>
+#include "core/model/model.h"
+#include "core/model/data.h"
 #include "core/conf.h"
 #include "core/const.h"
 #include "core/pluginHost.h"
@@ -54,10 +56,9 @@ extern gdMainWindow* G_MainWin;
 namespace giada {
 namespace v
 {
-gdPluginList::gdPluginList(m::pluginHost::StackType stackType, size_t chanIndex)
-: gdWindow (468, 204), 
-  stackType(stackType),
-  chanIndex(chanIndex)
+gdPluginList::gdPluginList(m::pluginHost::StackInfo stackInfo)
+: gdWindow   (468, 204), 
+  m_stackInfo(stackInfo)
 {
 	if (m::conf::pluginListX)
 		resize(m::conf::pluginListX, m::conf::pluginListY, w(), h());
@@ -79,13 +80,13 @@ gdPluginList::gdPluginList(m::pluginHost::StackType stackType, size_t chanIndex)
 	/* TODO - awful stuff... we should subclass into gdPluginListChannel and
 	gdPluginListMaster */
 
-	if (stackType == m::pluginHost::StackType::MASTER_OUT)
+	if (m_stackInfo.type == m::pluginHost::StackType::MASTER_OUT)
 		label("Master Out Plug-ins");
 	else
-	if (stackType == m::pluginHost::StackType::MASTER_IN)
+	if (m_stackInfo.type == m::pluginHost::StackType::MASTER_IN)
 		label("Master In Plug-ins");
 	else {
-		std::string l = "Channel " + u::string::iToString(chanIndex + 1) + " Plug-ins";
+		std::string l = "Channel " + u::string::iToString(m_stackInfo.chanIndex + 1) + " Plug-ins";
 		copy_label(l.c_str());
 	}
 
@@ -115,7 +116,22 @@ void gdPluginList::cb_addPlugin(Fl_Widget* v, void* p) { ((gdPluginList*)p)->cb_
 
 void gdPluginList::rebuild()
 {
-	m::pluginHost::Stack stack = m::pluginHost::getStack(stackType, chanIndex);
+	/* TODO - awful stuff... we should subclass into gdPluginListChannel and
+	gdPluginListMasterIn and gdPluginListMasterOut */
+
+#if 0
+	switch(m_stackData.info.type) {
+		case m::pluginHost::StackType::MASTER_OUT:
+			/*m_stackData.stack = m::model::get()->masterOutPlugins;*/ break;
+		case m::pluginHost::StackType::MASTER_IN:
+			/*m_stackData.stack = m::model::get()->masterInPlugins;*/ break;
+		case m::pluginHost::StackType::CHANNEL:
+			m_stackData.stack = m::model::get()->channels[m_stackData.info.chanIndex]->plugins; break;
+		default:
+			assert(false);
+	}
+#endif
+	const m::pluginHost::Stack& stack = m::model::get()->channels[m_stackInfo.chanIndex]->plugins;
 
 	/* Clear the previous list. */
 
@@ -127,9 +143,9 @@ void gdPluginList::rebuild()
 
 	int i  = 0;
 	int py = 0;
-	for (const m::Plugin* plugin : stack.plugins) {
+	for (const std::unique_ptr<m::Plugin>& plugin : stack) {
 		py = (list->y() - list->yposition()) + (i * 24);
-		list->add(new gePluginElement(*this, *plugin, list->x(), py, 800));
+		list->add(new gePluginElement(*plugin, m_stackInfo, list->x(), py, 800));
 		i++;
 	}
 
@@ -160,34 +176,10 @@ void gdPluginList::cb_addPlugin()
 	int wy = m::conf::pluginChooserY;
 	int ww = m::conf::pluginChooserW;
 	int wh = m::conf::pluginChooserH;
-	u::gui::openSubWindow(G_MainWin, new v::gdPluginChooser(wx, wy, ww, wh, stackType, chanIndex), 
-		WID_FX_CHOOSER);
+	u::gui::openSubWindow(G_MainWin, new v::gdPluginChooser(wx, wy, ww, wh, 
+		m_stackInfo), WID_FX_CHOOSER);
 }
 
-
-/* -------------------------------------------------------------------------- */
-
-#if 0
-void gdPluginList::refreshList()
-{
-
-
-/*THESE THINGS MUST BE PERFORMED BY EACH COMPONENT IN THEIR REFRESH() METHODS */
-/* 
-	if (stack.type == pluginHost::StackType::MASTER_OUT) {
-		G_MainWin->mainIO->setMasterFxOutFull(stack.plugins.size() > 0);
-	}
-	else
-	if (stack.type == pluginHost::StackType::MASTER_IN) {
-		G_MainWin->mainIO->setMasterFxInFull(stack.plugins.size() > 0);
-	}
-	else {
-		ch->guiChannel->fx->status = stack.plugins.size();
-		ch->guiChannel->fx->redraw();
-	}
-*/
-}
-#endif
 }} // giada::v::
 
 

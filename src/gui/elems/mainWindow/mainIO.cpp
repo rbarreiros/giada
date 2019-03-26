@@ -120,15 +120,15 @@ void geMainIO::cb_inVol()
 
 void geMainIO::cb_masterFxOut()
 {
-	m::pluginHost::Stack stack = m::pluginHost::getStack(m::pluginHost::StackType::MASTER_OUT);
-	u::gui::openSubWindow(G_MainWin, new gdPluginList(stack.type, stack.chanIndex), WID_FX_LIST);
+//	m::pluginHost::Stack stack = m::pluginHost::getStack(m::pluginHost::StackType::MASTER_OUT);
+//	u::gui::openSubWindow(G_MainWin, new gdPluginList(stack.type, stack.chanIndex), WID_FX_LIST);
 }
 
 
 void geMainIO::cb_masterFxIn()
 {
-	m::pluginHost::Stack stack = m::pluginHost::getStack(m::pluginHost::StackType::MASTER_IN);
-	u::gui::openSubWindow(G_MainWin, new gdPluginList(stack.type, stack.chanIndex), WID_FX_LIST);
+//	m::pluginHost::Stack stack = m::pluginHost::getStack(m::pluginHost::StackType::MASTER_IN);
+//	u::gui::openSubWindow(G_MainWin, new gdPluginList(stack.type, stack.chanIndex), WID_FX_LIST);
 }
 
 

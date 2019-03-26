@@ -47,7 +47,8 @@ class gePluginElement : public Fl_Group
 {
 public:
 
-	gePluginElement(gdPluginList& gdp, const m::Plugin& p, int x, int y, int w);
+	gePluginElement(const m::Plugin& p, m::pluginHost::StackInfo info, int x, 
+		int y, int w);
 
 	geButton* button;
 	geChoice* program;
@@ -71,9 +72,8 @@ private:
 	void cb_shiftDown();
 	void cb_setProgram();
 
-	gdPluginList& m_parentWin;
-
 	const m::Plugin& m_plugin;
+	m::pluginHost::StackInfo m_stackInfo;
 };
 }} // giada::v::
 

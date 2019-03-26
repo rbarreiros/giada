@@ -71,6 +71,8 @@ void setFavicon(Fl_Window* w);
 
 void openSubWindow(gdWindow* parent, gdWindow* child, int id);
 
+// TODO closeSubWindow(...)
+
 /* refreshActionEditor
 Reloads the action editor window by closing and reopening it. It's used when you
 delete some actions from the mainWindow and the action editor window is open. */

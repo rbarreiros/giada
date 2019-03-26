@@ -141,8 +141,8 @@ void updateControls()
 
 #ifdef WITH_VST
 
-	G_MainWin->mainIO->setMasterFxOutFull(pluginHost::getStack(pluginHost::StackType::MASTER_OUT).plugins.size() > 0);
-	G_MainWin->mainIO->setMasterFxInFull(pluginHost::getStack(pluginHost::StackType::MASTER_IN).plugins.size() > 0);
+//	G_MainWin->mainIO->setMasterFxOutFull(pluginHost::getStack(pluginHost::StackType::MASTER_OUT).plugins.size() > 0);
+//	G_MainWin->mainIO->setMasterFxInFull(pluginHost::getStack(pluginHost::StackType::MASTER_IN).plugins.size() > 0);
 	
 #endif
 

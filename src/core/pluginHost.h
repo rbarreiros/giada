@@ -46,19 +46,18 @@ class AudioBuffer;
 
 namespace pluginHost
 {
-enum class StackType { MASTER_OUT, MASTER_IN, CHANNEL };
+using Stack = std::vector<std::unique_ptr<Plugin>>;
 
-
-/* Stack
-A list of plug-ins with their source (master in, master out or channel). */
-
-struct Stack
-{
-    std::vector<const Plugin*> plugins;
-    StackType type;
-    size_t chanIndex;
+enum class StackType 
+{ 
+	MASTER_OUT, MASTER_IN, CHANNEL 
 };
 
+struct StackInfo
+{
+	StackType type;
+	size_t    chanIndex;
+};
 
 void init(int buffersize);
 void close();
@@ -66,51 +65,35 @@ void close();
 /* addPlugin
 Adds a new plugin to stack 't'. */
 
-void addPlugin(std::unique_ptr<Plugin> p, StackType t, size_t chanIndex=0);
-
-/* countPlugins
-Returns the size of stack 't'. */
-
-int countPlugins(StackType t, size_t chanIndex=0);
+void addPlugin(std::unique_ptr<Plugin> p, StackInfo info);
 
 /* freeStack
 Frees plugin stack of type 't'. */
 
-void freeStack(StackType t, size_t chanIndex=0);
+void freeStack(StackInfo info);
 
 /* processStack
 Applies the fx list to the buffer. */
 
-void processAudioStack(AudioBuffer& outBuf, 
-    const std::vector<std::unique_ptr<Plugin>>& stack);
-void processMidiStack(AudioBuffer& outBuf, 
-    const std::vector<std::unique_ptr<Plugin>>& stack, juce::MidiBuffer& events);
-
-/* getStack
-Returns a vector of Plugin pointers given the stackType. If stackType == CHANNEL
-chanIndex is also required. */
-
-Stack getStack(StackType t, size_t chanIndex=0);
+void processAudioStack(AudioBuffer& outBuf, const Stack& stack);
+void processMidiStack(AudioBuffer& outBuf, const Stack& stack, 
+    juce::MidiBuffer& events);
 
 /* getPluginByIndex */
 
-Plugin* getPluginByIndex(size_t pluginIndex, StackType t, size_t channelIndex=0);
+const Plugin* getPluginByIndex(size_t pluginIndex, StackInfo info);
 
 /* swapPlugin */
 
-void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType t, 
-    size_t chanIndex=0);
+void swapPlugin(size_t index1, size_t index2, StackInfo info);
 
 /* freePlugin.
 Returns the internal stack index of the deleted plugin. */
 
-void freePlugin(size_t pluginIndex, StackType stack, size_t chanIndex=0);
+void freePlugin(size_t pluginIndex, StackInfo info);
 
-void setPluginParameter(size_t pluginIndex, int paramIndex, float value, StackType stack, 
-    size_t chanIndex=0);
-
-void setPluginProgram(size_t pluginIndex, int programIndex, StackType stack, 
-    size_t chanIndex=0); 
+void setPluginParameter(size_t pluginIndex, int paramIndex, float value, StackInfo info);
+void setPluginProgram(size_t pluginIndex, int programIndex, StackInfo info); 
 
 /* runDispatchLoop
 Wakes up plugins' GUI manager for N milliseconds. */
@@ -122,7 +105,7 @@ Frees everything. */
 
 void freeAllStacks();
 
-void forEachPlugin(StackType t, size_t chanIndex, std::function<void(const Plugin* p)> f);
+void forEachPlugin(StackInfo info, std::function<void(const Plugin* p)> f);
 
 }}}; // giada::m::pluginHost::
 

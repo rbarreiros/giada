@@ -47,13 +47,10 @@ class gdPluginList : public gdWindow
 {
 public:
 
-	gdPluginList(m::pluginHost::StackType stackType, size_t chanIndex);
+	gdPluginList(m::pluginHost::StackInfo stackInfo);
 	~gdPluginList();
 
 	void rebuild() override;
-
-	m::pluginHost::StackType stackType;
-	size_t chanIndex;
 
 private:
 
@@ -62,6 +59,8 @@ private:
 
 	geButton*  addPlugin;
 	Fl_Scroll* list;	
+
+    m::pluginHost::StackInfo m_stackInfo;
 };
 
 }} // giada::v::

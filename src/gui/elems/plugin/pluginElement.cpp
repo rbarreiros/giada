@@ -52,10 +52,10 @@ extern gdMainWindow* G_MainWin;
 namespace giada {
 namespace v
 {
-gePluginElement::gePluginElement(gdPluginList& parent, const m::Plugin& p, int X, int Y, int W)
+gePluginElement::gePluginElement(const m::Plugin& p, m::pluginHost::StackInfo info, int X, int Y, int W)
 : Fl_Group   (X, Y, W, 20), 
-  m_parentWin(parent), 
-  m_plugin   (p)
+  m_plugin   (p),
+  m_stackInfo(info)
 {
 	begin();
 	button    = new geButton(8, y(), 220, 20);
@@ -107,8 +107,8 @@ void gePluginElement::cb_setProgram      (Fl_Widget* v, void* p) { ((gePluginEle
 
 void gePluginElement::cb_shiftUp()
 {
-	c::plugin::swapPlugins(m_plugin.index, m_plugin.index - 1, m_parentWin.stackType,
-		m_parentWin.chanIndex);
+	//c::plugin::swapPlugins(m_plugin.index, m_plugin.index - 1, m_parentWin.stackType,
+	//	m_parentWin.chanIndex);
 }
 
 
@@ -117,8 +117,8 @@ void gePluginElement::cb_shiftUp()
 
 void gePluginElement::cb_shiftDown()
 {
-	c::plugin::swapPlugins(m_plugin.index, m_plugin.index + 1, m_parentWin.stackType,
-		m_parentWin.chanIndex);
+	//c::plugin::swapPlugins(m_plugin.index, m_plugin.index + 1, m_parentWin.stackType,
+	//	m_parentWin.chanIndex);
 }
 
 
@@ -129,10 +129,10 @@ void gePluginElement::cb_removePlugin()
 {
 	/* Any subwindow linked to the plugin must be destroyed first. The 
 	pluginWindow has id = id_plugin + 1, because id=0 is reserved for the parent 
-	window 'add plugin' (i.e. this).*/
+	window 'add plugin'.*/
 	
-	m_parentWin.delSubWindow(m_plugin.getId() + 1);
-	c::plugin::freePlugin(m_plugin.index, m_parentWin.stackType, m_parentWin.chanIndex);
+	// TODO - u::gui::closeSubWindow(...) m_parentWin.delSubWindow(m_plugin.getId() + 1);
+	c::plugin::freePlugin(m_plugin.index, m_stackInfo);
 }
 
 
@@ -142,8 +142,9 @@ void gePluginElement::cb_removePlugin()
 void gePluginElement::cb_openPluginWindow()
 {
 	/* The new pluginWindow has id = id_plugin + 1, because id=0 is reserved for 
-	the parent window 'add plugin' (i.e. this). */
+	the parent window 'add plugin'. */
 
+/*
 	int pwid = m_plugin.getId() + 1;
 	
 	gdWindow* w;
@@ -164,7 +165,7 @@ void gePluginElement::cb_openPluginWindow()
 	if (m_parentWin.hasWindow(pwid))
 		m_parentWin.delSubWindow(pwid);
 	w->setId(pwid);
-	m_parentWin.addSubWindow(w);
+	m_parentWin.addSubWindow(w);*/
 }
 
 
@@ -184,8 +185,8 @@ void gePluginElement::cb_setBypass()
 
 void gePluginElement::cb_setProgram()
 {
-	c::plugin::setProgram(m_plugin.index, program->value(), m_parentWin.stackType,
-		m_parentWin.chanIndex);
+	//c::plugin::setProgram(m_plugin.index, program->value(), m_parentWin.stackType,
+	//	m_parentWin.chanIndex);
 }
 }} // giada::v::
 

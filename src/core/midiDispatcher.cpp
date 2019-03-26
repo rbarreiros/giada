@@ -75,6 +75,7 @@ void processPlugins_(Channel* ch, const MidiEvent& midiEvent)
 	indexes match both the structure of Channel::midiInPlugins and 
 	vector<Plugin*>* plugins. */
 
+#if 0
 	pluginHost::Stack stack = pluginHost::getStack(pluginHost::StackType::CHANNEL, ch->index);
 
 	for (const Plugin* plugin : stack.plugins) {
@@ -88,6 +89,7 @@ void processPlugins_(Channel* ch, const MidiEvent& midiEvent)
 				plugin->getId(), k, ch->index, pure, midiEvent.getVelocity(), vf);
 		}
 	}
+#endif
 }
 
 #endif

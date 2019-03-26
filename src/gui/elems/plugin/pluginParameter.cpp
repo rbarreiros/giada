@@ -78,8 +78,8 @@ void gePluginParameter::cb_setValue(Fl_Widget* v, void* p)  { ((gePluginParamete
 
 void gePluginParameter::cb_setValue()
 {
-	c::plugin::setParameter(m_plugin.index, m_paramIndex, m_slider->value(), 
-		m_plugin.stackType, m_plugin.chanIndex, /*gui=*/true);
+	//c::plugin::setParameter(m_plugin.index, m_paramIndex, m_slider->value(), 
+	//	m_plugin.stackType, m_plugin.chanIndex, /*gui=*/true);
 }
 
 

@@ -47,18 +47,16 @@ class Channel;
 namespace c {
 namespace plugin 
 {
-void addPlugin(int pluginIndex, m::pluginHost::StackType stack, size_t chanIndex);
+void addPlugin(int pluginIndex, m::pluginHost::StackInfo info);
 
-void swapPlugins(size_t pluginIndex1, size_t pluginIndex2, m::pluginHost::StackType t,
-    size_t chanIndex);
+void swapPlugins(size_t index1, size_t index2, m::pluginHost::StackInfo info);
 
-void freePlugin(size_t pluginIndex, m::pluginHost::StackType stack, size_t chanIndex);
+void freePlugin(size_t pluginIndex, m::pluginHost::StackInfo info);
 
 void setParameter(size_t pluginIndex, int paramIndex, float value, 
-    m::pluginHost::StackType stack, size_t chanIndex, bool gui=true); 
+    m::pluginHost::StackInfo info, bool gui=true); 
 
-void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackType stack, 
-    size_t chanIndex);
+void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackInfo info);
 
 /* setPluginPathCb
 Callback attached to the DirBrowser for adding new Plug-in search paths in the

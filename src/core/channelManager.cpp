@@ -53,7 +53,7 @@ void writePlugins_(const Channel* ch, patch::channel_t& pch)
 {
 #ifdef WITH_VST
 
-	pluginHost::forEachPlugin(pluginHost::StackType::CHANNEL, ch->index, [&] (const Plugin* p) {
+	pluginHost::forEachPlugin({pluginHost::StackType::CHANNEL, ch->index}, [&] (const Plugin* p) {
 		patch::plugin_t pp;
 		pp.path   = p->getUniqueId();
 		pp.bypass = p->isBypassed();
@@ -105,7 +105,7 @@ void readPlugins_(Channel* ch, const patch::channel_t& pch)
 				plugin->midiInParams.push_back(midiInParam);
 		}
 
-		pluginHost::addPlugin(std::move(plugin), pluginHost::StackType::CHANNEL, ch->index);
+		pluginHost::addPlugin(std::move(plugin), {pluginHost::StackType::CHANNEL, ch->index});
 	}
 
 #endif

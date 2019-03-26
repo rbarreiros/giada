@@ -183,6 +183,8 @@ void gdMidiInputChannel::addChannelLearners()
 
 void gdMidiInputChannel::addPluginLearners()
 {
+	assert(false);
+#if 0
 	m::pluginHost::Stack stack = pluginHost::getStack(pluginHost::StackType::CHANNEL, ch->index);
 
 	int i = 0;
@@ -204,6 +206,7 @@ void gdMidiInputChannel::addPluginLearners()
 
 		i++;
 	}
+#endif
 }
 
 #endif

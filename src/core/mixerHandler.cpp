@@ -76,7 +76,7 @@ int readPatchPlugins_(const std::vector<patch::plugin_t>& list, pluginHost::Stac
 			p->setBypass(ppl.bypass);
 			for (unsigned j=0; j<ppl.params.size(); j++)
 				p->setParameter(j, ppl.params.at(j));
-			pluginHost::addPlugin(std::move(p), t, 0);
+			pluginHost::addPlugin(std::move(p), {t, 0});
 			ret &= 1;
 		}
 		else
@@ -85,29 +85,6 @@ int readPatchPlugins_(const std::vector<patch::plugin_t>& list, pluginHost::Stac
 	return ret;
 }
 
-#endif
-
-
-/* -------------------------------------------------------------------------- */
-
-#if 0
-int getNewChanIndex()
-{
-	/* Always skip last channel: it's the last one just added. */
-
-	const std::vector<Channel*>& channels = model::get()->channels;
-	
-	if (channels.size() == 1)
-		return 0;
-
-	int index = 0;
-	for (unsigned i=0; i<channels.size()-1; i++) {
-		if (channels.at(i)->index > index)
-			index = channels.at(i)->index;
-		}
-	index += 1;
-	return index;
-}
 #endif
 
 }; // {anonymous}

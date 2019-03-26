@@ -78,8 +78,7 @@ void juceToGiadaOutBuf_(AudioBuffer& outBuf)
 /* -------------------------------------------------------------------------- */
 
 
-void processPlugins_(const std::vector<std::unique_ptr<Plugin>>& stack, 
-	juce::MidiBuffer& events)
+void processPlugins_(const Stack& stack, juce::MidiBuffer& events)
 {
 	for (const std::unique_ptr<Plugin>& p : stack) {
 		if (p->isSuspended() || p->isBypassed())
@@ -92,24 +91,32 @@ void processPlugins_(const std::vector<std::unique_ptr<Plugin>>& stack,
 
 /* -------------------------------------------------------------------------- */
 
-/* getStack_
-Returns a vector of unique_ptr's given the stackType. If stackType == CHANNEL
-a channel index is also required. */
 
-std::vector<std::unique_ptr<Plugin>>& getStack_(std::shared_ptr<model::Data> data, 
-	StackType stack, size_t chanIndex=0)
+/* getStack_ (1)
+Returns the proper stack given the stack information. */
+
+const Stack& getStack_(const std::shared_ptr<model::Data>& data, StackInfo info)
 {
-	switch(stack) {
+	switch(info.type) {
 		case StackType::MASTER_OUT:
 			return data->masterOutPlugins; break;
 		case StackType::MASTER_IN:
 			return data->masterInPlugins; break;
 		case StackType::CHANNEL:
-			assert(chanIndex < data->channels.size());
-			return data->channels[chanIndex]->plugins; break;
+			assert(info.chanIndex < data->channels.size());
+			return data->channels[info.chanIndex]->plugins; break;
 		default:
 			assert(false);
 	}
+}
+
+
+/* getStack_ (1)
+Same as above, for non-const data.  */
+
+Stack& getStack_(std::shared_ptr<model::Data>& data, StackInfo info)
+{
+	return const_cast<Stack&>(getStack_(data, info));
 }
 
 }; // {anonymous}
@@ -139,13 +146,12 @@ void init(int buffersize)
 /* -------------------------------------------------------------------------- */
 
 
-void addPlugin(std::unique_ptr<Plugin> p, StackType type, size_t chanIndex)
+void addPlugin(std::unique_ptr<Plugin> p, StackInfo info)
 {
 	std::shared_ptr<model::Data> data = model::clone();
 
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(data, type, chanIndex);
-	p->index     = stack.size();
-	p->stackType = type;
+	Stack& stack = getStack_(data, info);
+	p->index = stack.size();
 	stack.push_back(std::move(p));
 
 	model::swap(data);	
@@ -155,37 +161,11 @@ void addPlugin(std::unique_ptr<Plugin> p, StackType type, size_t chanIndex)
 /* -------------------------------------------------------------------------- */
 
 
-Stack getStack(StackType type, size_t chanIndex)
-{
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(model::get(), type, chanIndex);
-
-	Stack out;
-	out.type = type;
-	out.chanIndex = chanIndex;
-	for (const std::unique_ptr<Plugin>& p : stack)
-		out.plugins.push_back(p.get());
-
-	return out;
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-int countPlugins(StackType type, size_t chanIndex)
-{
-	return getStack_(model::get(), type, chanIndex).size();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void freeStack(StackType type, size_t chanIndex)
+void freeStack(StackInfo info)
 {
 	std::shared_ptr<model::Data> data = model::clone();
 	
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(data, type, chanIndex);
+	Stack& stack = getStack_(data, info);
 	stack.clear();
 	
 	model::swap(data);
@@ -195,7 +175,7 @@ void freeStack(StackType type, size_t chanIndex)
 /* -------------------------------------------------------------------------- */
 
 
-void processAudioStack(AudioBuffer& outBuf, const std::vector<std::unique_ptr<Plugin>>& stack)
+void processAudioStack(AudioBuffer& outBuf, const Stack& stack)
 {
 	if (stack.size() == 0)
 		return;	
@@ -209,8 +189,7 @@ void processAudioStack(AudioBuffer& outBuf, const std::vector<std::unique_ptr<Pl
 }
 
 
-void processMidiStack(AudioBuffer& outBuf, const std::vector<std::unique_ptr<Plugin>>& stack,
-	juce::MidiBuffer& events)
+void processMidiStack(AudioBuffer& outBuf, const Stack& stack, juce::MidiBuffer& events)
 {
 	if (stack.size() == 0)
 		return;	
@@ -234,31 +213,30 @@ void processMidiStack(AudioBuffer& outBuf, const std::vector<std::unique_ptr<Plu
 /* -------------------------------------------------------------------------- */
 
 
-Plugin* getPluginByIndex(size_t pluginIndex, StackType stack, size_t chanIndex)
+const Plugin* getPluginByIndex(size_t pluginIndex, StackInfo info)
 {
-	return getStack_(model::get(), stack, chanIndex)[pluginIndex].get();
+	return getStack_(model::get(), info)[pluginIndex].get();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType type, 
-    size_t chanIndex)
+void swapPlugin(size_t index1, size_t index2, StackInfo info)
 {
-	size_t stackSize = getStack_(model::get(), type, chanIndex).size();
+	size_t size = getStack_(model::get(), info).size();
 
 	/* Nothing to do if there's only one plugin or on edges. */
 	
-	if (stackSize == 1 || pluginIndex2 < 0 || pluginIndex2 >= stackSize)
+	if (size == 1 || index2 < 0 || index2 >= size)
 		return;
 
 	std::shared_ptr<model::Data> data = model::clone();
-	
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(data, type, chanIndex);
-	std::swap(stack.at(pluginIndex1), stack.at(pluginIndex2));
-	stack.at(pluginIndex1)->index = pluginIndex2;
-	stack.at(pluginIndex2)->index = pluginIndex1;
+
+	Stack& stack = getStack_(data, info);
+	std::swap(stack.at(index1), stack.at(index2));
+	stack.at(index1)->index = index2;
+	stack.at(index2)->index = index1;
 	
 	model::swap(data);
 }
@@ -267,11 +245,11 @@ void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType type,
 /* -------------------------------------------------------------------------- */
 
 
-void freePlugin(size_t pluginIndex, StackType type, size_t chanIndex)
+void freePlugin(size_t pluginIndex, StackInfo info)
 {
 	std::shared_ptr<model::Data> data = model::clone();
 	
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(data, type, chanIndex);
+	Stack& stack = getStack_(data, info);
 	stack.erase(stack.begin() + pluginIndex); 
 	
 	model::swap(data);
@@ -281,20 +259,18 @@ void freePlugin(size_t pluginIndex, StackType type, size_t chanIndex)
 /* -------------------------------------------------------------------------- */
 
 
-void setPluginParameter(size_t pluginIndex, int paramIndex, float value, StackType type, 
-    size_t chanIndex)
+void setPluginParameter(size_t pluginIndex, int paramIndex, float value, StackInfo info)
 {
-	getStack_(model::get(), type, chanIndex)[pluginIndex]->setParameter(paramIndex, value);
+	getStack_(model::get(), info)[pluginIndex]->setParameter(paramIndex, value);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void setPluginProgram(size_t pluginIndex, int programIndex, StackType type, 
-    size_t chanIndex)
+void setPluginProgram(size_t pluginIndex, int programIndex, StackInfo info)
 {
-	getStack_(model::get(), type, chanIndex)[pluginIndex]->setCurrentProgram(programIndex);
+	getStack_(model::get(), info)[pluginIndex]->setCurrentProgram(programIndex);
 }
 
 
@@ -312,19 +288,23 @@ void runDispatchLoop()
 
 void freeAllStacks()
 {
-	freeStack(StackType::MASTER_OUT, 0);
-	freeStack(StackType::MASTER_IN, 0);
-	for (const std::unique_ptr<Channel>& c : model::get()->channels)
-		freeStack(StackType::CHANNEL, c->index);
+	std::shared_ptr<model::Data> data = model::clone();
+
+	getStack_(data, {StackType::MASTER_OUT, 0}).clear();
+	getStack_(data, {StackType::MASTER_IN, 0}).clear();
+	for (const std::unique_ptr<Channel>& c : data->channels)
+		getStack_(data, {StackType::CHANNEL, c->index}).clear();
+
+	model::swap(data);
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void forEachPlugin(StackType type, size_t chanIndex, std::function<void(const Plugin* p)> f)
+void forEachPlugin(StackInfo info, std::function<void(const Plugin* p)> f)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(model::get(), type, chanIndex);
+	const Stack& stack = getStack_(model::get(), info);
 	for (const std::unique_ptr<Plugin>& p : stack)
 		f(p.get());
 }

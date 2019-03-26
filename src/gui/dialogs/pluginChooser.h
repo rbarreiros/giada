@@ -49,8 +49,7 @@ class gdPluginChooser : public gdWindow
 {
 public:
 
-	gdPluginChooser(int x, int y, int w, int h, m::pluginHost::StackType stackType, 
-		size_t chanIndex);
+	gdPluginChooser(int x, int y, int w, int h, m::pluginHost::StackInfo info);
 
 	~gdPluginChooser();
 
@@ -68,8 +67,7 @@ private:
 	geButton*        cancelBtn;
 	gePluginBrowser* browser;
 
-	m::pluginHost::StackType stackType;
-	size_t chanIndex;
+	m::pluginHost::StackInfo m_stackInfo;
 };
 }} // giada::v::
 
