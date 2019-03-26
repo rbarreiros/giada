@@ -49,8 +49,7 @@ int Plugin::m_idGenerator = 1;
 
 
 Plugin::Plugin(juce::AudioPluginInstance* plugin, double samplerate, int buffersize)
-: m_ui    (nullptr),
-  m_plugin(plugin),
+: m_plugin(plugin),
   m_id    (m_idGenerator++),
   m_bypass(false)
 {
@@ -85,7 +84,6 @@ Plugin::Plugin(juce::AudioPluginInstance* plugin, double samplerate, int buffers
 
 Plugin::~Plugin()
 {
-	closeEditor();
 	m_plugin->suspendProcessing(true);
 	m_plugin->releaseResources();
 }
@@ -115,24 +113,9 @@ int Plugin::countMainOutChannels() const
 /* -------------------------------------------------------------------------- */
 
 
-void Plugin::showEditor(void* parent)
+juce::AudioProcessorEditor* Plugin::createEditor() const
 {
-	m_ui = m_plugin->createEditorIfNeeded();
-	if (m_ui == nullptr) {
-		gu_log("[Plugin::showEditor] unable to create editor!\n");
-		return;
-	}
-	m_ui->setOpaque(true);
-	m_ui->addToDesktop(0, parent);
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-bool Plugin::isEditorOpen() const
-{
-	return m_ui != nullptr && m_ui->isVisible() && m_ui->isOnDesktop();
+	return m_plugin->createEditorIfNeeded();
 }
 
 
@@ -211,13 +194,6 @@ void Plugin::setBypass(bool b) { m_bypass = b; }
 
 
 int Plugin::getId() const { return m_id; }
-
-
-/* -------------------------------------------------------------------------- */
-
-
-int Plugin::getEditorW() const { assert(m_ui != nullptr); return m_ui->getWidth(); }
-int Plugin::getEditorH() const { assert(m_ui != nullptr); return m_ui->getHeight(); }
 
 
 /* -------------------------------------------------------------------------- */
@@ -325,16 +301,6 @@ string Plugin::getParameterText(int index) const
 string Plugin::getParameterLabel(int index) const
 {
 	return m_plugin->getParameters()[index]->getLabel().toStdString();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void Plugin::closeEditor()
-{
-	delete m_ui;
-	m_ui = nullptr;
 }
 
 }} // giada::m::

@@ -38,6 +38,10 @@ namespace giada {
 namespace m {
 namespace model
 {
+/* get
+Returns a pointer to the current data. Use this when you want to read the data
+model or modify a specific atomic parameter. */
+  
 const std::shared_ptr<Data> get();
 
 /* clone

@@ -51,18 +51,18 @@ class gdPluginWindow : public gdWindow
 {
 public:
 
-    gdPluginWindow(const m::Plugin& p);
+	gdPluginWindow(const m::Plugin& p, m::pluginHost::StackInfo info);
 
-    void updateParameter(int index, bool changeSlider=false);
-    void updateParameters(bool changeSlider=false);
+	void updateParameter(int index, bool changeSlider=false);
+	void updateParameters(bool changeSlider=false);
 
 private:
 
-	const m::Plugin& m_plugin;
-
-	geLiquidScroll* m_list;
-
 	int getLabelWidth() const;
+
+	const m::Plugin& m_plugin;
+	
+	geLiquidScroll* m_list;
 };
 }} // giada::v::
 

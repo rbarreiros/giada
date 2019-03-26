@@ -40,9 +40,9 @@
 namespace giada {
 namespace v
 {
-gdPluginWindow::gdPluginWindow(const m::Plugin& p)
-: gdWindow(450, 156), 
-  m_plugin(p)
+gdPluginWindow::gdPluginWindow(const m::Plugin& p, m::pluginHost::StackInfo info)
+: gdWindow   (450, 156), 
+  m_plugin   (p)
 {
 	set_non_modal();
 
@@ -56,7 +56,7 @@ gdPluginWindow::gdPluginWindow(const m::Plugin& p)
 		for (int i=0; i<numParams; i++) {
 			int py = m_list->y() + (i * (G_GUI_UNIT + G_GUI_INNER_MARGIN));
 			int pw = m_list->w() - m_list->scrollbar_size() - (G_GUI_OUTER_MARGIN*3);
-			new v::gePluginParameter(i, m_plugin, m_list->x(), py, pw, labelWidth);
+			new v::gePluginParameter(i, m_plugin, info, m_list->x(), py, pw, labelWidth);
 		}
 	m_list->end();
 

@@ -40,13 +40,16 @@
 namespace giada {
 namespace v
 {
-gePluginParameter::gePluginParameter(int paramIndex, const m::Plugin& p, int X, 
-	int Y, int W, int labelWidth)
+gePluginParameter::gePluginParameter(int paramIndex, const m::Plugin& p, 
+	m::pluginHost::StackInfo info, int X, int Y, int W, int labelWidth)
 : Fl_Group    (X, Y, W, G_GUI_UNIT), 
-  m_paramIndex(paramIndex), 
-  m_plugin    (p)
+  m_stackInfo (info),
+  m_plugin    (p),
+  m_paramIndex(paramIndex)
 {
 	begin();
+
+		const int VALUE_WIDTH = 100;
 
 		m_label = new geBox(x(), y(), labelWidth, G_GUI_UNIT);
 		m_label->copy_label(m_plugin.getParameterName(m_paramIndex).c_str());
@@ -78,8 +81,8 @@ void gePluginParameter::cb_setValue(Fl_Widget* v, void* p)  { ((gePluginParamete
 
 void gePluginParameter::cb_setValue()
 {
-	//c::plugin::setParameter(m_plugin.index, m_paramIndex, m_slider->value(), 
-	//	m_plugin.stackType, m_plugin.chanIndex, /*gui=*/true);
+	c::plugin::setParameter(m_plugin.index, m_paramIndex, m_slider->value(), 
+		m_stackInfo, /*gui=*/true);
 }
 
 

@@ -93,7 +93,7 @@ Channel::Channel(const Channel& o)
   status         (o.status),
   recStatus      (o.recStatus),
   column         (o.column),
-  index          (o.index + 1),
+  index          (o.index),
   previewMode    (o.previewMode),
   pan            (o.pan.load()),
   volume         (o.volume.load()),

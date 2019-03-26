@@ -46,24 +46,23 @@ class gePluginParameter : public Fl_Group
 {
 public:
 
-	gePluginParameter(int paramIndex, const m::Plugin& p, int x, int y, int w, 
-		int labelWidth);
+	gePluginParameter(int paramIndex, const m::Plugin& p, 
+		m::pluginHost::StackInfo info, int x, int y, int w, int labelWidth);
 
 	void update(bool changeSlider);
 
 private:
 
-	static const int VALUE_WIDTH = 100;
+	static void cb_setValue(Fl_Widget* v, void* p);
+	void cb_setValue();
 
-	int m_paramIndex;
+	m::pluginHost::StackInfo m_stackInfo;
 	const m::Plugin& m_plugin;
+	int m_paramIndex;
 
 	geBox*    m_label;
 	geSlider* m_slider;
 	geBox*    m_value;
-
-	static void cb_setValue(Fl_Widget* v, void* p);
-	void cb_setValue();
 };
 }} // giada::v::
 

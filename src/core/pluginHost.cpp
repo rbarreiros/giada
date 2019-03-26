@@ -30,7 +30,6 @@
 
 #include <cassert>
 #include "utils/log.h"
-#include "utils/vector.h"
 #include "core/model/model.h"
 #include "core/model/data.h"
 #include "const.h"
@@ -47,9 +46,6 @@ namespace
 {
 juce::MessageManager* messageManager_;
 juce::AudioBuffer<float> audioBuffer_;
-
-std::vector<std::unique_ptr<Plugin>> masterOut_;
-std::vector<std::unique_ptr<Plugin>> masterIn_;
 
 
 /* -------------------------------------------------------------------------- */
@@ -112,11 +108,12 @@ const Stack& getStack_(const std::shared_ptr<model::Data>& data, StackInfo info)
 
 
 /* getStack_ (1)
-Same as above, for non-const data.  */
+Same as above, for non-const data. It's ugly, but if you omit the const_cast on 
+'data' the function would call itself in an infinite recursion. */
 
 Stack& getStack_(std::shared_ptr<model::Data>& data, StackInfo info)
 {
-	return const_cast<Stack&>(getStack_(data, info));
+	return const_cast<Stack&>(getStack_(const_cast<const std::shared_ptr<model::Data>&>(data), info));
 }
 
 }; // {anonymous}

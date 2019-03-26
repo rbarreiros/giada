@@ -77,7 +77,7 @@ gdPluginList::gdPluginList(m::pluginHost::StackInfo stackInfo)
 	end();
 	set_non_modal();
 
-	/* TODO - awful stuff... we should subclass into gdPluginListChannel and
+	/* TODO - awful stuff... please subclass into gdPluginListChannel and
 	gdPluginListMaster */
 
 	if (m_stackInfo.type == m::pluginHost::StackType::MASTER_OUT)
@@ -116,22 +116,21 @@ void gdPluginList::cb_addPlugin(Fl_Widget* v, void* p) { ((gdPluginList*)p)->cb_
 
 void gdPluginList::rebuild()
 {
-	/* TODO - awful stuff... we should subclass into gdPluginListChannel and
+	/* TODO - awful stuff... please subclass into gdPluginListChannel and
 	gdPluginListMasterIn and gdPluginListMasterOut */
 
-#if 0
-	switch(m_stackData.info.type) {
+	const m::pluginHost::Stack* stack;
+
+	switch(m_stackInfo.type) {
 		case m::pluginHost::StackType::MASTER_OUT:
-			/*m_stackData.stack = m::model::get()->masterOutPlugins;*/ break;
+			stack = &m::model::get()->masterOutPlugins; break;
 		case m::pluginHost::StackType::MASTER_IN:
-			/*m_stackData.stack = m::model::get()->masterInPlugins;*/ break;
+			stack = &m::model::get()->masterInPlugins; break;
 		case m::pluginHost::StackType::CHANNEL:
-			m_stackData.stack = m::model::get()->channels[m_stackData.info.chanIndex]->plugins; break;
+			stack = &m::model::get()->channels[m_stackInfo.chanIndex]->plugins; break;
 		default:
 			assert(false);
 	}
-#endif
-	const m::pluginHost::Stack& stack = m::model::get()->channels[m_stackInfo.chanIndex]->plugins;
 
 	/* Clear the previous list. */
 
@@ -143,7 +142,7 @@ void gdPluginList::rebuild()
 
 	int i  = 0;
 	int py = 0;
-	for (const std::unique_ptr<m::Plugin>& plugin : stack) {
+	for (const std::unique_ptr<m::Plugin>& plugin : *stack) {
 		py = (list->y() - list->yposition()) + (i * 24);
 		list->add(new gePluginElement(*plugin, m_stackInfo, list->x(), py, 800));
 		i++;

@@ -144,6 +144,7 @@ int loadChannel(size_t chanIndex, const std::string& fname)
 	}
 
 	std::shared_ptr<model::Data> data = model::clone();
+	assert(chanIndex < data->channels.size());
 	static_cast<SampleChannel*>(data->channels[chanIndex].get())->pushWave(std::move(res.wave));
 	model::swap(data);
 

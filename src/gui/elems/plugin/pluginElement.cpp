@@ -107,8 +107,7 @@ void gePluginElement::cb_setProgram      (Fl_Widget* v, void* p) { ((gePluginEle
 
 void gePluginElement::cb_shiftUp()
 {
-	//c::plugin::swapPlugins(m_plugin.index, m_plugin.index - 1, m_parentWin.stackType,
-	//	m_parentWin.chanIndex);
+	c::plugin::swapPlugins(m_plugin.index, m_plugin.index - 1, m_stackInfo);
 }
 
 
@@ -117,8 +116,7 @@ void gePluginElement::cb_shiftUp()
 
 void gePluginElement::cb_shiftDown()
 {
-	//c::plugin::swapPlugins(m_plugin.index, m_plugin.index + 1, m_parentWin.stackType,
-	//	m_parentWin.chanIndex);
+	c::plugin::swapPlugins(m_plugin.index, m_plugin.index + 1, m_stackInfo);
 }
 
 
@@ -131,7 +129,7 @@ void gePluginElement::cb_removePlugin()
 	pluginWindow has id = id_plugin + 1, because id=0 is reserved for the parent 
 	window 'add plugin'.*/
 	
-	// TODO - u::gui::closeSubWindow(...) m_parentWin.delSubWindow(m_plugin.getId() + 1);
+	static_cast<gdWindow*>(window())->delSubWindow(m_plugin.getId() + 1);
 	c::plugin::freePlugin(m_plugin.index, m_stackInfo);
 }
 
@@ -144,28 +142,22 @@ void gePluginElement::cb_openPluginWindow()
 	/* The new pluginWindow has id = id_plugin + 1, because id=0 is reserved for 
 	the parent window 'add plugin'. */
 
-/*
 	int pwid = m_plugin.getId() + 1;
-	
-	gdWindow* w;
-	if (m_plugin.hasEditor()) {
-		if (m_plugin.isEditorOpen()) {
-			gu_log("[gePluginElement::cb_openPluginWindow] Plug-in has editor but it's already visible\n");
-			m_parentWin.getChild(pwid)->show();  // Raise it to top
-			return;
-		}
-		gu_log("[gePluginElement::cb_openPluginWindow] Plug-in has editor, window id=%d\n", pwid);
-		w = new gdPluginWindowGUI(const_cast<m::Plugin*>(&m_plugin)); // TODO!!!!
+
+	gdWindow* parent = static_cast<gdWindow*>(window());
+	gdWindow* child  = parent->getChild(pwid);
+
+	if (child != nullptr) {
+		child->show();  // Raise it to top
 	}
 	else {
-		w = new v::gdPluginWindow(m_plugin);
-		gu_log("[gePluginElement::cb_openPluginWindow] Plug-in has no editor, window id=%d\n", pwid);
+		if (m_plugin.hasEditor())
+			child = new gdPluginWindowGUI(m_plugin);
+		else 
+			child = new gdPluginWindow(m_plugin, m_stackInfo);
+		child->setId(pwid);
+		parent->addSubWindow(child);
 	}
-	
-	if (m_parentWin.hasWindow(pwid))
-		m_parentWin.delSubWindow(pwid);
-	w->setId(pwid);
-	m_parentWin.addSubWindow(w);*/
 }
 
 
@@ -185,8 +177,7 @@ void gePluginElement::cb_setBypass()
 
 void gePluginElement::cb_setProgram()
 {
-	//c::plugin::setProgram(m_plugin.index, program->value(), m_parentWin.stackType,
-	//	m_parentWin.chanIndex);
+	c::plugin::setProgram(m_plugin.index, program->value(), m_stackInfo);
 }
 }} // giada::v::
 

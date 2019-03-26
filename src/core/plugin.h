@@ -52,7 +52,6 @@ public:
 	std::string getUniqueId() const;
 
 	std::string getName() const;
-	bool isEditorOpen() const;
 	bool hasEditor() const;
 	int getNumParameters() const;
 	float getParameter(int index) const;
@@ -65,11 +64,11 @@ public:
 	int getCurrentProgram() const;
 	std::string getProgramName(int index) const;
 	int getId() const;
-	int getEditorW() const;
-	int getEditorH() const;
 	void setParameter(int index, float value) const;
 	void setCurrentProgram(int index) const;
 	bool acceptsMidi() const;
+
+	juce::AudioProcessorEditor* createEditor() const;
 
 	/* process
 	Process the plug-in with audio and MIDI data. The audio buffer is a reference:
@@ -79,13 +78,6 @@ public:
 	copy. */
 
 	void process(juce::AudioBuffer<float>& b, juce::MidiBuffer m);
-
-	void showEditor(void* parent);
-
-	/* closeEditor
-	Shuts down plugin GUI. */
-
-	void closeEditor();
 
 	void toggleBypass();
 	void setBypass(bool b);
@@ -112,7 +104,6 @@ private:
 	
 	static int m_idGenerator;
 
-	juce::AudioProcessorEditor* m_ui;     // gui
 	juce::AudioPluginInstance*  m_plugin; // core
 	juce::AudioBuffer<float>    m_buffer;
 

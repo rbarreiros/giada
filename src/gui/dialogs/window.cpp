@@ -25,11 +25,11 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../utils/log.h"
+#include "utils/log.h"
 #include "window.h"
 
 
-void __cb_window_closer(Fl_Widget *v, void *p)
+void __cb_window_closer(Fl_Widget* v, void* p)
 {
   delete (Fl_Window*) p;
 }
@@ -38,7 +38,7 @@ void __cb_window_closer(Fl_Widget *v, void *p)
 /* -------------------------------------------------------------------------- */
 
 
-gdWindow::gdWindow(int x, int y, int w, int h, const char *title, int id)
+gdWindow::gdWindow(int x, int y, int w, int h, const char* title, int id)
 	: Fl_Double_Window(x, y, w, h, title), id(id), parent(nullptr)
 {
 }
@@ -47,7 +47,7 @@ gdWindow::gdWindow(int x, int y, int w, int h, const char *title, int id)
 /* -------------------------------------------------------------------------- */
 
 
-gdWindow::gdWindow(int w, int h, const char *title, int id)
+gdWindow::gdWindow(int w, int h, const char* title, int id)
 	: Fl_Double_Window(w, h, title), id(id), parent(nullptr)
 {
 }
@@ -71,9 +71,9 @@ gdWindow::~gdWindow()
 /* this is the default callback of each window, fired when the user closes
  * the window with the 'x'. Watch out: is the parent that calls delSubWIndow */
 
-void gdWindow::cb_closeChild(Fl_Widget *v, void *p)
+void gdWindow::cb_closeChild(Fl_Widget* v, void* p)
 {
-	gdWindow *child = (gdWindow*) v;
+	gdWindow* child = (gdWindow*) v;
 	if (child->getParent() != nullptr)
 		(child->getParent())->delSubWindow(child);
 }
@@ -82,7 +82,7 @@ void gdWindow::cb_closeChild(Fl_Widget *v, void *p)
 /* -------------------------------------------------------------------------- */
 
 
-void gdWindow::addSubWindow(gdWindow *w)
+void gdWindow::addSubWindow(gdWindow* w)
 {
 	/** TODO - useless: delete ---------------------------------------- */
 	for (unsigned i=0; i<subWindows.size(); i++)
@@ -103,7 +103,7 @@ void gdWindow::addSubWindow(gdWindow *w)
 /* -------------------------------------------------------------------------- */
 
 
-void gdWindow::delSubWindow(gdWindow *w)
+void gdWindow::delSubWindow(gdWindow* w)
 {
 	for (unsigned i=0; i<subWindows.size(); i++)
 		if (w->getId() == subWindows.at(i)->getId()) {
@@ -162,13 +162,13 @@ void gdWindow::debug()
 /* -------------------------------------------------------------------------- */
 
 
-gdWindow *gdWindow::getParent()
+gdWindow* gdWindow::getParent()
 {
 	return parent;
 }
 
 
-void gdWindow::setParent(gdWindow *w)
+void gdWindow::setParent(gdWindow* w)
 {
 	parent = w;
 }
@@ -189,7 +189,7 @@ bool gdWindow::hasWindow(int id)
 /* -------------------------------------------------------------------------- */
 
 
-gdWindow *gdWindow::getChild(int id)
+gdWindow* gdWindow::getChild(int id)
 {
 	for (unsigned i=0; i<subWindows.size(); i++)
 		if (id == subWindows.at(i)->getId())
