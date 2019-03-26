@@ -291,26 +291,4 @@ bool Channel::isReadingActions() const
 	return hasActions && readActions;
 }
 
-
-/* -------------------------------------------------------------------------- */
-
-
-#ifdef WITH_VST
-
-const juce::MidiBuffer& Channel::getPluginMidiEvents() const
-{
-	return midiBuffer;
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void Channel::clearMidiBuffer()
-{
-	midiBuffer.clear();
-}
-
-#endif
-
 }} // giada::m::

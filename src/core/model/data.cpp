@@ -89,8 +89,8 @@ void Data::render(AudioBuffer& out, const AudioBuffer& in, AudioBuffer& inToOut)
 		channel->process(out, in, mixer::isChannelAudible(channel.get()), clock::isRunning());
 
 #ifdef WITH_VST
-	pluginHost::processStack(out,     pluginHost::StackType::MASTER_OUT, 0);
-	pluginHost::processStack(inToOut, pluginHost::StackType::MASTER_IN, 0);
+	pluginHost::processAudioStack(out,     masterOutPlugins);
+	pluginHost::processAudioStack(inToOut, masterInPlugins);
 #endif
 }
 

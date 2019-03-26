@@ -81,7 +81,10 @@ void freeStack(StackType t, size_t chanIndex=0);
 /* processStack
 Applies the fx list to the buffer. */
 
-void processStack(AudioBuffer& outBuf, StackType t, size_t chanIndex=0);
+void processAudioStack(AudioBuffer& outBuf, 
+    const std::vector<std::unique_ptr<Plugin>>& stack);
+void processMidiStack(AudioBuffer& outBuf, 
+    const std::vector<std::unique_ptr<Plugin>>& stack, juce::MidiBuffer& events);
 
 /* getStack
 Returns a vector of Plugin pointers given the stackType. If stackType == CHANNEL

@@ -55,16 +55,38 @@ std::vector<std::unique_ptr<Plugin>> masterIn_;
 /* -------------------------------------------------------------------------- */
 
 
-void processPlugin_(Plugin& p, size_t chanIndex)
+void giadaToJuceTempBuf_(const AudioBuffer& outBuf)
 {
-	if (p.isSuspended() || p.isBypassed())
-		return;
+	for (int i=0; i<outBuf.countFrames(); i++)
+		for (int j=0; j<outBuf.countChannels(); j++)
+			audioBuffer_.setSample(j, i, outBuf[i][j]);
+}
 
-	juce::MidiBuffer events;
-	if (p.stackType == StackType::CHANNEL)
-		events = model::get()->channels[chanIndex]->getPluginMidiEvents();
 
-	p.process(audioBuffer_, events);
+/* juceToGiadaOutBuf_
+Converts buffer from Juce to Giada. A note for the future: if we overwrite (=) 
+(as we do now) it's SEND, if we add (+) it's INSERT. */
+
+void juceToGiadaOutBuf_(AudioBuffer& outBuf)
+{
+	for (int i=0; i<outBuf.countFrames(); i++)
+		for (int j=0; j<outBuf.countChannels(); j++)	
+			outBuf[i][j] = audioBuffer_.getSample(j, i);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void processPlugins_(const std::vector<std::unique_ptr<Plugin>>& stack, 
+	juce::MidiBuffer& events)
+{
+	for (const std::unique_ptr<Plugin>& p : stack) {
+		if (p->isSuspended() || p->isBypassed())
+			continue;
+		const_cast<std::unique_ptr<Plugin>&>(p)->process(audioBuffer_, events);
+		events.clear();
+	}
 }
 
 
@@ -77,8 +99,6 @@ a channel index is also required. */
 std::vector<std::unique_ptr<Plugin>>& getStack_(std::shared_ptr<model::Data> data, 
 	StackType stack, size_t chanIndex=0)
 {
-printf("chanIndex=%ld, data->channels.size=%ld\n", chanIndex, data->channels.size());
-
 	switch(stack) {
 		case StackType::MASTER_OUT:
 			return data->masterOutPlugins; break;
@@ -175,49 +195,39 @@ void freeStack(StackType type, size_t chanIndex)
 /* -------------------------------------------------------------------------- */
 
 
-void processStack(AudioBuffer& outBuf, StackType stackType,size_t chanIndex)
+void processAudioStack(AudioBuffer& outBuf, const std::vector<std::unique_ptr<Plugin>>& stack)
 {
-	std::vector<std::unique_ptr<Plugin>>& stack = getStack_(model::get(), 
-		stackType, chanIndex);
-
 	if (stack.size() == 0)
-		return;
+		return;	
 
 	assert(outBuf.countFrames() == audioBuffer_.getNumSamples());
 
-	/* MIDI channels must not process the current buffer: give them an empty one. 
-	Sample channels and Master in/out want audio data instead: let's convert the 
-	internal buffer from Giada to Juce. */
+	giadaToJuceTempBuf_(outBuf);
+	juce::MidiBuffer events; // empty
+	processPlugins_(stack, events);
+	juceToGiadaOutBuf_(outBuf);
+}
 
-	if (stackType == StackType::CHANNEL && model::get()->channels[chanIndex]->type == ChannelType::MIDI) 
-		audioBuffer_.clear();
-	else
-		for (int i=0; i<outBuf.countFrames(); i++)
-			for (int j=0; j<outBuf.countChannels(); j++)
-				audioBuffer_.setSample(j, i, outBuf[i][j]);
 
-	/* Hardcore processing. Part of this loop must be guarded by mutexes, i.e. 
-	the MIDI process part. You definitely don't want a situation like the 
-	following one:
-		1. this::processStack()
-		2. [a new midi event comes in from kernelMidi thread]
-		3. channel::clearMidiBuffer()
-	The midi event in between would be surely lost, deleted by the last call to
-	channel::clearMidiBuffer()! 
-	TODO - that's why we need a proper queue for MIDI events in input... */
+void processMidiStack(AudioBuffer& outBuf, const std::vector<std::unique_ptr<Plugin>>& stack,
+	juce::MidiBuffer& events)
+{
+	if (stack.size() == 0)
+		return;	
 
-	for (std::unique_ptr<Plugin>& plugin : stack)
-		processPlugin_(*plugin.get(), chanIndex);
+	assert(outBuf.countFrames() == audioBuffer_.getNumSamples());
 
-	if (stackType == StackType::CHANNEL)
-		model::get()->channels[chanIndex]->clearMidiBuffer();
+	/* MIDI channels must not process the current buffer: give them an empty 
+	and clean one. */
 
-	/* Converting buffer from Juce to Giada. A note for the future: if we 
-	overwrite (=) (as we do now) it's SEND, if we add (+) it's INSERT. */
+	audioBuffer_.clear();
 
-	for (int i=0; i<outBuf.countFrames(); i++)
-		for (int j=0; j<outBuf.countChannels(); j++)	
-			outBuf[i][j] = audioBuffer_.getSample(j, i);
+	/* TODO - events: not sure how to pass/clear them yet */
+	/* TODO - events: not sure how to pass/clear them yet */
+	/* TODO - events: not sure how to pass/clear them yet */
+	processPlugins_(stack, events);
+
+	juceToGiadaOutBuf_(outBuf);
 }
 
 
@@ -240,8 +250,6 @@ void swapPlugin(size_t pluginIndex1, size_t pluginIndex2, StackType type,
 
 	/* Nothing to do if there's only one plugin or on edges. */
 	
-printf("%ld %ld\n", pluginIndex1, pluginIndex2);
-
 	if (stackSize == 1 || pluginIndex2 < 0 || pluginIndex2 >= stackSize)
 		return;
 

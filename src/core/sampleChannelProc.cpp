@@ -26,7 +26,7 @@
 
 
 #include <cassert>
-#include "../utils/math.h"
+#include "utils/math.h"
 #include "const.h"
 #include "pluginHost.h"
 #include "sampleChannel.h"
@@ -205,7 +205,7 @@ void processData_(SampleChannel* ch, m::AudioBuffer& out, const m::AudioBuffer& 
 	}
 
 #ifdef WITH_VST
-	pluginHost::processStack(ch->buffer, pluginHost::StackType::CHANNEL, ch->index);
+	pluginHost::processAudioStack(ch->buffer, ch->plugins);
 #endif
 
 	for (int i=0; i<out.countFrames(); i++) {

@@ -178,18 +178,6 @@ public:
 
 	void calcVolumeEnvelope();
 
-#ifdef WITH_VST
-
-	/* getPluginMidiEvents
-	Returns a reference to midiBuffer stack. This is available for any kind of
-	channel, but it makes sense only for MIDI channels. */
-
-	const juce::MidiBuffer& getPluginMidiEvents() const;
-
-	void clearMidiBuffer();
-
-#endif
-
 	/* guiChannel
 	Pointer to a gChannel object, part of the GUI. TODO - remove this and send
 	signals instead. */
@@ -258,15 +246,8 @@ public:
 	uint32_t midiOutLsolo;
 
 #ifdef WITH_VST
+
 	std::vector<std::unique_ptr<Plugin>> plugins;
-#endif
-
-protected:
-
-	Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t column);
-	Channel(const Channel& o);
-
-#ifdef WITH_VST
 
 	/* MidiBuffer contains MIDI events. When ready, events are sent to each plugin 
 	in the channel. This is available for any kind of channel, but it makes sense 
@@ -275,6 +256,11 @@ protected:
 	juce::MidiBuffer midiBuffer;
 
 #endif
+
+protected:
+
+	Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t column);
+	Channel(const Channel& o);
 };
 
 }} // giada::m::
