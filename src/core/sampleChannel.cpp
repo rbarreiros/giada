@@ -25,7 +25,7 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../utils/log.h"
+#include "utils/log.h"
 #include "sampleChannelProc.h"
 #include "sampleChannelRec.h"
 #include "channelManager.h"

@@ -32,7 +32,7 @@
 #include <memory>
 #include <vector>
 #include "core/recorder.h"
-#include "core/plugin.h"
+#include "core/pluginHost.h"
 
 
 namespace giada {
@@ -59,8 +59,8 @@ public:
 
     recorder::ActionMap actions;
     std::vector<std::unique_ptr<Channel>> channels;
-    std::vector<std::unique_ptr<Plugin>> masterOutPlugins;
-    std::vector<std::unique_ptr<Plugin>> masterInPlugins;
+    pluginHost::Stack masterOutPlugins;
+    pluginHost::Stack masterInPlugins;
     
 private:
 

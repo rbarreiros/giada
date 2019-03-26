@@ -166,9 +166,7 @@ void gePluginElement::cb_openPluginWindow()
 
 void gePluginElement::cb_setBypass()
 {
-	assert(false); 
-	// TODO - pluginHost::bypassPlugin
-	// m_plugin->toggleBypass();
+	c::plugin::toggleBypass(m_plugin.index, m_stackInfo);
 }
 
 

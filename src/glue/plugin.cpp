@@ -163,6 +163,15 @@ void setParameter(size_t pluginIndex, int paramIndex, float value,
 /* -------------------------------------------------------------------------- */
 
 
+void toggleBypass(size_t pluginIndex, m::pluginHost::StackInfo info)
+{
+	pluginHost::toggleBypass(pluginIndex, info);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void setPluginPathCb(void* data)
 {
 	gdBrowserDir* browser = (gdBrowserDir*) data;

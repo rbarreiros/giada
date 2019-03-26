@@ -63,6 +63,9 @@ Callback attached to the DirBrowser for adding new Plug-in search paths in the
 configuration window. */
 
 void setPluginPathCb(void* data);
+
+
+void toggleBypass(size_t pluginIndex, m::pluginHost::StackInfo info);
 }}}; // giada::c::plugin::
 
 

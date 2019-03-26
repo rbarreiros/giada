@@ -41,8 +41,9 @@
 #include "audioBuffer.h"
 
 #ifdef WITH_VST
-	#include "../deps/juce-config.h"
+	#include "deps/juce-config.h"
 	#include "plugin.h"
+	#include "pluginHost.h"
 #endif
 
 
@@ -247,7 +248,7 @@ public:
 
 #ifdef WITH_VST
 
-	std::vector<std::unique_ptr<Plugin>> plugins;
+	pluginHost::Stack plugins;
 
 	/* MidiBuffer contains MIDI events. When ready, events are sent to each plugin 
 	in the channel. This is available for any kind of channel, but it makes sense 

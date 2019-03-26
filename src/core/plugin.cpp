@@ -82,6 +82,17 @@ Plugin::Plugin(juce::AudioPluginInstance* plugin, double samplerate, int buffers
 /* -------------------------------------------------------------------------- */
 
 
+Plugin::Plugin(const Plugin& o)
+: m_plugin(o.m_plugin),
+  m_id    (m_idGenerator++),
+  m_bypass(o.m_bypass.load())
+{
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 Plugin::~Plugin()
 {
 	m_plugin->suspendProcessing(true);
@@ -185,9 +196,8 @@ bool Plugin::acceptsMidi() const
 /* -------------------------------------------------------------------------- */
 
 
-bool Plugin::isBypassed() const { return m_bypass; }
-void Plugin::toggleBypass() { m_bypass = !m_bypass; }
-void Plugin::setBypass(bool b) { m_bypass = b; }
+bool Plugin::isBypassed() const { return m_bypass.load(); }
+void Plugin::setBypass(bool b) { m_bypass.store(b); }
 
 
 /* -------------------------------------------------------------------------- */
@@ -282,7 +292,8 @@ string Plugin::getProgramName(int index) const
 
 string Plugin::getParameterName(int index) const
 {
-	return m_plugin->getParameters()[index]->getName(MAX_LABEL_SIZE).toStdString();
+	const int labelSize = 64;
+	return m_plugin->getParameters()[index]->getName(labelSize).toStdString();
 }
 
 

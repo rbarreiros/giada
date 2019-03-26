@@ -95,6 +95,8 @@ void freePlugin(size_t pluginIndex, StackInfo info);
 void setPluginParameter(size_t pluginIndex, int paramIndex, float value, StackInfo info);
 void setPluginProgram(size_t pluginIndex, int programIndex, StackInfo info); 
 
+void toggleBypass(size_t pluginIndex, StackInfo info);
+
 /* runDispatchLoop
 Wakes up plugins' GUI manager for N milliseconds. */
 

@@ -44,6 +44,7 @@ class Plugin
 public:
 
 	Plugin(juce::AudioPluginInstance* p, double samplerate, int buffersize);
+	Plugin(const Plugin& o);
 	~Plugin();
 
 	/* getUniqueId
@@ -79,7 +80,6 @@ public:
 
 	void process(juce::AudioBuffer<float>& b, juce::MidiBuffer m);
 
-	void toggleBypass();
 	void setBypass(bool b);
 
 	/* midiInParams
@@ -88,8 +88,6 @@ public:
 	std::vector<uint32_t> midiInParams;
 
 	size_t index;
-	size_t chanIndex;
-	pluginHost::StackType stackType;
 
 private:
 
@@ -99,8 +97,6 @@ private:
 #endif
 
 	enum class BusType { IN = true, OUT = false };
-
-	static const int MAX_LABEL_SIZE = 64;
 	
 	static int m_idGenerator;
 
@@ -108,7 +104,7 @@ private:
 	juce::AudioBuffer<float>    m_buffer;
 
 	int m_id;
-	bool m_bypass;
+	std::atomic<bool> m_bypass;
 
 	juce::AudioProcessor::Bus* getMainBus(BusType b) const;
 
