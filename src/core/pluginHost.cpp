@@ -276,8 +276,8 @@ void setPluginProgram(size_t pluginIndex, int programIndex, StackInfo info)
 
 void toggleBypass(size_t pluginIndex, StackInfo info)
 {
-	//Plugin* p = getStack_(model::get(), info)[pluginIndex].get();
-	//p->setBypass(!p->isBypassed());
+	Plugin* p = getStack_(model::get(), info)[pluginIndex].get();
+	p->setBypass(!p->isBypassed());
 }
 
 

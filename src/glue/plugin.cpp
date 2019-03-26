@@ -30,27 +30,24 @@
 
 #include <cassert>
 #include <FL/Fl.H>
-#include "../core/pluginManager.h"
-#include "../core/pluginHost.h"
-#include "../core/mixer.h"
-#include "../core/plugin.h"
-#include "../core/channel.h"
-#include "../core/const.h"
-#include "../core/conf.h"
-#include "../utils/gui.h"
-#include "../gui/dialogs/mainWindow.h"
-#include "../gui/dialogs/pluginWindow.h"
-#include "../gui/dialogs/pluginList.h"
-#include "../gui/dialogs/warnings.h"
-#include "../gui/dialogs/config.h"
-#include "../gui/dialogs/browser/browserDir.h"
+#include "core/pluginManager.h"
+#include "core/pluginHost.h"
+#include "core/mixer.h"
+#include "core/plugin.h"
+#include "core/channel.h"
+#include "core/const.h"
+#include "core/conf.h"
+#include "utils/gui.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/pluginWindow.h"
+#include "gui/dialogs/pluginList.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/dialogs/config.h"
+#include "gui/dialogs/browser/browserDir.h"
 #include "plugin.h"
 
 
 extern gdMainWindow* G_MainWin;
-
-
-using namespace giada::m;
 
 
 namespace giada {
@@ -59,19 +56,27 @@ namespace plugin
 {
 namespace
 {
-/* getPluginWindow_
-Returns the plugInWindow (GUI-less one) with the parameter list. It might be 
-nullptr if there is no plug-in window shown on screen. */
-
-v::gdPluginWindow* getPluginWindow_(const Plugin* p)
+void updatePluginEditor_(size_t pluginIndex, m::pluginHost::StackInfo info, 
+	bool gui)
 {
+	const m::Plugin* p = m::pluginHost::getPluginByIndex(pluginIndex, info);
+
+	if (p->hasEditor())
+		return;
+
 	/* Get the parent window first: the plug-in list. Then, if it exists, get
 	the child window - the actual pluginWindow. */
 
 	v::gdPluginList* parent = static_cast<v::gdPluginList*>(u::gui::getSubwindow(G_MainWin, WID_FX_LIST));
 	if (parent == nullptr)
-		return nullptr;
-	return static_cast<v::gdPluginWindow*>(u::gui::getSubwindow(parent, p->getId() + 1));
+		return;
+	v::gdPluginWindow* child = static_cast<v::gdPluginWindow*>(u::gui::getSubwindow(parent, p->getId() + 1));
+	if (child == nullptr) 
+		return;
+	
+	if (!gui) Fl::lock();
+	child->updateParameters(!gui);
+	if (!gui) Fl::unlock();
 }
 } // {anonymous}
 
@@ -81,13 +86,13 @@ v::gdPluginWindow* getPluginWindow_(const Plugin* p)
 /* -------------------------------------------------------------------------- */
 
 
-void addPlugin(int pluginIndex, m::pluginHost::StackInfo info)
+void addPlugin(int pluginListIndex, m::pluginHost::StackInfo info)
 {
-	if (pluginIndex >= pluginManager::countAvailablePlugins())
+	if (pluginListIndex >= m::pluginManager::countAvailablePlugins())
 		return;
-	std::unique_ptr<Plugin> p = pluginManager::makePlugin(pluginIndex);
+	std::unique_ptr<m::Plugin> p = m::pluginManager::makePlugin(pluginListIndex);
 	if (p != nullptr)
-		pluginHost::addPlugin(std::move(p), info);
+		m::pluginHost::addPlugin(std::move(p), info);
 }
 
 
@@ -96,7 +101,7 @@ void addPlugin(int pluginIndex, m::pluginHost::StackInfo info)
 
 void swapPlugins(size_t index1, size_t index2, m::pluginHost::StackInfo info)
 {
-	pluginHost::swapPlugin(index1, index2, info);
+	m::pluginHost::swapPlugin(index1, index2, info);
 }
 
 
@@ -105,7 +110,7 @@ void swapPlugins(size_t index1, size_t index2, m::pluginHost::StackInfo info)
 
 void freePlugin(size_t pluginIndex, m::pluginHost::StackInfo info)
 {
-	pluginHost::freePlugin(pluginIndex, info);
+	m::pluginHost::freePlugin(pluginIndex, info);
 }
 
 
@@ -114,22 +119,8 @@ void freePlugin(size_t pluginIndex, m::pluginHost::StackInfo info)
 
 void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackInfo info)
 {
-	pluginHost::setPluginProgram(pluginIndex, programIndex, info); 
-
-	/* No need to update plug-in editor if it has one: the plug-in's editor takes
-	care of it on its own. Conversely, update the specific parameter for UI-less 
-	plug-ins. */
-
-	const Plugin* p = pluginHost::getPluginByIndex(pluginIndex, info);
-
-	if (p->hasEditor())
-		return;
-
-	v::gdPluginWindow* child = getPluginWindow_(p);
-	if (child == nullptr) 
-		return;
-	
-	child->updateParameters(true);
+	m::pluginHost::setPluginProgram(pluginIndex, programIndex, info); 
+	updatePluginEditor_(pluginIndex, info, true); 
 }
 
 
@@ -139,24 +130,8 @@ void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackInfo i
 void setParameter(size_t pluginIndex, int paramIndex, float value, 
     m::pluginHost::StackInfo info, bool gui)
 {
-	pluginHost::setPluginParameter(pluginIndex, paramIndex, value, info); 
-
-	/* No need to update plug-in editor if it has one: the plug-in's editor takes
-	care of it on its own. Conversely, update the specific parameter for UI-less 
-	plug-ins. */
-
-	const Plugin* p = pluginHost::getPluginByIndex(pluginIndex, info);
-
-	if (p->hasEditor())
-		return;
-
-	v::gdPluginWindow* child = getPluginWindow_(p);
-	if (child == nullptr) 
-		return;
-
-	Fl::lock();
-	child->updateParameter(paramIndex, !gui);
-	Fl::unlock();
+	m::pluginHost::setPluginParameter(pluginIndex, paramIndex, value, info); 
+	updatePluginEditor_(pluginIndex, info, gui); 
 }
 
 
@@ -165,7 +140,7 @@ void setParameter(size_t pluginIndex, int paramIndex, float value,
 
 void toggleBypass(size_t pluginIndex, m::pluginHost::StackInfo info)
 {
-	pluginHost::toggleBypass(pluginIndex, info);
+	m::pluginHost::toggleBypass(pluginIndex, info);
 }
 
 
@@ -181,9 +156,9 @@ void setPluginPathCb(void* data)
 		return;
 	}
 
-	if (!conf::pluginPath.empty() && conf::pluginPath.back() != ';')
-		conf::pluginPath += ";";
-	conf::pluginPath += browser->getCurrentPath();
+	if (!m::conf::pluginPath.empty() && m::conf::pluginPath.back() != ';')
+		m::conf::pluginPath += ";";
+	m::conf::pluginPath += browser->getCurrentPath();
 
 	browser->do_callback();
 

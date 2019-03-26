@@ -35,7 +35,7 @@
 #ifdef WITH_VST
 
 
-#include "../core/pluginHost.h"
+#include "core/pluginHost.h"
 
 
 namespace giada {
@@ -47,7 +47,7 @@ class Channel;
 namespace c {
 namespace plugin 
 {
-void addPlugin(int pluginIndex, m::pluginHost::StackInfo info);
+void addPlugin(int pluginListIndex, m::pluginHost::StackInfo info);
 
 void swapPlugins(size_t index1, size_t index2, m::pluginHost::StackInfo info);
 
@@ -58,14 +58,13 @@ void setParameter(size_t pluginIndex, int paramIndex, float value,
 
 void setProgram(size_t pluginIndex, int programIndex, m::pluginHost::StackInfo info);
 
+void toggleBypass(size_t pluginIndex, m::pluginHost::StackInfo info);
+
 /* setPluginPathCb
 Callback attached to the DirBrowser for adding new Plug-in search paths in the
 configuration window. */
 
 void setPluginPathCb(void* data);
-
-
-void toggleBypass(size_t pluginIndex, m::pluginHost::StackInfo info);
 }}}; // giada::c::plugin::
 
 
