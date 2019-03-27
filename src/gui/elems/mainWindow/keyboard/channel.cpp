@@ -46,10 +46,10 @@
 extern gdMainWindow* G_MainWin;
 
 
-using namespace giada;
-
-
-geChannel::geChannel(int X, int Y, int W, int H, giada::m::Channel* ch)
+namespace giada {
+namespace v
+{
+geChannel::geChannel(int X, int Y, int W, int H, m::Channel* ch)
 : Fl_Group(X, Y, W, H, nullptr),
   ch      (ch)
 {
@@ -264,3 +264,5 @@ int geChannel::getSize()
 {
 	return h();
 }
+
+}} // giada::v::

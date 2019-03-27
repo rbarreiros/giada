@@ -304,7 +304,7 @@ void startReadingActions(size_t chanIndex, bool gui)
 
 	if (!gui) {
 		Fl::lock();
-		static_cast<geSampleChannel*>(G_MainWin->keyboard->getChannel(chanIndex))->readActions->value(1);
+		static_cast<v::geSampleChannel*>(G_MainWin->keyboard->getChannel(chanIndex))->readActions->value(1);
 		Fl::unlock();
 	}
 }
@@ -320,7 +320,7 @@ void stopReadingActions(size_t chanIndex, bool gui)
 
 	if (!gui) {
 		Fl::lock();
-		static_cast<geSampleChannel*>(G_MainWin->keyboard->getChannel(chanIndex))->readActions->value(0);
+		static_cast<v::geSampleChannel*>(G_MainWin->keyboard->getChannel(chanIndex))->readActions->value(0);
 		Fl::unlock();
 	}
 }

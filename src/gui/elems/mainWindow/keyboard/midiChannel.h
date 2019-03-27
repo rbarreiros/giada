@@ -29,11 +29,17 @@
 #define GE_MIDI_CHANNEL_H
 
 
-#include "../../../../core/midiChannel.h"
 #include "channel.h"
 #include "channelButton.h"
 
 
+namespace giada {
+namespace m
+{
+class MidiChannel;
+}
+namespace v
+{
 class geMidiChannel : public geChannel
 {
 private:
@@ -45,7 +51,7 @@ private:
 
 public:
 
-	geMidiChannel(int x, int y, int w, int h, giada::m::MidiChannel* ch);
+	geMidiChannel(int x, int y, int w, int h, m::MidiChannel* ch);
 
 	void resize(int x, int y, int w, int h) override;
 
@@ -55,6 +61,7 @@ public:
 
 	int keyPress(int event);  // TODO - move to base class
 };
+}} // giada::v::
 
 
 #endif

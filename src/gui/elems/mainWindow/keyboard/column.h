@@ -33,12 +33,14 @@
 
 
 class geButton;
-class geChannel;
 class geResizerBar;
+
+
 namespace giada {
 namespace v 
 {
 class geKeyboard;
+class geChannel;
 }}
 
 
@@ -64,7 +66,7 @@ public:
 	Adds a new channel in this column and set the internal pointer to channel 
 	to 'ch'. */
 
-	geChannel* addChannel(giada::m::Channel* ch, int size);
+	giada::v::geChannel* addChannel(giada::m::Channel* ch, int size);
 
 	int handle(int e) override;
 	void draw() override;
@@ -79,7 +81,7 @@ public:
 	/* deleteChannel
 	Removes the channel 'gch' from this column. */
 
-	void deleteChannel(geChannel* gch);
+	void deleteChannel(giada::v::geChannel* gch);
 
 	void repositionChannels();
 

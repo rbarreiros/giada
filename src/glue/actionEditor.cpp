@@ -26,13 +26,13 @@
 
 
 #include <cassert>
-#include "../core/clock.h"
-#include "../core/const.h"
-#include "../core/sampleChannel.h"
-#include "../core/midiChannel.h"
-#include "../core/recorderHandler.h"
-#include "../core/recorder.h"
-#include "../core/action.h"
+#include "core/clock.h"
+#include "core/const.h"
+#include "core/sampleChannel.h"
+#include "core/midiChannel.h"
+#include "core/recorderHandler.h"
+#include "core/recorder.h"
+#include "core/action.h"
 #include "recorder.h"
 #include "actionEditor.h"
 
@@ -130,7 +130,7 @@ void recordMidiAction(m::MidiChannel* ch, int note, int velocity, Frame f1, Fram
 
 	mr::updateSiblings(a1, nullptr, a2);
 
-	cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
+	// cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
 }
 
 
@@ -154,7 +154,7 @@ void deleteMidiAction(m::MidiChannel* ch, const m::Action* a)
 	}
 	mr::deleteAction(a);
 
-	cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
+	//cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -192,7 +192,7 @@ void recordSampleAction(const m::SampleChannel* ch, int type, Frame f1, Frame f2
 		mr::rec(ch->index, f1, e1);
 	}
 	
-	cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
+	//cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
 }
 
 
@@ -231,7 +231,7 @@ void recordEnvelopeAction(m::Channel* ch, int frame, int value)
 	else 
 		recordNonFirstEnvelopeAction_(ch->index, frame, value);
 
-	cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
+	//cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
 }
 
 
@@ -268,7 +268,7 @@ void deleteEnvelopeAction(m::Channel* ch, const m::Action* a)
 	mr::updateSiblings(a1, a1->prev, a3);
 	mr::updateSiblings(a3, a1, a3->next);
 
-	cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
+	//cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
 }
 
 
@@ -293,7 +293,7 @@ void updateEnvelopeAction(m::Channel* ch, const m::Action* a, int frame, int val
 		recordEnvelopeAction(ch, frame, value); 
 	}
 
-	cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);	
+	//cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);	
 }
 
 
@@ -311,7 +311,7 @@ void deleteSampleAction(m::SampleChannel* ch, const m::Action* a)
 		mr::deleteAction(a->next);
 	mr::deleteAction(a);
 
-	cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
+	//cr::updateChannel(ch->guiChannel, /*refreshActionEditor=*/false);
 }
 
 

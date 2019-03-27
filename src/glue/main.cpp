@@ -204,7 +204,7 @@ void clearAllSamples()
 	clock::setStatus(ClockStatus::STOPPED);
 	for (Channel* ch : mixer::channels) {
 		ch->empty();
-		ch->guiChannel->reset();
+		//ch->guiChannel->reset();
 	}
 	recorder::clearAll();
 	return;

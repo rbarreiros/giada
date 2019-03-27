@@ -32,21 +32,22 @@
 #include "channel.h"
 
 
-namespace giada { 
-namespace m { 
-class SampleChannel; 
-}}
-
-
 class geChannelMode;
 class geButton;
 
 
+namespace giada {
+namespace m 
+{ 
+class SampleChannel; 
+}
+namespace v
+{
 class geSampleChannel : public geChannel
 {
 public:
 
-	geSampleChannel(int x, int y, int w, int h, giada::m::SampleChannel* ch);
+	geSampleChannel(int x, int y, int w, int h, m::SampleChannel* ch);
 
 	void resize(int x, int y, int w, int h) override;
 
@@ -73,6 +74,7 @@ private:
 	void cb_openMenu();
 	void cb_readActions();
 };
+}} // giada::v::
 
 
 #endif

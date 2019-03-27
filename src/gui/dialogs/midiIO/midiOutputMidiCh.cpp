@@ -26,13 +26,13 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../../core/midiChannel.h"
-#include "../../../utils/gui.h"
-#include "../../elems/midiLearner.h"
-#include "../../elems/basics/button.h"
-#include "../../elems/basics/check.h"
-#include "../../elems/basics/choice.h"
-#include "../../elems/mainWindow/keyboard/channel.h"
+#include "core/midiChannel.h"
+#include "utils/gui.h"
+#include "gui/elems/midiLearner.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/basics/check.h"
+#include "gui/elems/basics/choice.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
 #include "midiOutputMidiCh.h"
 
 
@@ -121,6 +121,6 @@ void gdMidiOutputMidiCh::__cb_close()
 	ch->midiOut     = enableOut->value();
 	ch->midiOutChan = chanListOut->value();
 	ch->midiOutL    = enableLightning->value();
-	ch->guiChannel->update();
+	//ch->guiChannel->update();
 	do_callback();
 }

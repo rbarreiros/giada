@@ -115,3 +115,12 @@ gdMainWindow::~gdMainWindow()
 	m::conf::mainWindowW = w();
 	m::conf::mainWindowH = h();
 }
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void gdMainWindow::rebuild()
+{
+	keyboard->rebuild();
+}

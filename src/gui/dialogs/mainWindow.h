@@ -60,6 +60,8 @@ public:
 
     gdMainWindow(int w, int h, const char* title, int argc, char** argv);
 	~gdMainWindow();
+
+    void rebuild() override;
 };
 
 

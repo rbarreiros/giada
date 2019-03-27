@@ -37,13 +37,14 @@
 
 class geButton;
 class geColumn;
-class geChannel;
-class geSampleChannel;
 
 
 namespace giada {
 namespace v
 {
+class geChannel;
+class geSampleChannel;
+
 class geKeyboard : public Fl_Scroll
 {
 public:

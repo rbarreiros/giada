@@ -26,12 +26,12 @@
 
 
 #include <FL/Fl.H>
-#include "../../../../core/const.h"
-#include "../../../../core/sampleChannel.h"
-#include "../../../../utils/string.h"
-#include "../../../../utils/fs.h"
-#include "../../../../glue/channel.h"
-#include "../../../dialogs/mainWindow.h"
+#include "core/const.h"
+#include "core/sampleChannel.h"
+#include "utils/string.h"
+#include "utils/fs.h"
+#include "glue/channel.h"
+#include "gui/dialogs/mainWindow.h"
 #include "sampleChannel.h"
 #include "keyboard.h"
 #include "sampleChannelButton.h"
@@ -64,7 +64,7 @@ int geSampleChannelButton::handle(int e)
 			break;
 		}
 		case FL_PASTE: {
-			geSampleChannel*  gch = static_cast<geSampleChannel*>(parent());
+			v::geSampleChannel*  gch = static_cast<v::geSampleChannel*>(parent());
 			m::SampleChannel* ch  = static_cast<m::SampleChannel*>(gch->ch);
 			int result = c::channel::loadChannel(ch->index, u::string::trim(gu_stripFileUrl(Fl::event_text())));
 			if (result != G_RES_OK)

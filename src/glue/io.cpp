@@ -133,8 +133,8 @@ void stopActionRec(bool gui)
 	G_MainWin->mainTransport->updateRecAction(0);
 	G_MainWin->mainTransport->setRecTriggerModeActive(true);
 	for (m::Channel* ch : m::mixer::channels)
-		if (ch->type == ChannelType::SAMPLE)
-			G_MainWin->keyboard->setChannelWithActions(static_cast<geSampleChannel*>(ch->guiChannel));
+		//if (ch->type == ChannelType::SAMPLE)
+			//G_MainWin->keyboard->setChannelWithActions(static_cast<v::geSampleChannel*>(ch->guiChannel));
 	if (!gui) Fl::unlock();
 
 	u::gui::refreshActionEditor();  // in case it's open
@@ -192,8 +192,8 @@ void stopInputRec(bool gui)
 	G_MainWin->mainTimer->setLock(false);
 	/* Update sample name inside sample channels' main button. This is useless 
 	for MIDI channels, but let's do it anyway. */
-	for (const m::Channel* ch : m::mixer::channels)
-		ch->guiChannel->update();
+	//for (const m::Channel* ch : m::mixer::channels)
+	//	ch->guiChannel->update();
 	if (!gui) Fl::unlock();
 }
 

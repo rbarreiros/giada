@@ -25,13 +25,14 @@
  * -------------------------------------------------------------------------- */
 
 
+#include <cassert>
 #include <FL/Fl.H>
-#include "../core/init.h"
-#include "../core/const.h"
-#include "../core/mixer.h"
-#include "../core/channel.h"
-#include "../glue/transport.h"
-#include "../glue/io.h"
+#include "core/init.h"
+#include "core/const.h"
+#include "core/mixer.h"
+#include "core/channel.h"
+#include "glue/transport.h"
+#include "glue/io.h"
 #include "elems/mainWindow/keyboard/channel.h"
 #include "dispatcher.h"
 
@@ -72,9 +73,10 @@ found, trigger the key-press function. */
 
 void dispatchChannels_(int event)
 {
-	for (m::Channel* ch : m::mixer::channels)
-		if (ch->guiChannel->handleKey(event))
-			perform_(ch, event);
+	assert(false);
+	//for (m::Channel* ch : m::mixer::channels)
+	//	if (ch->guiChannel->handleKey(event))
+	//		perform_(ch, event);
 }
 
 

@@ -56,9 +56,9 @@
 extern gdMainWindow* G_MainWin;
 
 
-using namespace giada;
-
-
+namespace giada {
+namespace v
+{
 namespace
 {
 enum class Menu
@@ -87,8 +87,6 @@ enum class Menu
 
 void menuCallback(Fl_Widget* w, void* v)
 {
-	using namespace giada;
-
 	geMidiChannel*  gch = static_cast<geMidiChannel*>(w);
 	m::MidiChannel* ch  = static_cast<m::MidiChannel*>(gch->ch);
 
@@ -198,8 +196,6 @@ geMidiChannel::geMidiChannel(int X, int Y, int W, int H, m::MidiChannel* ch)
 	mainButton->callback(cb_openMenu, (void*)this);
 
 	vol->callback(cb_changeVol, (void*)this);
-
-	ch->guiChannel = this;
 
 	changeSize(H);  // Update size dynamically
 }
@@ -340,3 +336,5 @@ void geMidiChannel::resize(int X, int Y, int W, int H)
 
 	packWidgets();
 }
+
+}} // giada::v::

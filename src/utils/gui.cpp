@@ -29,7 +29,7 @@
 #include <FL/Fl.H>
 #include <FL/fl_draw.H>
 #if defined(_WIN32)
-	#include "../ext/resource.h"
+	#include "ext/resource.h"
 #elif defined(__linux__)
 	#include <X11/xpm.h>
 #endif
@@ -71,7 +71,7 @@ int blinker_ = 0;
 /* -------------------------------------------------------------------------- */
 
 
-void rebuildWindow_(int wid)
+void rebuildSubWindow_(int wid)
 {
 	gdWindow* w = getSubwindow(G_MainWin, wid);
 	if (w != nullptr)
@@ -111,9 +111,8 @@ void refresh()
 
 void rebuild()
 {
-	G_MainWin->keyboard->rebuild();	 // TODO - implement gdMainWin::rebuild and call it directly
-
-	rebuildWindow_(WID_FX_LIST);
+	G_MainWin->rebuild();
+	rebuildSubWindow_(WID_FX_LIST);
 }
 
 
@@ -133,8 +132,8 @@ void updateControls()
 {
 	using namespace giada::m;
 
-	for (const Channel* ch : mixer::channels)
-		ch->guiChannel->update();
+	//for (const Channel* ch : mixer::channels)
+	//	ch->guiChannel->update();
 
 	G_MainWin->mainIO->setOutVol(mixer::outVol.load());
 	G_MainWin->mainIO->setInVol(mixer::inVol.load());

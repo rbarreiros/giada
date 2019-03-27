@@ -29,17 +29,18 @@
 #define G_GLUE_RECORDER_H
 
 
-class geChannel;
-
-
 namespace giada {
+namespace v
+{
+class geChannel;
+}
 namespace c {
 namespace recorder 
 {
-void clearAllActions(geChannel* gch);
-void clearVolumeActions(geChannel* gch);
-void clearStartStopActions(geChannel* gch);
-void updateChannel(geChannel* gch, bool refreshActionEditor=true);
+void clearAllActions(v::geChannel* gch);
+void clearVolumeActions(v::geChannel* gch);
+void clearStartStopActions(v::geChannel* gch);
+void updateChannel(v::geChannel* gch, bool refreshActionEditor=true);
 }}} // giada::c::recorder::
 
 #endif

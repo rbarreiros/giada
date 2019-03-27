@@ -146,11 +146,11 @@ int writePatch(const Channel* ch, bool isProject)
 	patch::channel_t pch;
 	pch.type            = static_cast<int>(ch->type);
 	pch.index           = ch->index;
-	pch.size            = ch->guiChannel->getSize();
+	//pch.size            = ch->guiChannel->getSize();
 	pch.name            = ch->name;
 	pch.key             = ch->key;
 	pch.armed           = ch->armed;
-	pch.column          = ch->guiChannel->getColumnIndex();
+	pch.column          = ch->column;
 	pch.mute            = ch->mute;
 	pch.solo            = ch->solo;
 	pch.volume          = ch->volume;

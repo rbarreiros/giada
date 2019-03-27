@@ -25,6 +25,7 @@
  * -------------------------------------------------------------------------- */
 
 
+#include <cassert>
 #include "core/mixer.h"
 #include "core/conf.h"
 #include "core/clock.h"
@@ -63,9 +64,9 @@
 extern gdMainWindow* G_MainWin;
 
 
-using namespace giada;
-
-
+namespace giada {
+namespace v
+{
 namespace
 {
 enum class Menu
@@ -101,8 +102,6 @@ enum class Menu
 
 void menuCallback(Fl_Widget* w, void* v)
 {
-	using namespace giada;
-
 	geSampleChannel*  gch = static_cast<geSampleChannel*>(w);
 	m::SampleChannel* ch  = static_cast<m::SampleChannel*>(gch->ch);
 
@@ -110,6 +109,7 @@ void menuCallback(Fl_Widget* w, void* v)
 
 	switch (selectedItem) {
 		case Menu::INPUT_MONITOR: {
+			assert(false);
 			c::channel::setInputMonitor(ch->index, false/* TODO ??????????*/);
 			break;
 		}
@@ -211,7 +211,7 @@ void menuCallback(Fl_Widget* w, void* v)
 /* -------------------------------------------------------------------------- */
 
 
-geSampleChannel::geSampleChannel(int X, int Y, int W, int H, giada::m::SampleChannel* ch)
+geSampleChannel::geSampleChannel(int X, int Y, int W, int H, m::SampleChannel* ch)
 	: geChannel(X, Y, W, H, ch)
 {
 	begin();
@@ -261,8 +261,6 @@ geSampleChannel::geSampleChannel(int X, int Y, int W, int H, giada::m::SampleCha
 
 	vol->callback(cb_changeVol, (void*)this);
 
-	ch->guiChannel = this;
-
 	changeSize(H);  // Update size dynamically
 }
 
@@ -289,8 +287,6 @@ void geSampleChannel::cb_button()
 
 void geSampleChannel::cb_openMenu()
 {
-	using namespace giada;
-
 	/* If you're recording (input or actions) no menu is allowed; you can't do
 	anything, especially deallocate the channel */
 
@@ -369,8 +365,6 @@ void geSampleChannel::cb_readActions()
 
 void geSampleChannel::refresh()
 {
-	using namespace giada;
-	
 	if (!mainButton->visible()) // mainButton invisible? status too (see below)
 		return;
 
@@ -511,3 +505,5 @@ void geSampleChannel::changeSize(int H)
 	modeBox->resize(x(), Y, w(), G_GUI_UNIT);
 	readActions->resize(x(), Y, w(), G_GUI_UNIT);
 }
+
+}} // giada::v::

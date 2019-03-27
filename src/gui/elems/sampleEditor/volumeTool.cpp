@@ -28,16 +28,16 @@
 #include <cmath>
 #include <cstdlib>
 #include <FL/Fl_Pack.H>
-#include "../../../core/sampleChannel.h"
-#include "../../../core/const.h"
-#include "../../../glue/channel.h"
-#include "../../../utils/gui.h"
-#include "../../../utils/math.h"
-#include "../../../utils/string.h"
-#include "../basics/dial.h"
-#include "../basics/input.h"
-#include "../basics/box.h"
-#include "../mainWindow/keyboard/channel.h"
+#include "core/sampleChannel.h"
+#include "core/const.h"
+#include "glue/channel.h"
+#include "utils/gui.h"
+#include "utils/math.h"
+#include "utils/string.h"
+#include "gui/elems/basics/dial.h"
+#include "gui/elems/basics/input.h"
+#include "gui/elems/basics/box.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
 #include "volumeTool.h"
 
 
@@ -74,7 +74,7 @@ void geVolumeTool::refresh()
 	if (dB > -INFINITY) tmp = u::string::fToString(dB, 2);  // 2 digits
 	else                tmp = "-inf";
 	input->value(tmp.c_str());
-	dial->value(ch->guiChannel->vol->value());
+	//dial->value(ch->guiChannel->vol->value());
 }
 
 
@@ -106,5 +106,5 @@ void geVolumeTool::cb_setVolumeNum()
 
 	float value = pow(10, (atof(input->value()) / 20)); // linear = 10^(dB/20)
 	c::channel::setVolume(ch->index, value, false, true);
-	dial->value(ch->guiChannel->vol->value());
+	//dial->value(ch->guiChannel->vol->value());
 }

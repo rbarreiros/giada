@@ -114,10 +114,8 @@ int geColumn::handle(int e)
 				m::SampleChannel* c = static_cast<m::SampleChannel*>(c::channel::addChannel(
 					m_index, ChannelType::SAMPLE, G_GUI_CHANNEL_H_1));
 				result = c::channel::loadChannel(c->index, gu_stripFileUrl(path));
-				if (result != G_RES_OK) {
-					deleteChannel(c->guiChannel);
+				if (result != G_RES_OK)
 					fails = true;
-				}
 			}
 			if (fails) {
 				if (paths.size() > 1)
@@ -166,8 +164,8 @@ void geColumn::resize(int X, int Y, int W, int H)
 
 void geColumn::refresh()
 {
-	for (int i=1; i<children(); i++) // Child 0 is 'add channel' button
-		static_cast<geChannel*>(child(i))->refresh();
+//	for (int i=1; i<children(); i++) // Child 0 is 'add channel' button
+//		static_cast<geChannel*>(child(i))->refresh();
 }
 
 
@@ -210,17 +208,17 @@ void geColumn::repositionChannels()
 /* -------------------------------------------------------------------------- */
 
 
-geChannel* geColumn::addChannel(m::Channel* ch, int size)
+giada::v::geChannel* geColumn::addChannel(m::Channel* ch, int size)
 {
-	geChannel* gch = nullptr;
+	giada::v::geChannel* gch = nullptr;
 
 	/* All geChannels are added with y=0. That's not a problem, they will be 
 	repositioned later on during geColumn::resize(). */
 
 	if (ch->type == ChannelType::SAMPLE)
-		gch = new geSampleChannel(x(), 0, w(), size, static_cast<m::SampleChannel*>(ch));
+		gch = new giada::v::geSampleChannel(x(), 0, w(), size, static_cast<m::SampleChannel*>(ch));
 	else
-		gch = new geMidiChannel(x(), 0, w(), size, static_cast<m::MidiChannel*>(ch));
+		gch = new giada::v::geMidiChannel(x(), 0, w(), size, static_cast<m::MidiChannel*>(ch));
 
 	add(gch);
 
@@ -234,7 +232,7 @@ geChannel* geColumn::addChannel(m::Channel* ch, int size)
 /* -------------------------------------------------------------------------- */
 
 
-void geColumn::deleteChannel(geChannel* gch)
+void geColumn::deleteChannel(giada::v::geChannel* gch)
 {
 	gch->hide();
 	remove(gch);
@@ -288,7 +286,7 @@ void geColumn::clear(bool full)
 	else {
 		while (children() >= 2) {  // skip "add new channel" btn
 			int i = children()-1;
-			deleteChannel(static_cast<geChannel*>(child(i)));
+			deleteChannel(static_cast<giada::v::geChannel*>(child(i)));
 		}
 	}
 }
@@ -299,7 +297,7 @@ void geColumn::clear(bool full)
 
 m::Channel* geColumn::getChannel(int i)
 {
-	return static_cast<geChannel*>(child(i + 1))->ch;  // Skip "add channel"
+	return static_cast<giada::v::geChannel*>(child(i + 1))->ch;  // Skip "add channel"
 }
 
 

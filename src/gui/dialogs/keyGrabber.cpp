@@ -25,17 +25,18 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../utils/gui.h"
-#include "../../utils/string.h"
-#include "../../core/conf.h"
-#include "../../core/channel.h"
-#include "../../core/sampleChannel.h"
-#include "../../core/midiChannel.h"
-#include "../../utils/log.h"
-#include "../elems/basics/box.h"
-#include "../elems/mainWindow/keyboard/keyboard.h"
-#include "../elems/mainWindow/keyboard/channel.h"
-#include "../elems/mainWindow/keyboard/channelButton.h"
+#include <cassert>
+#include "utils/gui.h"
+#include "utils/string.h"
+#include "core/conf.h"
+#include "core/channel.h"
+#include "core/sampleChannel.h"
+#include "core/midiChannel.h"
+#include "utils/log.h"
+#include "gui/elems/basics/box.h"
+#include "gui/elems/mainWindow/keyboard/keyboard.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
+#include "gui/elems/mainWindow/keyboard/channelButton.h"
 #include "keyGrabber.h"
 #include "config.h"
 #include "mainWindow.h"
@@ -98,8 +99,9 @@ void gdKeyGrabber::cb_clear()
 
 void gdKeyGrabber::setButtonLabel(int key)
 {
-	ch->guiChannel->mainButton->setKey(key);
-	ch->key = key;
+	assert(false);
+	//ch->guiChannel->mainButton->setKey(key);
+	//ch->key = key;
 }
 
 /* -------------------------------------------------------------------------- */

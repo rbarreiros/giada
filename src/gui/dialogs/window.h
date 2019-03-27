@@ -64,7 +64,7 @@ public:
 	gdWindow* getChild(int id);
 
 	/* hasWindow
-	 * true if the window with id 'id' exists in the stack. */
+	True if the window with id 'id' exists in the stack. */
 
 	bool hasWindow(int id);
 

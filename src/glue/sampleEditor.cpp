@@ -27,26 +27,26 @@
 
 #include <cassert>
 #include <FL/Fl.H>
-#include "../gui/dialogs/mainWindow.h"
-#include "../gui/dialogs/sampleEditor.h"
-#include "../gui/dialogs/warnings.h"
-#include "../gui/elems/basics/button.h"
-#include "../gui/elems/sampleEditor/waveTools.h"
-#include "../gui/elems/sampleEditor/volumeTool.h"
-#include "../gui/elems/sampleEditor/boostTool.h"
-#include "../gui/elems/sampleEditor/panTool.h"
-#include "../gui/elems/sampleEditor/pitchTool.h"
-#include "../gui/elems/sampleEditor/rangeTool.h"
-#include "../gui/elems/sampleEditor/shiftTool.h"
-#include "../gui/elems/sampleEditor/waveform.h"
-#include "../gui/elems/mainWindow/keyboard/channel.h"
-#include "../core/sampleChannel.h"
-#include "../core/waveFx.h"
-#include "../core/wave.h"
-#include "../core/waveManager.h"
-#include "../core/const.h"
-#include "../utils/gui.h"
-#include "../utils/log.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/sampleEditor.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/sampleEditor/waveTools.h"
+#include "gui/elems/sampleEditor/volumeTool.h"
+#include "gui/elems/sampleEditor/boostTool.h"
+#include "gui/elems/sampleEditor/panTool.h"
+#include "gui/elems/sampleEditor/pitchTool.h"
+#include "gui/elems/sampleEditor/rangeTool.h"
+#include "gui/elems/sampleEditor/shiftTool.h"
+#include "gui/elems/sampleEditor/waveform.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
+#include "core/sampleChannel.h"
+#include "core/waveFx.h"
+#include "core/wave.h"
+#include "core/waveManager.h"
+#include "core/const.h"
+#include "utils/gui.h"
+#include "utils/log.h"
 #include "channel.h"
 #include "sampleEditor.h"
 
@@ -262,11 +262,13 @@ void rewindPreview(m::SampleChannel* ch)
 
 void toNewChannel(m::SampleChannel* ch, int a, int b)
 {
-	m::SampleChannel* newCh = static_cast<m::SampleChannel*>(c::channel::addChannel(
-		ch->guiChannel->getColumnIndex(), ChannelType::SAMPLE, G_GUI_CHANNEL_H_1));
+	assert(false);
 
-	newCh->pushWave(m::waveManager::createFromWave(ch->wave.get(), a, b));
-	newCh->guiChannel->update();
+	//m::SampleChannel* newCh = static_cast<m::SampleChannel*>(c::channel::addChannel(
+	//	ch->guiChannel->getColumnIndex(), ChannelType::SAMPLE, G_GUI_CHANNEL_H_1));
+
+	//newCh->pushWave(m::waveManager::createFromWave(ch->wave.get(), a, b));
+	//newCh->guiChannel->update();
 }
 
 

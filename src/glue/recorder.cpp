@@ -26,21 +26,21 @@
 
 
 #include <cassert>
-#include "../gui/dialogs/warnings.h"
-#include "../gui/elems/mainWindow/keyboard/channel.h"
-#include "../gui/elems/mainWindow/keyboard/sampleChannel.h"
-#include "../core/const.h"
-#include "../core/clock.h"
-#include "../core/kernelMidi.h"
-#include "../core/channel.h"
-#include "../core/recorderHandler.h"
-#include "../core/recorder.h"
-#include "../core/action.h"
-#include "../core/mixer.h"
-#include "../core/sampleChannel.h"
-#include "../core/midiChannel.h"
-#include "../utils/gui.h"
-#include "../utils/log.h"
+#include "gui/dialogs/warnings.h"
+#include "gui/elems/mainWindow/keyboard/channel.h"
+#include "gui/elems/mainWindow/keyboard/sampleChannel.h"
+#include "core/const.h"
+#include "core/clock.h"
+#include "core/kernelMidi.h"
+#include "core/channel.h"
+#include "core/recorderHandler.h"
+#include "core/recorder.h"
+#include "core/action.h"
+#include "core/mixer.h"
+#include "core/sampleChannel.h"
+#include "core/midiChannel.h"
+#include "utils/gui.h"
+#include "utils/log.h"
 #include "recorder.h"
 
 
@@ -48,11 +48,11 @@ namespace giada {
 namespace c {
 namespace recorder 
 {
-void clearAllActions(geChannel* gch)
+void clearAllActions(v::geChannel* gch)
 {
 	if (!gdConfirmWin("Warning", "Clear all actions: are you sure?"))
 		return;
-	gch->ch->kill(0);
+	//gch->ch->kill(0);
 	m::recorder::clearChannel(gch->ch->index);
 	updateChannel(gch);
 }
@@ -61,7 +61,7 @@ void clearAllActions(geChannel* gch)
 /* -------------------------------------------------------------------------- */
 
 
-void clearVolumeActions(geChannel* gch)
+void clearVolumeActions(v::geChannel* gch)
 {
 	if (!gdConfirmWin("Warning", "Clear all volume actions: are you sure?"))
 		return;
@@ -73,7 +73,7 @@ void clearVolumeActions(geChannel* gch)
 /* -------------------------------------------------------------------------- */
 
 
-void clearStartStopActions(geChannel* gch)
+void clearStartStopActions(v::geChannel* gch)
 {
 	if (!gdConfirmWin("Warning", "Clear all start/stop actions: are you sure?"))
 		return;
@@ -88,14 +88,14 @@ void clearStartStopActions(geChannel* gch)
 /* -------------------------------------------------------------------------- */
 
 
-void updateChannel(geChannel* gch, bool refreshActionEditor)
+void updateChannel(v::geChannel* gch, bool refreshActionEditor)
 {
 	gch->ch->hasActions = m::recorder::hasActions(gch->ch->index);
 	if (!gch->ch->hasActions)
 		gch->ch->readActions = false;
 
 	if (gch->ch->type == ChannelType::SAMPLE) {
-		geSampleChannel* gsch = static_cast<geSampleChannel*>(gch);
+		v::geSampleChannel* gsch = static_cast<v::geSampleChannel*>(gch);
 		gsch->ch->hasActions ? gsch->showActionButton() : gsch->hideActionButton();
 	}
 	if (refreshActionEditor)

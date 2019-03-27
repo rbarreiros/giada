@@ -28,7 +28,6 @@
 #include <cassert>
 #include <cstring>
 #include "utils/log.h"
-#include "gui/elems/mainWindow/keyboard/channel.h"
 #include "const.h"
 #include "channelManager.h"
 #include "pluginManager.h"
@@ -51,8 +50,7 @@ namespace giada {
 namespace m 
 {
 Channel::Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t column)
-: guiChannel     (nullptr),
-  type           (type),
+: type           (type),
   status         (status),
   recStatus      (ChannelStatus::OFF),
   column         (column),

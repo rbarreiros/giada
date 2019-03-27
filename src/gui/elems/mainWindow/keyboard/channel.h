@@ -31,7 +31,6 @@
 
 #include <FL/Fl_Group.H>
 #include "core/types.h"
-#include "core/channel.h"
 
 
 class geChannelStatus;
@@ -43,11 +42,18 @@ class geStatusButton;
 #endif
 
 
+namespace giada {
+namespace m
+{
+class Channel;
+}
+namespace v
+{
 class geChannel : public Fl_Group
 {
 public:
 
-	geChannel(int x, int y, int w, int h, giada::m::Channel* ch);
+	geChannel(int x, int y, int w, int h, m::Channel* ch);
 
 	/* reset
 	Resets channel to initial status. */
@@ -83,7 +89,7 @@ public:
 
 	bool handleKey(int e);
 
-	giada::m::Channel* ch;
+	m::Channel* ch;
  
 	geButton*        button;
 	geChannelStatus* status;
@@ -144,6 +150,7 @@ protected:
 
 	void packWidgets();
 };
+}} // giada::v::
 
 
 #endif

@@ -47,9 +47,6 @@
 #endif
 
 
-class geChannel;
-
-
 namespace giada {
 namespace m
 {
@@ -178,12 +175,6 @@ public:
 	void setPan(float v);
 
 	void calcVolumeEnvelope();
-
-	/* guiChannel
-	Pointer to a gChannel object, part of the GUI. TODO - remove this and send
-	signals instead. */
-
-	geChannel* guiChannel;
 
 	/* buffer
 	Working buffer for internal processing. */
