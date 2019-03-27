@@ -89,7 +89,7 @@ SampleChannel::SampleChannel(const SampleChannel& o)
 	}
 		
 	if (o.wave)
-		pushWave(std::make_unique<Wave>(*o.wave)); // invoke Wave's copy constructor	
+		wave = std::make_unique<Wave>(*o.wave); // invoke Wave's copy constructor	
 
 	bufferPreview.alloc(o.bufferPreview.countFrames(), G_MAX_IO_CHANS);
 }

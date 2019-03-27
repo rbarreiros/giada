@@ -30,8 +30,8 @@
 
 #include <cassert>
 #include <FL/Fl.H>
-#include "../utils/log.h"
-#include "../utils/time.h"
+#include "utils/log.h"
+#include "utils/time.h"
 #include "const.h"
 #include "plugin.h"
 
