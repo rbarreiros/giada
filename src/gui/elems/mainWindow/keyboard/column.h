@@ -90,7 +90,7 @@ public:
 
 	void refresh();
 
-	giada::m::Channel* getChannel(int i);
+	const giada::m::Channel* getChannel(int i);
 	int getIndex();
 	void setIndex(int i);
 	bool isEmpty();   

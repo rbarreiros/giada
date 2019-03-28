@@ -53,7 +53,7 @@ class geChannel : public Fl_Group
 {
 public:
 
-	geChannel(int x, int y, int w, int h, m::Channel* ch);
+	geChannel(int x, int y, int w, int h, const m::Channel* ch);
 
 	/* reset
 	Resets channel to initial status. */
@@ -89,7 +89,7 @@ public:
 
 	bool handleKey(int e);
 
-	m::Channel* ch;
+	const m::Channel* ch;
  
 	geButton*        button;
 	geChannelStatus* status;

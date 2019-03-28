@@ -92,6 +92,7 @@ void fillPatchGlobalsPlugins_(vector<const m::Plugin*> stack, vector<m::patch::p
 
 void fillPatchColumns_()
 {
+/*
 	using namespace giada::m;
 
 	for (unsigned i=0; i<G_MainWin->keyboard->getTotalColumns(); i++) {
@@ -110,6 +111,7 @@ void fillPatchColumns_()
 		}
 		patch::columns.push_back(pCol);
 	}
+*/
 }
 
 

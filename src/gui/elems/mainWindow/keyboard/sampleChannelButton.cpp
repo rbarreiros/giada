@@ -65,7 +65,7 @@ int geSampleChannelButton::handle(int e)
 		}
 		case FL_PASTE: {
 			v::geSampleChannel*  gch = static_cast<v::geSampleChannel*>(parent());
-			m::SampleChannel* ch  = static_cast<m::SampleChannel*>(gch->ch);
+			const m::SampleChannel* ch  = static_cast<const m::SampleChannel*>(gch->ch);
 			int result = c::channel::loadChannel(ch->index, u::string::trim(gu_stripFileUrl(Fl::event_text())));
 			if (result != G_RES_OK)
 				G_MainWin->keyboard->printChannelMessage(result);

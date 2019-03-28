@@ -49,7 +49,7 @@ extern gdMainWindow* G_MainWin;
 namespace giada {
 namespace v
 {
-geChannel::geChannel(int X, int Y, int W, int H, m::Channel* ch)
+geChannel::geChannel(int X, int Y, int W, int H, const m::Channel* ch)
 : Fl_Group(X, Y, W, H, nullptr),
   ch      (ch)
 {

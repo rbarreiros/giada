@@ -47,7 +47,7 @@ class geSampleChannel : public geChannel
 {
 public:
 
-	geSampleChannel(int x, int y, int w, int h, m::SampleChannel* ch);
+	geSampleChannel(int x, int y, int w, int h, const m::SampleChannel* ch);
 
 	void resize(int x, int y, int w, int h) override;
 

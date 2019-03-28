@@ -103,7 +103,7 @@ enum class Menu
 void menuCallback(Fl_Widget* w, void* v)
 {
 	geSampleChannel*  gch = static_cast<geSampleChannel*>(w);
-	m::SampleChannel* ch  = static_cast<m::SampleChannel*>(gch->ch);
+	const m::SampleChannel* ch  = static_cast<const m::SampleChannel*>(gch->ch);
 
 	Menu selectedItem = (Menu) (intptr_t) v;
 
@@ -114,37 +114,37 @@ void menuCallback(Fl_Widget* w, void* v)
 			break;
 		}
 		case Menu::LOAD_SAMPLE: {
-			gdWindow *w = new gdBrowserLoad(m::conf::browserX, m::conf::browserY,
+			/*gdWindow *w = new gdBrowserLoad(m::conf::browserX, m::conf::browserY,
 				m::conf::browserW, m::conf::browserH, "Browse sample",
 				m::conf::samplePath.c_str(), c::storage::loadSample, ch);
-			u::gui::openSubWindow(G_MainWin, w, WID_FILE_BROWSER);
+			u::gui::openSubWindow(G_MainWin, w, WID_FILE_BROWSER);*/
 			break;
 		}
 		case Menu::EXPORT_SAMPLE: {
-			gdWindow *w = new gdBrowserSave(m::conf::browserX, m::conf::browserY,
+			/*gdWindow *w = new gdBrowserSave(m::conf::browserX, m::conf::browserY,
 				m::conf::browserW, m::conf::browserH, "Save sample",
 				m::conf::samplePath.c_str(), "", c::storage::saveSample, ch);
-			u::gui::openSubWindow(G_MainWin, w, WID_FILE_BROWSER);
+			u::gui::openSubWindow(G_MainWin, w, WID_FILE_BROWSER);*/
 			break;
 		}
 		case Menu::SETUP_KEYBOARD_INPUT: {
-			new gdKeyGrabber(ch); // FIXME - use gu_openSubWindow
+			//new gdKeyGrabber(ch); // FIXME - use gu_openSubWindow
 			break;
 		}
 		case Menu::SETUP_MIDI_INPUT: {
-			u::gui::openSubWindow(G_MainWin, new gdMidiInputChannel(ch), 0);
+			//u::gui::openSubWindow(G_MainWin, new gdMidiInputChannel(ch), 0);
 			break;
 		}
 		case Menu::SETUP_MIDI_OUTPUT: {
-			u::gui::openSubWindow(G_MainWin, new gdMidiOutputSampleCh(ch), 0);
+			//u::gui::openSubWindow(G_MainWin, new gdMidiOutputSampleCh(ch), 0);
 			break;
 		}
 		case Menu::EDIT_SAMPLE: {
-			u::gui::openSubWindow(G_MainWin, new gdSampleEditor(ch), WID_SAMPLE_EDITOR);
+			//u::gui::openSubWindow(G_MainWin, new gdSampleEditor(ch), WID_SAMPLE_EDITOR);
 			break;
 		}
 		case Menu::EDIT_ACTIONS: {
-			u::gui::openSubWindow(G_MainWin, new v::gdSampleActionEditor(ch), WID_ACTION_EDITOR);
+			//u::gui::openSubWindow(G_MainWin, new v::gdSampleActionEditor(ch), WID_ACTION_EDITOR);
 			break;
 		}
 		case Menu::CLEAR_ACTIONS:
@@ -189,7 +189,7 @@ void menuCallback(Fl_Widget* w, void* v)
 			break;
 		}
 		case Menu::RENAME_CHANNEL: {
-			u::gui::openSubWindow(G_MainWin, new gdChannelNameInput(ch), WID_SAMPLE_NAME);
+			//u::gui::openSubWindow(G_MainWin, new gdChannelNameInput(ch), WID_SAMPLE_NAME);
 			break;
 		}
 		case Menu::FREE_CHANNEL: {
@@ -211,7 +211,7 @@ void menuCallback(Fl_Widget* w, void* v)
 /* -------------------------------------------------------------------------- */
 
 
-geSampleChannel::geSampleChannel(int X, int Y, int W, int H, m::SampleChannel* ch)
+geSampleChannel::geSampleChannel(int X, int Y, int W, int H, const m::SampleChannel* ch)
 	: geChannel(X, Y, W, H, ch)
 {
 	begin();
@@ -221,7 +221,7 @@ geSampleChannel::geSampleChannel(int X, int Y, int W, int H, m::SampleChannel* c
 	status      = new geChannelStatus(arm->x()+arm->w()+4, y(), G_GUI_UNIT, H, ch);
 	mainButton  = new geSampleChannelButton(status->x()+status->w()+4, y(), G_GUI_UNIT, H, "-- no sample --");
 	readActions = new geButton(mainButton->x()+mainButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", readActionOff_xpm, readActionOn_xpm);
-	modeBox     = new geChannelMode(readActions->x()+readActions->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, ch);
+	modeBox     = new geChannelMode(readActions->x()+readActions->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, /* TODO !!!!! */nullptr);
 	mute        = new geButton(modeBox->x()+modeBox->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", muteOff_xpm, muteOn_xpm);
 	solo        = new geButton(mute->x()+mute->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", soloOff_xpm, soloOn_xpm);
 #ifdef WITH_VST
@@ -278,7 +278,7 @@ void geSampleChannel::cb_readActions(Fl_Widget* v, void* p) { ((geSampleChannel*
 
 void geSampleChannel::cb_button()
 {
-	v::dispatcher::dispatchTouch(ch, button->value());
+	//v::dispatcher::dispatchTouch(ch, button->value());
 }
 
 
@@ -295,7 +295,7 @@ void geSampleChannel::cb_openMenu()
 
 	Fl_Menu_Item rclick_menu[] = {
 		{"Input monitor",            0, menuCallback, (void*) Menu::INPUT_MONITOR,
-			FL_MENU_TOGGLE | FL_MENU_DIVIDER | (static_cast<m::SampleChannel*>(ch)->inputMonitor ? FL_MENU_VALUE : 0)},
+			FL_MENU_TOGGLE | FL_MENU_DIVIDER | (static_cast<const m::SampleChannel*>(ch)->inputMonitor ? FL_MENU_VALUE : 0)},
 		{"Load new sample...",       0, menuCallback, (void*) Menu::LOAD_SAMPLE},
 		{"Export sample to file...", 0, menuCallback, (void*) Menu::EXPORT_SAMPLE},
 		{"Setup keyboard input...",  0, menuCallback, (void*) Menu::SETUP_KEYBOARD_INPUT},
@@ -335,7 +335,7 @@ void geSampleChannel::cb_openMenu()
 	/* No 'clear start/stop actions' for those channels in loop mode: they cannot
 	have start/stop actions. */
 
-	if (static_cast<m::SampleChannel*>(ch)->isAnyLoopMode())
+	if (static_cast<const m::SampleChannel*>(ch)->isAnyLoopMode())
 		rclick_menu[(int) Menu::CLEAR_ACTIONS_START_STOP].deactivate();
 
 	Fl_Menu_Button* b = new Fl_Menu_Button(0, 0, 100, 50);
@@ -370,7 +370,7 @@ void geSampleChannel::refresh()
 
 	setColorsByStatus();
 
-	if (static_cast<m::SampleChannel*>(ch)->wave != nullptr) {
+	if (static_cast<const m::SampleChannel*>(ch)->wave != nullptr) {
 		if (m::mixer::recording && ch->armed)
 			mainButton->setInputRecordMode();
 		if (m::recorder::isActive())
@@ -448,7 +448,7 @@ void geSampleChannel::update()
 
 void geSampleChannel::showActionButton()
 {
-	readActions->value(static_cast<m::SampleChannel*>(ch)->readActions);
+	readActions->value(static_cast<const m::SampleChannel*>(ch)->readActions);
 	readActions->show();
 	packWidgets();
 	redraw();

@@ -295,7 +295,7 @@ void geColumn::clear(bool full)
 /* -------------------------------------------------------------------------- */
 
 
-m::Channel* geColumn::getChannel(int i)
+const m::Channel* geColumn::getChannel(int i)
 {
 	return static_cast<giada::v::geChannel*>(child(i + 1))->ch;  // Skip "add channel"
 }

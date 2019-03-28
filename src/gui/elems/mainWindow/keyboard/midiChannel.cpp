@@ -88,7 +88,7 @@ enum class Menu
 void menuCallback(Fl_Widget* w, void* v)
 {
 	geMidiChannel*  gch = static_cast<geMidiChannel*>(w);
-	m::MidiChannel* ch  = static_cast<m::MidiChannel*>(gch->ch);
+	const m::MidiChannel* ch  = static_cast<const m::MidiChannel*>(gch->ch);
 
 	Menu selectedItem = (Menu) (intptr_t) v;
 
@@ -100,19 +100,19 @@ void menuCallback(Fl_Widget* w, void* v)
 		case Menu::__END_RESIZE_SUBMENU__:
 			break;
 		case Menu::EDIT_ACTIONS:
-			u::gui::openSubWindow(G_MainWin, new v::gdMidiActionEditor(ch), WID_ACTION_EDITOR);
+			//u::gui::openSubWindow(G_MainWin, new v::gdMidiActionEditor(ch), WID_ACTION_EDITOR);
 			break;
 		case Menu::CLEAR_ACTIONS_ALL:
 			c::recorder::clearAllActions(gch);
 			break;
 		case Menu::SETUP_KEYBOARD_INPUT:
-			u::gui::openSubWindow(G_MainWin, new gdKeyGrabber(ch), 0);
+			//u::gui::openSubWindow(G_MainWin, new gdKeyGrabber(ch), 0);
 			break;
 		case Menu::SETUP_MIDI_INPUT:
-			u::gui::openSubWindow(G_MainWin, new gdMidiInputChannel(ch), 0);
+			//u::gui::openSubWindow(G_MainWin, new gdMidiInputChannel(ch), 0);
 			break;
 		case Menu::SETUP_MIDI_OUTPUT:
-			u::gui::openSubWindow(G_MainWin, new gdMidiOutputMidiCh(ch), 0);
+			//u::gui::openSubWindow(G_MainWin, new gdMidiOutputMidiCh(ch), 0);
 			break;
 		case Menu::RESIZE_H1:
 			gch->changeSize(G_GUI_CHANNEL_H_1);
@@ -134,7 +134,7 @@ void menuCallback(Fl_Widget* w, void* v)
 			c::channel::cloneChannel(ch->index);
 			break;		
 		case Menu::RENAME_CHANNEL:
-			u::gui::openSubWindow(G_MainWin, new gdChannelNameInput(ch), WID_SAMPLE_NAME);
+			//u::gui::openSubWindow(G_MainWin, new gdChannelNameInput(ch), WID_SAMPLE_NAME);
 			break;
 		case Menu::DELETE_CHANNEL:
 			c::channel::deleteChannel(ch->index);
@@ -148,7 +148,7 @@ void menuCallback(Fl_Widget* w, void* v)
 /* -------------------------------------------------------------------------- */
 
 
-geMidiChannel::geMidiChannel(int X, int Y, int W, int H, m::MidiChannel* ch)
+geMidiChannel::geMidiChannel(int X, int Y, int W, int H, const m::MidiChannel* ch)
 	: geChannel(X, Y, W, H, ch)
 {
 	begin();
@@ -213,7 +213,7 @@ void geMidiChannel::cb_openMenu(Fl_Widget* v, void* p) { ((geMidiChannel*)p)->cb
 
 void geMidiChannel::cb_button()
 {
-	v::dispatcher::dispatchTouch(ch, button->value());
+	//v::dispatcher::dispatchTouch(ch, button->value());
 }
 
 

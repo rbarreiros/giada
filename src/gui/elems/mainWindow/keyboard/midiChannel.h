@@ -51,7 +51,7 @@ private:
 
 public:
 
-	geMidiChannel(int x, int y, int w, int h, m::MidiChannel* ch);
+	geMidiChannel(int x, int y, int w, int h, const m::MidiChannel* ch);
 
 	void resize(int x, int y, int w, int h) override;
 

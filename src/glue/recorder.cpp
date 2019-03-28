@@ -75,13 +75,14 @@ void clearVolumeActions(v::geChannel* gch)
 
 void clearStartStopActions(v::geChannel* gch)
 {
+	/*
 	if (!gdConfirmWin("Warning", "Clear all start/stop actions: are you sure?"))
 		return;
 	gch->ch->kill(0);
 	m::recorder::clearActions(gch->ch->index, m::MidiEvent::NOTE_ON);
 	m::recorder::clearActions(gch->ch->index, m::MidiEvent::NOTE_OFF);
 	m::recorder::clearActions(gch->ch->index, m::MidiEvent::NOTE_KILL);
-	updateChannel(gch);
+	updateChannel(gch);*/
 }
 
 
@@ -89,7 +90,7 @@ void clearStartStopActions(v::geChannel* gch)
 
 
 void updateChannel(v::geChannel* gch, bool refreshActionEditor)
-{
+{/*
 	gch->ch->hasActions = m::recorder::hasActions(gch->ch->index);
 	if (!gch->ch->hasActions)
 		gch->ch->readActions = false;
@@ -99,7 +100,7 @@ void updateChannel(v::geChannel* gch, bool refreshActionEditor)
 		gsch->ch->hasActions ? gsch->showActionButton() : gsch->hideActionButton();
 	}
 	if (refreshActionEditor)
-		u::gui::refreshActionEditor(); // refresh a.editor window, it could be open
+		u::gui::refreshActionEditor(); // refresh a.editor window, it could be open*/
 }
 
 }}} // giada::c::recorder::
