@@ -34,13 +34,11 @@
 #include "channelStatus.h"
 
 
-using namespace giada;
-using namespace giada::m;
-
-
-geChannelStatus::geChannelStatus(int x, int y, int w, int h, const SampleChannel* ch, 
-	const char* l)
-: Fl_Box(x, y, w, h, l), ch(ch)
+namespace giada {
+namespace v
+{
+geChannelStatus::geChannelStatus(int x, int y, int w, int h, const m::SampleChannel* ch)
+: Fl_Box(x, y, w, h), ch(ch)
 {
 }
 
@@ -70,10 +68,10 @@ void geChannelStatus::draw()
 		fl_rectf(x()+1, y()+1, w()-2, h()-2, G_COLOR_GREY_2);  // status empty
 
 
-	if (mixer::recording && ch->armed)
+	if (m::mixer::recording && ch->armed)
 		fl_rectf(x()+1, y()+1, w()-2, h()-2, G_COLOR_RED);     // take in progress
 	else
-	if (recorder::isActive())
+	if (m::recorder::isActive())
 		fl_rectf(x()+1, y()+1, w()-2, h()-2, G_COLOR_BLUE);    // action recording
 
 	/* Equation for the progress bar: 
@@ -85,5 +83,6 @@ void geChannelStatus::draw()
 	else
 		pos = (pos * (w()-1)) / ((ch->getEnd() - ch->getBegin()));
 	fl_rectf(x()+1, y()+1, pos, h()-2, G_COLOR_LIGHT_1);
-
 }
+
+}} // giada::v::

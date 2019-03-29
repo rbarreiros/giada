@@ -46,7 +46,7 @@ class geColumn : public Fl_Group
 {
 public:
 
-	geColumn(int x, int y, int w, int h, int index, giada::v::geKeyboard* parent);
+	geColumn(int x, int y, int w, int h, int index, geKeyboard* parent);
 	~geColumn();
 
 	int handle(int e) override;
