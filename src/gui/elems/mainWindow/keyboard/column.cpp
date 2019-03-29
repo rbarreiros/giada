@@ -51,7 +51,7 @@ geColumn::geColumn(int X, int Y, int W, int H, int index, geKeyboard* parent)
   m_parent(parent), 
   m_index (index)
 {
-	/* geColumn does a bit of a mess: we pass a pointer to its m_parent (geKeyboard) and
+	/* geColumn does a bit of a mess: we pass a pointer to its parent (geKeyboard) and
 	the geColumn itself deals with the creation of another widget, outside geColumn
 	and inside geKeyboard, which handles the vertical resize bar (geResizerBar).
 	The resizer cannot stay inside geColumn: it needs a broader view on the other
@@ -93,7 +93,7 @@ int geColumn::handle(int e)
 	switch (e) {
 		case FL_RELEASE: {
 			if (Fl::event_button() == FL_RIGHT_MOUSE) {
-				__cb_addChannel();
+				cb_addChannel();
 				return 1;
 			}
 		}
@@ -187,7 +187,7 @@ void geColumn::draw()
 /* -------------------------------------------------------------------------- */
 
 
-void geColumn::cb_addChannel(Fl_Widget* v, void* p) { ((geColumn*)p)->__cb_addChannel(); }
+void geColumn::cb_addChannel(Fl_Widget* v, void* p) { ((geColumn*)p)->cb_addChannel(); }
 
 
 /* -------------------------------------------------------------------------- */
@@ -205,7 +205,7 @@ void geColumn::repositionChannels()
 /* -------------------------------------------------------------------------- */
 
 
-geChannel* geColumn::addChannel(m::Channel* ch, int size)
+geChannel* geColumn::addChannel(const m::Channel* ch, int size)
 {
 	geChannel* gch = nullptr;
 
@@ -213,9 +213,9 @@ geChannel* geColumn::addChannel(m::Channel* ch, int size)
 	repositioned later on during geColumn::resize(). */
 
 	if (ch->type == ChannelType::SAMPLE)
-		gch = new geSampleChannel(x(), 0, w(), size, static_cast<m::SampleChannel*>(ch));
+		gch = new geSampleChannel(x(), 0, w(), size, static_cast<const m::SampleChannel*>(ch));
 	else
-		gch = new geMidiChannel(x(), 0, w(), size, static_cast<m::MidiChannel*>(ch));
+		gch = new geMidiChannel(x(), 0, w(), size, static_cast<const m::MidiChannel*>(ch));
 
 	add(gch);
 
@@ -229,9 +229,9 @@ geChannel* geColumn::addChannel(m::Channel* ch, int size)
 /* -------------------------------------------------------------------------- */
 
 
-void geColumn::__cb_addChannel()
+void geColumn::cb_addChannel()
 {
-	gu_log("[geColumn::__cb_addChannel] m_index = %d\n", m_index);
+	gu_log("[geColumn::cb_addChannel] m_index = %d\n", m_index);
 
 	Fl_Menu_Item rclick_menu[] = {
 		{"Sample channel"},

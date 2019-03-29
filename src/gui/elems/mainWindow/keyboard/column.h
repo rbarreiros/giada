@@ -44,17 +44,6 @@ class geChannel;
 
 class geColumn : public Fl_Group
 {
-private:
-
-	static void cb_addChannel  (Fl_Widget* v, void* p);
-	inline void __cb_addChannel();
-
-	geButton*     m_addChannelBtn;
-	geResizerBar* m_resizer;
-	geKeyboard*   m_parent;
-
-	int m_index;
-
 public:
 
 	geColumn(int x, int y, int w, int h, int index, giada::v::geKeyboard* parent);
@@ -68,7 +57,7 @@ public:
 	Adds a new channel in this column and set the internal pointer to channel 
 	to 'ch'. */
 
-	geChannel* addChannel(m::Channel* ch, int size);
+	geChannel* addChannel(const m::Channel* ch, int size);
 
 	void repositionChannels();
 
@@ -82,6 +71,17 @@ public:
 	void setIndex(int i);
 	bool isEmpty();   
 	int countChannels();
+
+private:
+
+	static void cb_addChannel(Fl_Widget* v, void* p);
+	void cb_addChannel();
+
+	geButton*     m_addChannelBtn;
+	geResizerBar* m_resizer;
+	geKeyboard*   m_parent;
+
+	int m_index;
 };
 }} // giada::v::
 
