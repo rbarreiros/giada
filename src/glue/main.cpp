@@ -228,6 +228,7 @@ void clearAllActions()
 
 void resetToInitState(bool resetGui, bool createColumns)
 {
+#if 0
 	u::gui::closeAllSubwindows();
 	mixer::close();
 	clock::init(conf::samplerate, conf::midiTCfps);
@@ -247,6 +248,7 @@ void resetToInitState(bool resetGui, bool createColumns)
 
 	if (resetGui)
 		u::gui::updateControls();
+#endif
 }
 
 

@@ -159,18 +159,6 @@ void geKeyboard::refresh()
 /* -------------------------------------------------------------------------- */
 
 
-geColumn* geKeyboard::getColumnByIndex(int index)
-{
-	for (unsigned i=0; i<columns.size(); i++)
-		if (columns.at(i)->getIndex() == index)
-			return columns.at(i);
-	return nullptr;
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
 int geKeyboard::handle(int e)
 {
 	switch (e) {
@@ -186,28 +174,6 @@ int geKeyboard::handle(int e)
 		}
 	}
 	return Fl_Group::handle(e);     // Assume the buttons won't handle the Keyboard events
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geKeyboard::clear()
-{
-	for (unsigned i=0; i<columns.size(); i++)
-		Fl::delete_widget(columns.at(i));
-	columns.clear();
-	indexColumn = 0;     // new columns will start from index=0
-	addColumnBtn->position(8, y());
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geKeyboard::setChannelWithActions(geSampleChannel* gch)
-{
-// TODO - remove me
 }
 
 
@@ -283,15 +249,6 @@ void geKeyboard::refreshColIndexes()
 {
 	for (unsigned i=0; i<columns.size(); i++)
 		columns.at(i)->setIndex(i);
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-int geKeyboard::getColumnWidth(int i)
-{
-  return getColumnByIndex(i)->w();
 }
 
 

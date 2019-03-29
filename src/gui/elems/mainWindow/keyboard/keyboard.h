@@ -78,25 +78,10 @@ public:
 
 	void organizeColumns();
 
-	/* getColumnByIndex
-	 * return the column with index 'index', or nullptr if not found. */
-
-	geColumn* getColumnByIndex(int index);
-
 	/* getColumn
 	 * return the column with from columns->at(i). */
 
 	geColumn* getColumn(int i);
-
-	/* clear
-	 * delete all channels and groups. */
-
-	void clear();
-
-	/* setChannelWithActions
-	 * add 'R' button if channel has actions, and set recorder to active. */
-
-	void setChannelWithActions(geSampleChannel* gch);
 
 	/* printChannelMessage
 	 * given any output by glue_loadChannel, print the message on screen
@@ -108,12 +93,6 @@ public:
 
 	unsigned getTotalColumns() { return columns.size(); }
 
-	/* getColumnWidth
-	 * return the width in pixel of i-th column. Warning: 'i' is the i-th column
-	 * in the column array, NOT the index. */
-
-	int getColumnWidth(int i);
-
 	/* getChannel
 	Given a chanIndex returns the UI channel it belongs to. */
 
@@ -122,6 +101,11 @@ public:
 private:
 
 	static const int COLUMN_GAP = 16;
+
+	/* indexColumn
+	The last index used for column. */
+
+	static int indexColumn;
 
 	void emptyColumns();
 	
@@ -134,15 +118,9 @@ private:
 	static void cb_addColumn(Fl_Widget* v, void* p);
 	void cb_addColumn(int width=G_DEFAULT_COLUMN_WIDTH);
 
-	/* indexColumn
-	 * the last index used for column. */
-
-	static int indexColumn;
-
 	geButton* addColumnBtn;
 
 	std::vector<geColumn*> columns;
-
 };
 }} // giada::v::
 
