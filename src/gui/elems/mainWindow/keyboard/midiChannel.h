@@ -42,24 +42,18 @@ namespace v
 {
 class geMidiChannel : public geChannel
 {
+public:
+
+    geMidiChannel(int x, int y, int w, int h, const m::MidiChannel* ch);
+
+    void resize(int x, int y, int w, int h) override;
+
 private:
 
 	static void cb_button(Fl_Widget* v, void* p);
 	static void cb_openMenu(Fl_Widget* v, void* p);
 	void cb_button();
 	void cb_openMenu();
-
-public:
-
-	geMidiChannel(int x, int y, int w, int h, const m::MidiChannel* ch);
-
-	void resize(int x, int y, int w, int h) override;
-
-	void reset() override;
-	void update() override;
-	void refresh() override;
-
-	int keyPress(int event);  // TODO - move to base class
 };
 }} // giada::v::
 

@@ -161,7 +161,7 @@ geMidiChannel::geMidiChannel(int X, int Y, int W, int H, const m::MidiChannel* c
 
 	button     = new geButton(x(), y(), G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm);
 	arm        = new geButton(button->x()+button->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm);
-	mainButton = new geMidiChannelButton(arm->x()+arm->w()+4, y(), w() - delta, H, "-- MIDI --");
+	mainButton = new geMidiChannelButton(arm->x()+arm->w()+4, y(), w() - delta, H, ch);
 	mute       = new geButton(mainButton->x()+mainButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", muteOff_xpm, muteOn_xpm);
 	solo       = new geButton(mute->x()+mute->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", soloOff_xpm, soloOn_xpm);
 #if defined(WITH_VST)
@@ -175,7 +175,18 @@ geMidiChannel::geMidiChannel(int X, int Y, int W, int H, const m::MidiChannel* c
 
 	resizable(mainButton);
 
-	update();
+	vol->value(ch->volume);
+	mute->value(ch->mute);
+	solo->value(ch->solo);
+
+	mainButton->setKey(ch->key);
+
+	arm->value(ch->armed);
+
+#ifdef WITH_VST
+	fx->status = ch->plugins.size() > 0;
+	fx->redraw();
+#endif
 
 	button->callback(cb_button, (void*)this);
 	button->when(FL_WHEN_CHANGED);   // do callback on keypress && on keyrelease
@@ -257,61 +268,6 @@ void geMidiChannel::cb_openMenu()
 	if (m)
 		m->do_callback(this, m->user_data());
 	return;
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geMidiChannel::refresh()
-{
-	setColorsByStatus();
-	if (m::recorder::isActive() && ch->armed)
-		mainButton->setActionRecordMode();
-	mainButton->redraw();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geMidiChannel::reset()
-{
-	mainButton->setDefaultMode("-- MIDI --");
-	mainButton->redraw();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geMidiChannel::update()
-{
-	const m::MidiChannel* mch = static_cast<const m::MidiChannel*>(ch);
-
-	std::string label; 
-	if (mch->name.empty())
-		label = "-- MIDI --";
-	else
-		label = mch->name.c_str();
-
-	if (mch->midiOut) 
-		label += " (ch " + u::string::iToString(mch->midiOutChan + 1) + " out)";
-
-	mainButton->label(label.c_str());
-
-	vol->value(mch->volume);
-	mute->value(mch->mute);
-	solo->value(mch->solo);
-
-	mainButton->setKey(mch->key);
-
-	arm->value(mch->armed);
-
-#ifdef WITH_VST
-	fx->status = mch->plugins.size() > 0;
-	fx->redraw();
-#endif
 }
 
 

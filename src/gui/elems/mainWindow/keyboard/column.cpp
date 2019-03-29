@@ -43,15 +43,13 @@
 #include "column.h"
 
 
-using std::vector;
-using std::string;
-using namespace giada;
-
-
-geColumn::geColumn(int X, int Y, int W, int H, int index, v::geKeyboard* parent)
-	: Fl_Group(X, Y, W, H), 
-		m_parent(parent), 
-		m_index (index)
+namespace giada {
+namespace v
+{
+geColumn::geColumn(int X, int Y, int W, int H, int index, geKeyboard* parent)
+: Fl_Group(X, Y, W, H), 
+  m_parent(parent), 
+  m_index (index)
 {
 	/* geColumn does a bit of a mess: we pass a pointer to its m_parent (geKeyboard) and
 	the geColumn itself deals with the creation of another widget, outside geColumn
@@ -105,14 +103,13 @@ int geColumn::handle(int e)
 			return 1;
 		}
 		case FL_PASTE: {              // handle actual drop (paste) operation
-			vector<string> paths = u::string::split(Fl::event_text(), "\n");
+			std::vector<std::string> paths = u::string::split(Fl::event_text(), "\n");
 			bool fails = false;
 			int result = 0;
-			for (string& path : paths) {
+			for (std::string& path : paths) {
 				gu_log("[geColumn::handle] loading %s...\n", path.c_str());
 				// TODO - c::channel::addAndLoad(...)
-				m::SampleChannel* c = static_cast<m::SampleChannel*>(c::channel::addChannel(
-					m_index, ChannelType::SAMPLE, G_GUI_CHANNEL_H_1));
+				m::Channel* c = c::channel::addChannel(m_index, ChannelType::SAMPLE, G_GUI_CHANNEL_H_1);
 				result = c::channel::loadChannel(c->index, gu_stripFileUrl(path));
 				if (result != G_RES_OK)
 					fails = true;
@@ -164,8 +161,8 @@ void geColumn::resize(int X, int Y, int W, int H)
 
 void geColumn::refresh()
 {
-//	for (int i=1; i<children(); i++) // Child 0 is 'add channel' button
-//		static_cast<geChannel*>(child(i))->refresh();
+	for (int i=1; i<children(); i++) // Child 0 is 'add channel' button
+		static_cast<geChannel*>(child(i))->refresh();
 }
 
 
@@ -208,17 +205,17 @@ void geColumn::repositionChannels()
 /* -------------------------------------------------------------------------- */
 
 
-giada::v::geChannel* geColumn::addChannel(m::Channel* ch, int size)
+geChannel* geColumn::addChannel(m::Channel* ch, int size)
 {
-	giada::v::geChannel* gch = nullptr;
+	geChannel* gch = nullptr;
 
 	/* All geChannels are added with y=0. That's not a problem, they will be 
 	repositioned later on during geColumn::resize(). */
 
 	if (ch->type == ChannelType::SAMPLE)
-		gch = new giada::v::geSampleChannel(x(), 0, w(), size, static_cast<m::SampleChannel*>(ch));
+		gch = new geSampleChannel(x(), 0, w(), size, static_cast<m::SampleChannel*>(ch));
 	else
-		gch = new giada::v::geMidiChannel(x(), 0, w(), size, static_cast<m::MidiChannel*>(ch));
+		gch = new geMidiChannel(x(), 0, w(), size, static_cast<m::MidiChannel*>(ch));
 
 	add(gch);
 
@@ -226,23 +223,6 @@ giada::v::geChannel* geColumn::addChannel(m::Channel* ch, int size)
 	gch->redraw();    // fix corruption
 	m_parent->redraw(); // redraw Keyboard
 	return gch;
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geColumn::deleteChannel(giada::v::geChannel* gch)
-{
-	gch->hide();
-	remove(gch);
-	delete gch;
-
-	/** TODO
-	 * reposition is useless when called by geColumn::clear(). Add a new
-	 * parameter to skip the operation */
-
-	repositionChannels();
 }
 
 
@@ -275,29 +255,12 @@ void geColumn::__cb_addChannel()
 }
 
 
-
-/* -------------------------------------------------------------------------- */
-
-
-void geColumn::clear(bool full)
-{
-	if (full)
-		Fl_Group::clear();
-	else {
-		while (children() >= 2) {  // skip "add new channel" btn
-			int i = children()-1;
-			deleteChannel(static_cast<giada::v::geChannel*>(child(i)));
-		}
-	}
-}
-
-
 /* -------------------------------------------------------------------------- */
 
 
 const m::Channel* geColumn::getChannel(int i)
 {
-	return static_cast<giada::v::geChannel*>(child(i + 1))->ch;  // Skip "add channel"
+	return static_cast<geChannel*>(child(i + 1))->ch;  // Skip "add channel"
 }
 
 
@@ -308,3 +271,5 @@ int geColumn::getIndex()       { return m_index; }
 void geColumn::setIndex(int i) { m_index = i; }
 bool geColumn::isEmpty()       { return children() == 1; }
 int geColumn::countChannels()  { return children() - 1; }
+
+}} // giada::v::

@@ -27,7 +27,10 @@
 
 #include <FL/Fl.H>
 #include "core/const.h"
+#include "core/wave.h"
 #include "core/sampleChannel.h"
+#include "core/mixer.h"
+#include "core/recorder.h"
 #include "utils/string.h"
 #include "utils/fs.h"
 #include "glue/channel.h"
@@ -40,13 +43,43 @@
 extern gdMainWindow* G_MainWin;
 
 
-using namespace giada;
-
-
-geSampleChannelButton::geSampleChannelButton(int x, int y, int w, int h,
-	const char* l)
-	: geChannelButton(x, y, w, h, l)
+namespace giada {
+namespace v
 {
+geSampleChannelButton::geSampleChannelButton(int x, int y, int w, int h,
+	const m::SampleChannel* ch)
+: geChannelButton(x, y, w, h, ch)
+{
+	switch (ch->status) {
+		case ChannelStatus::EMPTY:
+			label("-- no sample --");
+			break;
+		case ChannelStatus::MISSING:
+		case ChannelStatus::WRONG:
+			label("* file not found! *");
+			break;
+		default:
+			if (ch->name.empty())
+				label(ch->wave->getBasename(false).c_str());
+			else
+				label(ch->name.c_str());
+			break;
+	}
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geSampleChannelButton::refresh()
+{
+	if (static_cast<const m::SampleChannel*>(m_ch)->wave == nullptr) 
+		return;
+	if (m::mixer::recording && m_ch->armed)
+		setInputRecordMode();
+	if (m::recorder::isActive())
+		setActionRecordMode();
+	redraw();
 }
 
 
@@ -64,9 +97,7 @@ int geSampleChannelButton::handle(int e)
 			break;
 		}
 		case FL_PASTE: {
-			v::geSampleChannel*  gch = static_cast<v::geSampleChannel*>(parent());
-			const m::SampleChannel* ch  = static_cast<const m::SampleChannel*>(gch->ch);
-			int result = c::channel::loadChannel(ch->index, u::string::trim(gu_stripFileUrl(Fl::event_text())));
+			int result = c::channel::loadChannel(m_ch->index, u::string::trim(gu_stripFileUrl(Fl::event_text())));
 			if (result != G_RES_OK)
 				G_MainWin->keyboard->printChannelMessage(result);
 			ret = 1;
@@ -75,3 +106,5 @@ int geSampleChannelButton::handle(int e)
 	}
 	return ret;
 }
+
+}} // giada::v::

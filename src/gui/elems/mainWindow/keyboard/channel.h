@@ -35,7 +35,6 @@
 
 class geChannelStatus;
 class geButton;
-class geChannelButton;
 class geDial;
 #ifdef WITH_VST
 class geStatusButton;
@@ -49,27 +48,18 @@ class Channel;
 }
 namespace v
 {
+class geChannelButton;
+
 class geChannel : public Fl_Group
 {
 public:
 
 	geChannel(int x, int y, int w, int h, const m::Channel* ch);
 
-	/* reset
-	Resets channel to initial status. */
-
-	virtual void reset() = 0;
-
-	/* update
-	Updates the label of sample button and everything else such as 'R' button, 
-	key box and so on, according to global values. */
-
-	virtual void update() = 0;
-
 	/* refresh
 	Updates graphics. */
 
-	virtual void refresh() = 0;
+	virtual void refresh();
 
 	/* changeSize
 	Changes channel's size according to a template (x1, x2, ...). */

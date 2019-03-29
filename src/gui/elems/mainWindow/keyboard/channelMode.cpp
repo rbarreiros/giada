@@ -27,21 +27,22 @@
  * -------------------------------------------------------------------------- */
 
 
+#include <cassert>
 #include <FL/fl_draw.H>
-#include "../../../../utils/gui.h"
-#include "../../../../core/graphics.h"
-#include "../../../../core/sampleChannel.h"
-#include "../../../../core/const.h"
-#include "../../basics/boxtypes.h"
+#include "utils/gui.h"
+#include "core/graphics.h"
+#include "core/sampleChannel.h"
+#include "core/const.h"
+#include "gui/elems/basics/boxtypes.h"
 #include "channelMode.h"
 
 
-using namespace giada;
-
-
-geChannelMode::geChannelMode(int x, int y, int w, int h, m::SampleChannel *ch, 
-	const char *L)
-: Fl_Menu_Button(x, y, w, h, L), ch(ch)
+namespace giada {
+namespace v
+{
+geChannelMode::geChannelMode(int x, int y, int w, int h, const m::SampleChannel* ch)
+: Fl_Menu_Button(x, y, w, h), 
+  ch            (ch)
 {
 	box(G_CUSTOM_BORDER_BOX);
 	textsize(G_GUI_FONT_SIZE_BASE);
@@ -97,18 +98,22 @@ void geChannelMode::draw()
 /* -------------------------------------------------------------------------- */
 
 
-void geChannelMode::cb_changeMode(Fl_Widget *v, void *p) { ((geChannelMode*)v)->__cb_changeMode((intptr_t)p); }
+void geChannelMode::cb_changeMode(Fl_Widget* v, void* p) { ((geChannelMode*)v)->cb_changeMode((intptr_t)p); }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void geChannelMode::__cb_changeMode(int mode)
+void geChannelMode::cb_changeMode(int mode)
 {
+	assert(false);
+#if 0
 	ch->mode = static_cast<ChannelMode>(mode);
 
 	/* What to do when the channel is playing and you change the mode? Nothing, 
 	since v0.5.3. Just refresh the action editor window, in case it's open. */
 
 	u::gui::refreshActionEditor();
+#endif
 }
+}} // giada::v::

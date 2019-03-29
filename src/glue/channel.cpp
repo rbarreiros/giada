@@ -268,7 +268,6 @@ void setBoost(size_t chanIndex, float val, bool gui)
 void setName(size_t chanIndex, const std::string& name)
 {
 	m::model::get()->channels[chanIndex]->name = name;
-	G_MainWin->keyboard->getChannel(chanIndex)->update();
 }
 
 

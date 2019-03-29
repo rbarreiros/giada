@@ -37,12 +37,10 @@ class geResizerBar;
 
 
 namespace giada {
-namespace v 
+namespace v
 {
 class geKeyboard;
 class geChannel;
-}}
-
 
 class geColumn : public Fl_Group
 {
@@ -53,7 +51,7 @@ private:
 
 	geButton*     m_addChannelBtn;
 	geResizerBar* m_resizer;
-	giada::v::geKeyboard* m_parent;
+	geKeyboard*   m_parent;
 
 	int m_index;
 
@@ -62,26 +60,15 @@ public:
 	geColumn(int x, int y, int w, int h, int index, giada::v::geKeyboard* parent);
 	~geColumn();
 
-	/* addChannel
-	Adds a new channel in this column and set the internal pointer to channel 
-	to 'ch'. */
-
-	giada::v::geChannel* addChannel(giada::m::Channel* ch, int size);
-
 	int handle(int e) override;
 	void draw() override;
 	void resize(int x, int y, int w, int h) override;
 
-	/* clear
-	Removes all channels from the column. If full==true, delete also the "add new 
-	channel" button. */
+	/* addChannel
+	Adds a new channel in this column and set the internal pointer to channel 
+	to 'ch'. */
 
-	void clear(bool full=false);
-
-	/* deleteChannel
-	Removes the channel 'gch' from this column. */
-
-	void deleteChannel(giada::v::geChannel* gch);
+	geChannel* addChannel(m::Channel* ch, int size);
 
 	void repositionChannels();
 
@@ -90,12 +77,13 @@ public:
 
 	void refresh();
 
-	const giada::m::Channel* getChannel(int i);
+	const m::Channel* getChannel(int i);
 	int getIndex();
 	void setIndex(int i);
 	bool isEmpty();   
 	int countChannels();
 };
+}} // giada::v::
 
 
 #endif

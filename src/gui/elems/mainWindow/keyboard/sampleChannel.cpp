@@ -219,9 +219,9 @@ geSampleChannel::geSampleChannel(int X, int Y, int W, int H, const m::SampleChan
 	button      = new geButton(x(), y(), G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm);
 	arm         = new geButton(button->x()+button->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm);
 	status      = new geChannelStatus(arm->x()+arm->w()+4, y(), G_GUI_UNIT, H, ch);
-	mainButton  = new geSampleChannelButton(status->x()+status->w()+4, y(), G_GUI_UNIT, H, "-- no sample --");
+	mainButton  = new geSampleChannelButton(status->x()+status->w()+4, y(), G_GUI_UNIT, H, ch);
 	readActions = new geButton(mainButton->x()+mainButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", readActionOff_xpm, readActionOn_xpm);
-	modeBox     = new geChannelMode(readActions->x()+readActions->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, /* TODO !!!!! */nullptr);
+	modeBox     = new geChannelMode(readActions->x()+readActions->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, ch);
 	mute        = new geButton(modeBox->x()+modeBox->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", muteOff_xpm, muteOn_xpm);
 	solo        = new geButton(mute->x()+mute->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", soloOff_xpm, soloOn_xpm);
 #ifdef WITH_VST
@@ -235,7 +235,31 @@ geSampleChannel::geSampleChannel(int X, int Y, int W, int H, const m::SampleChan
 
 	resizable(mainButton);
 
-	update();
+	/* Update channels. If you load a patch with recorded actions, the 'R' button 
+	must be shown. Moreover if the actions are active, the 'R' button must be 
+	activated accordingly. */
+
+	if (ch->hasActions)
+		showActionButton();
+	else
+		hideActionButton();
+
+	modeBox->value(static_cast<int>(ch->mode));
+	modeBox->redraw();
+
+	vol->value(ch->volume);
+	mute->value(ch->mute);
+	solo->value(ch->solo);
+
+	mainButton->setKey(ch->key);
+
+	arm->value(ch->armed);
+
+#ifdef WITH_VST
+	fx->status = ch->plugins.size() > 0;
+	fx->redraw();
+#endif
+
 
 	button->callback(cb_button, (void*)this);
 	button->when(FL_WHEN_CHANGED);   // do callback on keypress && on keyrelease
@@ -365,81 +389,8 @@ void geSampleChannel::cb_readActions()
 
 void geSampleChannel::refresh()
 {
-	if (!mainButton->visible()) // mainButton invisible? status too (see below)
-		return;
-
-	setColorsByStatus();
-
-	if (static_cast<const m::SampleChannel*>(ch)->wave != nullptr) {
-		if (m::mixer::recording && ch->armed)
-			mainButton->setInputRecordMode();
-		if (m::recorder::isActive())
-			mainButton->setActionRecordMode();
+	if (static_cast<const m::SampleChannel*>(ch)->wave != nullptr) 
 		status->redraw(); // status invisible? sampleButton too (see below)
-	}
-	mainButton->redraw();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geSampleChannel::reset()
-{
-	hideActionButton();
-	mainButton->setDefaultMode("-- no sample --");
-	mainButton->redraw();
-	status->redraw();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geSampleChannel::update()
-{
-	const m::SampleChannel* sch = static_cast<const m::SampleChannel*>(ch);
-
-	switch (sch->status) {
-		case ChannelStatus::EMPTY:
-			mainButton->label("-- no sample --");
-			break;
-		case ChannelStatus::MISSING:
-		case ChannelStatus::WRONG:
-			mainButton->label("* file not found! *");
-			break;
-		default:
-			if (sch->name.empty())
-				mainButton->label(sch->wave->getBasename(false).c_str());
-			else
-				mainButton->label(sch->name.c_str());
-			break;
-	}
-
-	/* Update channels. If you load a patch with recorded actions, the 'R' button 
-	must be shown. Moreover if the actions are active, the 'R' button must be 
-	activated accordingly. */
-
-	if (sch->hasActions)
-		showActionButton();
-	else
-		hideActionButton();
-
-	modeBox->value(static_cast<int>(sch->mode));
-	modeBox->redraw();
-
-	vol->value(sch->volume);
-	mute->value(sch->mute);
-	solo->value(sch->solo);
-
-	mainButton->setKey(sch->key);
-
-	arm->value(sch->armed);
-
-#ifdef WITH_VST
-	fx->status = sch->plugins.size() > 0;
-	fx->redraw();
-#endif
 }
 
 

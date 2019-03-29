@@ -71,6 +71,18 @@ void geChannel::cb_openFxWindow(Fl_Widget* v, void* p) { ((geChannel*)p)->cb_ope
 /* -------------------------------------------------------------------------- */
 
 
+void geChannel::refresh()
+{
+	if (!mainButton->visible()) // mainButton invisible: nothing to do
+		return;
+	mainButton->refresh();
+	setColorsByStatus();
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void geChannel::cb_arm()
 {
 	c::channel::setArm(ch->index, arm->value());

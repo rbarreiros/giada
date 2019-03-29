@@ -97,45 +97,8 @@ void geKeyboard::rebuild()
 
 	emptyColumns();
 
-/* TODO - temporary const_cast: remove it and make everything immutable */
-/* TODO - temporary const_cast: remove it and make everything immutable */
-/* TODO - temporary const_cast: remove it and make everything immutable */
-
 	for (const std::unique_ptr<m::Channel>& c : channels)
-		columns[c->column]->addChannel(const_cast<m::Channel*>(c.get()), G_GUI_CHANNEL_H_1);
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geKeyboard::freeChannel(geChannel* gch)
-{
-	gch->reset();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geKeyboard::deleteChannel(geChannel* gch)
-{
-	for (unsigned i=0; i<columns.size(); i++) {
-		int k = columns.at(i)->find(gch);
-		if (k != columns.at(i)->children()) {
-			columns.at(i)->deleteChannel(gch);
-			return;
-		}
-	}
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geKeyboard::updateChannel(geChannel* gch)
-{
-	gch->update();
+		columns[c->column]->addChannel(c.get(), G_GUI_CHANNEL_H_1);
 }
 
 
@@ -180,29 +143,6 @@ void geKeyboard::organizeColumns()
 void geKeyboard::cb_addColumn(Fl_Widget* v, void* p)
 {
 	((geKeyboard*)p)->cb_addColumn(G_DEFAULT_COLUMN_WIDTH);
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-geChannel* geKeyboard::addChannel(int colIndex, m::Channel* ch, int size, bool build)
-{
-	geColumn* col = getColumnByIndex(colIndex);
-
-	/* no column with index 'colIndex' found? Just create it and set its index
-	to 'colIndex'. */
-
-	if (!col) {
-		cb_addColumn();
-		col = columns.back();
-		col->setIndex(colIndex);
-		gu_log("[geKeyboard::addChannel] created new column with index=%d\n", colIndex);
-	}
-
-	gu_log("[geKeyboard::addChannel] add to column with index=%d, size=%d\n", 
-		col->getIndex(), size);
-	return col->addChannel(ch, size);
 }
 
 
@@ -267,10 +207,7 @@ void geKeyboard::clear()
 
 void geKeyboard::setChannelWithActions(geSampleChannel* gch)
 {
-	if (gch->ch->hasActions)
-		gch->showActionButton();
-	else
-		gch->hideActionButton();
+// TODO - remove me
 }
 
 

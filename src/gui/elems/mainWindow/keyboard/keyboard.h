@@ -68,34 +68,10 @@ public:
 
 	void refresh();
 
-	/* addChannel
-	Adds a new channel to geChannels. Used by callbacks and during patch loading. 
-	Requires Channel (and not geChannel). If build is set to true, also generate 
-	the corresponding column if column (index) does not exist yet. */
-
-	geChannel* addChannel(int column, giada::m::Channel* ch, int size, bool build=false);
-
 	/* addColumn
 	 * add a new column to the top of the stack. */
 
 	void addColumn(int width=380);
-
-	/* deleteChannel
-	 * delete a channel from geChannels<> where geChannel->ch == ch and remove
-	 * it from the stack. */
-
-	void deleteChannel(geChannel* gch);
-
-	/* freeChannel
-	 * free a channel from geChannels<> where geChannel->ch == ch. No channels
-	 * are deleted */
-
-	void freeChannel(geChannel* gch);
-
-	/* updateChannel
-	 * wrapper function to call gch->update(). */
-
-	void updateChannel(geChannel* gch);
 
 	/* organizeColumns
 	 * reorganize columns layout by removing empty gaps. */

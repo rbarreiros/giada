@@ -32,7 +32,6 @@
 #include "channel.h"
 
 
-class geChannelMode;
 class geButton;
 
 
@@ -43,6 +42,8 @@ class SampleChannel;
 }
 namespace v
 {
+class geChannelMode;
+
 class geSampleChannel : public geChannel
 {
 public:
@@ -51,14 +52,12 @@ public:
 
 	void resize(int x, int y, int w, int h) override;
 
-	void reset() override;
-	void update() override;
 	void refresh() override;
 	void changeSize(int h) override;
 
 	/* show/hideActionButton
 	Adds or removes 'R' button when actions are available. */
-
+	/* TODO - private stuff */
 	void showActionButton();
 	void hideActionButton();
 

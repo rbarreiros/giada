@@ -27,16 +27,19 @@
 
 #include <FL/fl_draw.H>
 #include "core/const.h"
+#include "core/recorder.h"
+#include "core/channel.h"
 #include "utils/string.h"
 #include "channelButton.h"
 
 
-using std::string;
-
-
-geChannelButton::geChannelButton(int x, int y, int w, int h, const char* l)
-	: geButton(x, y, w, h, l), 
-	  m_key   ("") 
+namespace giada {
+namespace v
+{
+geChannelButton::geChannelButton(int x, int y, int w, int h, const m::Channel* ch)
+: geButton(x, y, w, h), 
+  m_key   (""),
+  m_ch    (ch)
 {
 }
 
@@ -44,7 +47,18 @@ geChannelButton::geChannelButton(int x, int y, int w, int h, const char* l)
 /* -------------------------------------------------------------------------- */
 
 
-void geChannelButton::setKey(const string& k)
+void geChannelButton::refresh()
+{
+    if (m::recorder::isActive() && m_ch->armed)
+        setActionRecordMode();
+    redraw();	
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
+void geChannelButton::setKey(std::string k)
 {
 	m_key = k;
 }
@@ -134,3 +148,5 @@ void geChannelButton::setEndingMode()
 {
 	bgColor0 = G_COLOR_GREY_4;
 }
+
+}} // giada::v::
