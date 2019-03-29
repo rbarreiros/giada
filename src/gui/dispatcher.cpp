@@ -55,13 +55,15 @@ std::function<void()> signalCb_ = nullptr;
 /* -------------------------------------------------------------------------- */
 
 
-void perform_(m::Channel* ch, int event)
+void perform_(const m::Channel* ch, int event)
 {
+/*
 	if (event == FL_KEYDOWN)
 		c::io::keyPress(ch, Fl::event_ctrl(), Fl::event_shift(), G_MAX_VELOCITY);
 	else
 	if (event == FL_KEYUP)	
 		c::io::keyRelease(ch, Fl::event_ctrl(), Fl::event_shift());
+*/
 }
 
 
@@ -149,7 +151,7 @@ void dispatchKey(int event)
 /* -------------------------------------------------------------------------- */
 
 
-void dispatchTouch(m::Channel* ch, bool status)
+void dispatchTouch(const m::Channel* ch, bool status)
 {
 	triggerSignalCb_();
 	perform_(ch, status ? FL_KEYDOWN : FL_KEYUP);

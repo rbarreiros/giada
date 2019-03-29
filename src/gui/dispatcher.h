@@ -41,7 +41,7 @@ namespace v {
 namespace dispatcher
 {
 void dispatchKey(int event);
-void dispatchTouch(m::Channel* ch, bool status);
+void dispatchTouch(const m::Channel* ch, bool status);
 void setSignalCallback(std::function<void()> f);
 }}} // giada::v::dispatcher
 

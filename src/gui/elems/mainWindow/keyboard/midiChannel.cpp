@@ -159,8 +159,8 @@ geMidiChannel::geMidiChannel(int X, int Y, int W, int H, const m::MidiChannel* c
 	int delta = 120; // (5 widgets * G_GUI_UNIT) + (5 paddings * 4)
 #endif
 
-	button     = new geButton(x(), y(), G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm);
-	arm        = new geButton(button->x()+button->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm);
+	playButton = new geButton(x(), y(), G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm);
+	arm        = new geButton(playButton->x()+playButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm);
 	mainButton = new geMidiChannelButton(arm->x()+arm->w()+4, y(), w() - delta, H, ch);
 	mute       = new geButton(mainButton->x()+mainButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", muteOff_xpm, muteOn_xpm);
 	solo       = new geButton(mute->x()+mute->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", soloOff_xpm, soloOn_xpm);
@@ -188,8 +188,8 @@ geMidiChannel::geMidiChannel(int X, int Y, int W, int H, const m::MidiChannel* c
 	fx->redraw();
 #endif
 
-	button->callback(cb_button, (void*)this);
-	button->when(FL_WHEN_CHANGED);   // do callback on keypress && on keyrelease
+	playButton->callback(cb_playButton, (void*)this);
+	playButton->when(FL_WHEN_CHANGED);   // do callback on keypress && on keyrelease
 
 	arm->type(FL_TOGGLE_BUTTON);
 	arm->callback(cb_arm, (void*)this);
@@ -215,16 +215,16 @@ geMidiChannel::geMidiChannel(int X, int Y, int W, int H, const m::MidiChannel* c
 /* -------------------------------------------------------------------------- */
 
 
-void geMidiChannel::cb_button  (Fl_Widget* v, void* p) { ((geMidiChannel*)p)->cb_button(); }
+void geMidiChannel::cb_playButton(Fl_Widget* v, void* p) { ((geMidiChannel*)p)->cb_playButton(); }
 void geMidiChannel::cb_openMenu(Fl_Widget* v, void* p) { ((geMidiChannel*)p)->cb_openMenu(); }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-void geMidiChannel::cb_button()
+void geMidiChannel::cb_playButton()
 {
-	//v::dispatcher::dispatchTouch(ch, button->value());
+	v::dispatcher::dispatchTouch(ch, playButton->value());
 }
 
 

@@ -158,16 +158,16 @@ void geChannel::setColorsByStatus()
 		case ChannelStatus::OFF:
 		case ChannelStatus::EMPTY:
 			mainButton->setDefaultMode();
-			button->imgOn  = channelPlay_xpm;
-			button->imgOff = channelStop_xpm;
-			button->redraw();
+			playButton->imgOn  = channelPlay_xpm;
+			playButton->imgOff = channelStop_xpm;
+			playButton->redraw();
 			break;
 		case ChannelStatus::PLAY:
 			mainButton->setPlayMode();
-			if (!button->value()) { // If not manually pressed (it would interfere)
-				button->imgOn  = channelStop_xpm;
-				button->imgOff = channelPlay_xpm;
-				button->redraw();			
+			if (!playButton->value()) { // If not manually pressed (it would interfere)
+				playButton->imgOn  = channelStop_xpm;
+				playButton->imgOff = channelPlay_xpm;
+				playButton->redraw();			
 			}
 			break;
 		case ChannelStatus::WAIT:
@@ -233,14 +233,14 @@ bool geChannel::handleKey(int e)
 	if (Fl::event_key() != ch->key) 
 		return false;
 
-	if (e == FL_KEYDOWN && !button->value()) {  // Key not already pressed
-		button->take_focus();                   // Move focus to this button
-		button->value(1);
+	if (e == FL_KEYDOWN && !playButton->value()) {  // Key not already pressed
+		playButton->take_focus();                   // Move focus to this playButton
+		playButton->value(1);
 		return true;
 	}
 
 	if (e == FL_KEYUP) {
-		button->value(0);
+		playButton->value(0);
 		return true;
 	}
 	
@@ -257,7 +257,7 @@ void geChannel::changeSize(int H)
 	
 	int Y = y() + (H / 2 - (G_GUI_UNIT / 2));
 
-	button->resize(x(), Y, w(), G_GUI_UNIT);
+	playButton->resize(x(), Y, w(), G_GUI_UNIT);
 	arm->resize(x(), Y, w(), G_GUI_UNIT);   
 	mainButton->resize(x(), y(), w(), H);
 	mute->resize(x(), Y, w(), G_GUI_UNIT);

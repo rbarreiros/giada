@@ -81,7 +81,7 @@ public:
 
 	const m::Channel* ch;
  
-	geButton*        button;
+	geButton*        playButton;
 	geChannelStatus* status;
 	geButton*        arm;
 	geChannelButton* mainButton;

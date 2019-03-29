@@ -216,8 +216,8 @@ geSampleChannel::geSampleChannel(int X, int Y, int W, int H, const m::SampleChan
 {
 	begin();
 
-	button      = new geButton(x(), y(), G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm);
-	arm         = new geButton(button->x()+button->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm);
+	playButton  = new geButton(x(), y(), G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm);
+	arm         = new geButton(playButton->x()+playButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm);
 	status      = new geChannelStatus(arm->x()+arm->w()+4, y(), G_GUI_UNIT, H, ch);
 	mainButton  = new geSampleChannelButton(status->x()+status->w()+4, y(), G_GUI_UNIT, H, ch);
 	readActions = new geButton(mainButton->x()+mainButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", readActionOff_xpm, readActionOn_xpm);
@@ -261,8 +261,8 @@ geSampleChannel::geSampleChannel(int X, int Y, int W, int H, const m::SampleChan
 #endif
 
 
-	button->callback(cb_button, (void*)this);
-	button->when(FL_WHEN_CHANGED);   // do callback on keypress && on keyrelease
+	playButton->callback(cb_playButton, (void*)this);
+	playButton->when(FL_WHEN_CHANGED);   // do callback on keypress && on keyrelease
 
 	arm->type(FL_TOGGLE_BUTTON);
 	arm->callback(cb_arm, (void*)this);
@@ -292,7 +292,7 @@ geSampleChannel::geSampleChannel(int X, int Y, int W, int H, const m::SampleChan
 /* -------------------------------------------------------------------------- */
 
 
-void geSampleChannel::cb_button     (Fl_Widget* v, void* p) { ((geSampleChannel*)p)->cb_button(); }
+void geSampleChannel::cb_playButton (Fl_Widget* v, void* p) { ((geSampleChannel*)p)->cb_playButton(); }
 void geSampleChannel::cb_openMenu   (Fl_Widget* v, void* p) { ((geSampleChannel*)p)->cb_openMenu(); }
 void geSampleChannel::cb_readActions(Fl_Widget* v, void* p) { ((geSampleChannel*)p)->cb_readActions(); }
 
@@ -300,9 +300,9 @@ void geSampleChannel::cb_readActions(Fl_Widget* v, void* p) { ((geSampleChannel*
 /* -------------------------------------------------------------------------- */
 
 
-void geSampleChannel::cb_button()
+void geSampleChannel::cb_playButton()
 {
-	//v::dispatcher::dispatchTouch(ch, button->value());
+	v::dispatcher::dispatchTouch(ch, playButton->value());
 }
 
 
