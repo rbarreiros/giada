@@ -25,20 +25,19 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../../utils/fs.h"
-#include "../../elems/browser.h"
-#include "../../elems/basics/button.h"
-#include "../../elems/basics/input.h"
+#include "utils/fs.h"
+#include "gui/elems/browser.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/basics/input.h"
 #include "browserSave.h"
 
 
-using std::string;
-using namespace giada::m;
-
-
-gdBrowserSave::gdBrowserSave(int x, int y, int w, int h, const string& title,
-		const string& path, const string& _name, void (*cb)(void*), Channel* ch)
-	:	gdBrowserBase(x, y, w, h, title, path, cb)
+namespace giada {
+namespace v
+{
+gdBrowserSave::gdBrowserSave(int x, int y, int w, int h, const std::string& title,
+	const std::string& path, const std::string& _name, void (*cb)(void*), m::Channel* ch)
+: gdBrowserBase(x, y, w, h, title, path, cb)
 {
 	channel = ch;
 
@@ -74,7 +73,7 @@ void gdBrowserSave::cb_down(Fl_Widget* v, void* p) { ((gdBrowserSave*)p)->cb_dow
 
 void gdBrowserSave::cb_down()
 {
-	string path = browser->getSelectedItem();
+	std::string path = browser->getSelectedItem();
 
 	if (path.empty())  // when click on an empty area
 		return;
@@ -94,7 +93,7 @@ void gdBrowserSave::cb_down()
 /* -------------------------------------------------------------------------- */
 
 
-string gdBrowserSave::getName() const
+std::string gdBrowserSave::getName() const
 {
   return name->value();
 }
@@ -107,3 +106,5 @@ void gdBrowserSave::cb_save()
 {
 	callback((void*) this);
 }
+
+}} // giada::v::

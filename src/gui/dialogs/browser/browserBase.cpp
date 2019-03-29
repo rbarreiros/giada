@@ -25,38 +25,37 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../../core/graphics.h"
-#include "../../../core/conf.h"
-#include "../../../core/const.h"
-#include "../../../utils/gui.h"
-#include "../../../utils/fs.h"
-#include "../../elems/browser.h"
-#include "../../elems/basics/button.h"
-#include "../../elems/basics/input.h"
-#include "../../elems/basics/progress.h"
-#include "../../elems/basics/check.h"
+#include "core/graphics.h"
+#include "core/conf.h"
+#include "core/const.h"
+#include "utils/gui.h"
+#include "utils/fs.h"
+#include "gui/elems/browser.h"
+#include "gui/elems/basics/button.h"
+#include "gui/elems/basics/input.h"
+#include "gui/elems/basics/progress.h"
+#include "gui/elems/basics/check.h"
 #include "browserBase.h"
 
 
-using std::string;
-using namespace giada;
-using namespace giada::m;
-
-
-gdBrowserBase::gdBrowserBase(int x, int y, int w, int h, const string& title,
-		const string& path, void (*callback)(void*))
-	:	gdWindow(x, y, w, h, title.c_str()), callback(callback)
+namespace giada {
+namespace v
+{
+gdBrowserBase::gdBrowserBase(int x, int y, int w, int h, const std::string& title,
+	const std::string& path, void (*callback)(void*))
+: gdWindow(x, y, w, h, title.c_str()), 
+  callback(callback)
 {
 	set_non_modal();
 
 	groupTop = new Fl_Group(8, 8, w-16, 40);
     hiddenFiles = new geCheck(groupTop->x(), groupTop->y(), 400, 20, "Show hidden files");
-		where = new geInput(groupTop->x(), hiddenFiles->y()+hiddenFiles->h(), 20, 20);
-		updir	= new geButton(groupTop->x()+groupTop->w()-20, where->y(), 20, 20, "", updirOff_xpm, updirOn_xpm);
+		where   = new geInput(groupTop->x(), hiddenFiles->y()+hiddenFiles->h(), 20, 20);
+		updir   = new geButton(groupTop->x()+groupTop->w()-20, where->y(), 20, 20, "", updirOff_xpm, updirOn_xpm);
 	groupTop->end();
 	groupTop->resizable(where);
 
-  hiddenFiles->callback(cb_toggleHiddenFiles, (void*) this);
+	hiddenFiles->callback(cb_toggleHiddenFiles, (void*) this);
 
 	where->readonly(true);
 	where->cursor_color(G_COLOR_BLACK);
@@ -66,11 +65,11 @@ gdBrowserBase::gdBrowserBase(int x, int y, int w, int h, const string& title,
 
 	browser = new geBrowser(8, groupTop->y()+groupTop->h()+8, w-16, h-93);
 	browser->loadDir(path);
-	if (path == conf::browserLastPath)
-		browser->preselect(conf::browserPosition, conf::browserLastValue);
+	if (path == m::conf::browserLastPath)
+		browser->preselect(m::conf::browserPosition, m::conf::browserLastValue);
 
-	Fl_Group *groupButtons = new Fl_Group(8, browser->y()+browser->h()+8, w-16, 20);
-		ok  	  = new geButton(w-88, groupButtons->y(), 80, 20);
+	Fl_Group* groupButtons = new Fl_Group(8, browser->y()+browser->h()+8, w-16, 20);
+		ok      = new geButton(w-88, groupButtons->y(), 80, 20);
 		cancel  = new geButton(w-ok->w()-96, groupButtons->y(), 80, 20, "Cancel");
 		status  = new geProgress(8, groupButtons->y(), cancel->x()-16, 20);
 		status->minimum(0);
@@ -96,13 +95,13 @@ gdBrowserBase::gdBrowserBase(int x, int y, int w, int h, const string& title,
 
 gdBrowserBase::~gdBrowserBase()
 {
-	conf::browserX = x();
-	conf::browserY = y();
-	conf::browserW = w();
-	conf::browserH = h();
-	conf::browserPosition = browser->position();
-	conf::browserLastPath = browser->getCurrentDir();
-	conf::browserLastValue = browser->value();
+	m::conf::browserX = x();
+	m::conf::browserY = y();
+	m::conf::browserW = w();
+	m::conf::browserH = h();
+	m::conf::browserPosition = browser->position();
+	m::conf::browserLastPath = browser->getCurrentDir();
+	m::conf::browserLastValue = browser->value();
 }
 
 
@@ -157,7 +156,7 @@ void gdBrowserBase::setStatusBar(float v)
 
 void gdBrowserBase::showStatusBar()
 {
-  status->show();
+	status->show();
 }
 
 
@@ -166,26 +165,26 @@ void gdBrowserBase::showStatusBar()
 
 void gdBrowserBase::hideStatusBar()
 {
-  status->hide();
+	status->hide();
 }
 
 
 /* -------------------------------------------------------------------------- */
 
 
-string gdBrowserBase::getCurrentPath() const 
+std::string gdBrowserBase::getCurrentPath() const 
 { 
 	return where->value(); 
 }
 
 
-Channel* gdBrowserBase::getChannel() const 
+const m::Channel* gdBrowserBase::getChannel() const 
 { 
 	return channel; 
 }
 
 
-string gdBrowserBase::getSelectedItem() const 
+std::string gdBrowserBase::getSelectedItem() const 
 {
 	return browser->getSelectedItem();
 }
@@ -198,3 +197,5 @@ void gdBrowserBase::fireCallback() const
 { 
 	callback((void*) this); 
 }
+
+}} // giada::v::

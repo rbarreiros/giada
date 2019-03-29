@@ -114,10 +114,10 @@ void menuCallback(Fl_Widget* w, void* v)
 			break;
 		}
 		case Menu::LOAD_SAMPLE: {
-			/*gdWindow *w = new gdBrowserLoad(m::conf::browserX, m::conf::browserY,
+			gdWindow *w = new gdBrowserLoad(m::conf::browserX, m::conf::browserY,
 				m::conf::browserW, m::conf::browserH, "Browse sample",
 				m::conf::samplePath.c_str(), c::storage::loadSample, ch);
-			u::gui::openSubWindow(G_MainWin, w, WID_FILE_BROWSER);*/
+			u::gui::openSubWindow(G_MainWin, w, WID_FILE_BROWSER);
 			break;
 		}
 		case Menu::EXPORT_SAMPLE: {

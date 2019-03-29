@@ -30,22 +30,22 @@
 
 #include <functional>
 #include <FL/Fl.H>
-#include "../../../core/const.h"
-#include "../../../core/conf.h"
-#include "../../../core/graphics.h"
-#include "../../../core/pluginManager.h"
-#include "../../../glue/plugin.h"
-#include "../../../utils/string.h"
-#include "../../../utils/fs.h"
-#include "../../../utils/gui.h"
-#include "../../dialogs/window.h"
-#include "../../dialogs/mainWindow.h"
-#include "../../dialogs/browser/browserDir.h"
-#include "../basics/box.h"
-#include "../basics/radio.h"
-#include "../basics/check.h"
-#include "../basics/input.h"
-#include "../basics/button.h"
+#include "core/const.h"
+#include "core/conf.h"
+#include "core/graphics.h"
+#include "core/pluginManager.h"
+#include "glue/plugin.h"
+#include "utils/string.h"
+#include "utils/fs.h"
+#include "utils/gui.h"
+#include "gui/dialogs/window.h"
+#include "gui/dialogs/mainWindow.h"
+#include "gui/dialogs/browser/browserDir.h"
+#include "gui/elems/basics/box.h"
+#include "gui/elems/basics/radio.h"
+#include "gui/elems/basics/check.h"
+#include "gui/elems/basics/input.h"
+#include "gui/elems/basics/button.h"
 #include "tabPlugins.h"
 
 
@@ -106,7 +106,7 @@ void geTabPlugins::cb_browse(Fl_Widget* w, void* p) { ((geTabPlugins*)p)->cb_bro
 
 void geTabPlugins::cb_browse()
 {
-	gdBrowserDir* browser = new gdBrowserDir(0, 0, 800, 600, "Add plug-ins directory", 
+	v::gdBrowserDir* browser = new v::gdBrowserDir(0, 0, 800, 600, "Add plug-ins directory", 
 		conf::patchPath, giada::c::plugin::setPluginPathCb);
 
 	static_cast<gdWindow*>(top_window())->addSubWindow(browser);

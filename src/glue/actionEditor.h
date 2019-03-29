@@ -30,7 +30,7 @@
 
 
 #include <vector>
-#include "../core/types.h"
+#include "core/types.h"
 
 
 namespace giada {

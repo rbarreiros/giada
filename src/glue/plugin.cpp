@@ -149,7 +149,7 @@ void toggleBypass(size_t pluginIndex, m::pluginHost::StackInfo info)
 
 void setPluginPathCb(void* data)
 {
-	gdBrowserDir* browser = (gdBrowserDir*) data;
+	v::gdBrowserDir* browser = (v::gdBrowserDir*) data;
 
 	if (browser->getCurrentPath() == "") {
 		gdAlert("Invalid path.");

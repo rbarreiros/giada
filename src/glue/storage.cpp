@@ -213,9 +213,9 @@ string makeUniqueSamplePath_(const string& base, const m::SampleChannel* ch)
 
 void savePatch(void* data)
 {
-	gdBrowserSave* browser = (gdBrowserSave*) data;
-	string name            = gu_stripExt(browser->getName());
-	string fullPath        = browser->getCurrentPath() + G_SLASH + name + ".gptc";
+	v::gdBrowserSave* browser = (v::gdBrowserSave*) data;
+	string name               = gu_stripExt(browser->getName());
+	string fullPath           = browser->getCurrentPath() + G_SLASH + name + ".gptc";
 
 	if (name == "") {
 		gdAlert("Please choose a file name.");
@@ -242,9 +242,9 @@ void loadPatch(void* data)
 {
 	using namespace giada::m;
 
-	gdBrowserLoad* browser = (gdBrowserLoad*) data;
-	string fullPath        = browser->getSelectedItem();
-	bool isProject         = gu_isProject(browser->getSelectedItem());
+	v::gdBrowserLoad* browser = (v::gdBrowserLoad*) data;
+	string fullPath           = browser->getSelectedItem();
+	bool isProject            = gu_isProject(browser->getSelectedItem());
 
 	browser->showStatusBar();
 
@@ -335,7 +335,7 @@ void saveProject(void* data)
 {
 	using namespace giada::m;
 
-	gdBrowserSave* browser = (gdBrowserSave*) data;
+	v::gdBrowserSave* browser = (v::gdBrowserSave*) data;
 	string name            = gu_stripExt(browser->getName());
 	string folderPath      = browser->getCurrentPath();
 	string fullPath        = folderPath + G_SLASH + name + ".gprj";
@@ -390,7 +390,7 @@ void saveProject(void* data)
 
 void loadSample(void* data)
 {
-	gdBrowserLoad* browser = (gdBrowserLoad*) data;
+	v::gdBrowserLoad* browser = (v::gdBrowserLoad*) data;
 	string fullPath        = browser->getSelectedItem();
 
 	if (fullPath.empty())
@@ -413,9 +413,10 @@ void loadSample(void* data)
 
 void saveSample(void* data)
 {
+#if 0
 	using namespace giada::m;
 
-	gdBrowserSave* browser = (gdBrowserSave*) data;
+	v::gdBrowserSave* browser = (v::gdBrowserSave*) data;
 	string name            = browser->getName();
 	string folderPath      = browser->getCurrentPath();
 
@@ -441,6 +442,7 @@ void saveSample(void* data)
 	}
 	else
 		gdAlert("Unable to save this sample!");
+#endif
 }
 
 }}} // giada::c::storage::

@@ -25,10 +25,10 @@
  * -------------------------------------------------------------------------- */
 
 
-#include "../../core/const.h"
-#include "../../utils/string.h"
-#include "../../utils/fs.h"
-#include "../dialogs/browser/browserBase.h"
+#include "core/const.h"
+#include "utils/string.h"
+#include "utils/fs.h"
+#include "gui/dialogs/browser/browserBase.h"
 #include "basics/boxtypes.h"
 #include "browser.h"
 
@@ -110,12 +110,12 @@ int geBrowser::handle(int e)
         select(value() - 1);
       else
       if (Fl::event_key(FL_Enter))
-        static_cast<gdBrowserBase*>(parent())->fireCallback();
+        static_cast<v::gdBrowserBase*>(parent())->fireCallback();
       ret = 1;
       break;
     case FL_PUSH:    // mouse
       if (Fl::event_clicks() > 0)  // double click
-        static_cast<gdBrowserBase*>(parent())->fireCallback();
+        static_cast<v::gdBrowserBase*>(parent())->fireCallback();
       ret = 1;
       break;
     case FL_RELEASE: // mouse
