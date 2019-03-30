@@ -55,12 +55,6 @@ public:
 	void refresh() override;
 	void changeSize(int h) override;
 
-	/* show/hideActionButton
-	Adds or removes 'R' button when actions are available. */
-	/* TODO - private stuff */
-	void showActionButton();
-	void hideActionButton();
-
 	geChannelMode* modeBox;
 	geButton*      readActions;
 

@@ -233,10 +233,9 @@ geSampleChannel::geSampleChannel(int X, int Y, int W, int H, const m::SampleChan
 	must be shown. Moreover if the actions are active, the 'R' button must be 
 	activated accordingly. */
 
-	if (ch->hasActions)
-		showActionButton();
-	else
-		hideActionButton();
+	readActions->value(ch->readActions);
+	if (!ch->hasActions)
+		readActions->hide();
 
 	modeBox->value(static_cast<int>(ch->mode));
 	modeBox->redraw();
@@ -384,30 +383,7 @@ void geSampleChannel::cb_readActions()
 void geSampleChannel::refresh()
 {
 	if (static_cast<const m::SampleChannel*>(ch)->wave != nullptr) 
-		status->redraw(); // status invisible? sampleButton too (see below)
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geSampleChannel::showActionButton()
-{
-	readActions->value(static_cast<const m::SampleChannel*>(ch)->readActions);
-	readActions->show();
-	packWidgets();
-	redraw();
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
-void geSampleChannel::hideActionButton()
-{
-	readActions->hide();
-	packWidgets();
-	redraw();
+		status->redraw();
 }
 
 
@@ -438,6 +414,9 @@ void geSampleChannel::resize(int X, int Y, int W, int H)
 
 	packWidgets();
 }
+
+
+/* -------------------------------------------------------------------------- */
 
 
 void geSampleChannel::changeSize(int H)
