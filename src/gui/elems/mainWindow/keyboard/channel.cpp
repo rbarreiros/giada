@@ -50,8 +50,8 @@ namespace giada {
 namespace v
 {
 geChannel::geChannel(int X, int Y, int W, int H, const m::Channel* ch)
-: Fl_Group(X, Y, W, H, nullptr),
-  ch      (ch)
+: geStacker(X, Y, W, H, geStacker::Dir::HORIZONTAL),
+  ch       (ch)
 {
 }
 
@@ -73,10 +73,30 @@ void geChannel::cb_openFxWindow(Fl_Widget* v, void* p) { ((geChannel*)p)->cb_ope
 
 void geChannel::refresh()
 {
-	if (!mainButton->visible()) // mainButton invisible: nothing to do
-		return;
-	mainButton->refresh();
-	setColorsByStatus();
+	if (mainButton->visible())
+		mainButton->refresh();
+
+	switch (ch->status) {
+		case ChannelStatus::OFF:
+		case ChannelStatus::EMPTY:
+			playButton->imgOn  = channelPlay_xpm;
+			playButton->imgOff = channelStop_xpm;
+			playButton->redraw();
+			break;
+		case ChannelStatus::PLAY:
+			if (!playButton->value()) { // If not manually pressed (it would interfere)
+				playButton->imgOn  = channelStop_xpm;
+				playButton->imgOff = channelPlay_xpm;
+				playButton->redraw();			
+			}
+			break;
+		case ChannelStatus::WAIT:
+			blink(); break;
+		default: break;
+	}
+
+	if (ch->recStatus == ChannelStatus::WAIT) 
+		blink();
 }
 
 
@@ -152,48 +172,6 @@ void geChannel::blink()
 /* -------------------------------------------------------------------------- */
 
 
-void geChannel::setColorsByStatus()
-{
-	switch (ch->status) {
-		case ChannelStatus::OFF:
-		case ChannelStatus::EMPTY:
-			mainButton->setDefaultMode();
-			playButton->imgOn  = channelPlay_xpm;
-			playButton->imgOff = channelStop_xpm;
-			playButton->redraw();
-			break;
-		case ChannelStatus::PLAY:
-			mainButton->setPlayMode();
-			if (!playButton->value()) { // If not manually pressed (it would interfere)
-				playButton->imgOn  = channelStop_xpm;
-				playButton->imgOff = channelPlay_xpm;
-				playButton->redraw();			
-			}
-			break;
-		case ChannelStatus::WAIT:
-			blink();
-			break;
-		case ChannelStatus::ENDING:
-			mainButton->setEndingMode();
-			break;
-		default: break;
-	}
-
-	switch (ch->recStatus) {
-		case ChannelStatus::WAIT:
-			blink();
-			break;
-		case ChannelStatus::ENDING:
-			mainButton->setEndingMode();
-			break;
-		default: break;
-	}
-}
-
-
-/* -------------------------------------------------------------------------- */
-
-
 void geChannel::packWidgets()
 {
 	/* Count visible widgets and resize mainButton according to how many widgets
@@ -257,14 +235,14 @@ void geChannel::changeSize(int H)
 	
 	int Y = y() + (H / 2 - (G_GUI_UNIT / 2));
 
-	playButton->resize(x(), Y, w(), G_GUI_UNIT);
-	arm->resize(x(), Y, w(), G_GUI_UNIT);   
-	mainButton->resize(x(), y(), w(), H);
-	mute->resize(x(), Y, w(), G_GUI_UNIT);
-	solo->resize(x(), Y, w(), G_GUI_UNIT);
-	vol->resize(x(), Y, w(), G_GUI_UNIT);
+	playButton->resize(playButton->x(), Y, playButton->w(), G_GUI_UNIT);
+	arm->resize(arm->x(), Y, arm->w(), G_GUI_UNIT);   
+	mainButton->resize(mainButton->x(), mainButton->y(), mainButton->w(), H);
+	mute->resize(mute->x(), Y, mute->w(), G_GUI_UNIT);
+	solo->resize(solo->x(), Y, solo->w(), G_GUI_UNIT);
+	vol->resize(vol->x(), Y, vol->w(), G_GUI_UNIT);
 #ifdef WITH_VST
-	fx->resize(x(), Y, w(), G_GUI_UNIT);
+	fx->resize(fx->x(), Y, fx->w(), G_GUI_UNIT);
 #endif
 }
 

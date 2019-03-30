@@ -49,9 +49,27 @@ geChannelButton::geChannelButton(int x, int y, int w, int h, const m::Channel* c
 
 void geChannelButton::refresh()
 {
-    if (m::recorder::isActive() && m_ch->armed)
-        setActionRecordMode();
-    redraw();	
+	if (m::recorder::isActive() && m_ch->armed)
+		setActionRecordMode();
+
+	switch (m_ch->status) {
+		case ChannelStatus::OFF:
+		case ChannelStatus::EMPTY:
+			setDefaultMode(); break;
+		case ChannelStatus::PLAY:
+			setPlayMode(); break;
+		case ChannelStatus::ENDING:
+			setEndingMode(); break;
+		default: break;
+	}
+
+	switch (m_ch->recStatus) {
+		case ChannelStatus::ENDING:
+			setEndingMode(); break;
+		default: break;
+	}
+	
+	redraw();	
 }
 
 

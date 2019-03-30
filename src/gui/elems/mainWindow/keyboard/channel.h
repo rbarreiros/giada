@@ -29,8 +29,8 @@
 #define GE_CHANNEL_H
 
 
-#include <FL/Fl_Group.H>
 #include "core/types.h"
+#include "gui/elems/basics/stacker.h"
 
 
 class geChannelStatus;
@@ -50,7 +50,7 @@ namespace v
 {
 class geChannelButton;
 
-class geChannel : public Fl_Group
+class geChannel : public geStacker
 {
 public:
 
@@ -129,11 +129,6 @@ protected:
 	Blinks button when channel is in wait/ending status. */
 
 	void blink();
-
-	/* setColorByStatus
-	Updates colors depending on channel status. */
-
-	void setColorsByStatus();
 
 	/* packWidgets
 	Spread widgets across available space. */

@@ -151,27 +151,21 @@ void menuCallback(Fl_Widget* w, void* v)
 geMidiChannel::geMidiChannel(int X, int Y, int W, int H, const m::MidiChannel* ch)
 	: geChannel(X, Y, W, H, ch)
 {
-	begin();
-
 #if defined(WITH_VST)
 	int delta = 144; // (6 widgets * G_GUI_UNIT) + (6 paddings * 4)
 #else
 	int delta = 120; // (5 widgets * G_GUI_UNIT) + (5 paddings * 4)
 #endif
 
-	playButton = new geButton(x(), y(), G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm);
-	arm        = new geButton(playButton->x()+playButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm);
-	mainButton = new geMidiChannelButton(arm->x()+arm->w()+4, y(), w() - delta, H, ch);
-	mute       = new geButton(mainButton->x()+mainButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", muteOff_xpm, muteOn_xpm);
-	solo       = new geButton(mute->x()+mute->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", soloOff_xpm, soloOn_xpm);
+	playButton = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm));
+	arm        = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm));
+	mainButton = stack(new geMidiChannelButton(0, 0, w() - delta, H, ch));
+	mute       = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", muteOff_xpm, muteOn_xpm));
+	solo       = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", soloOff_xpm, soloOn_xpm));
 #if defined(WITH_VST)
-	fx         = new geStatusButton(solo->x()+solo->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, fxOff_xpm, fxOn_xpm);
-	vol        = new geDial(fx->x()+fx->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT);
-#else
-	vol        = new geDial(solo->x()+solo->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT);
+	fx         = stack(new geStatusButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, fxOff_xpm, fxOn_xpm));
 #endif
-
-	end();
+	vol        = stack(new geDial(0, 0, G_GUI_UNIT, G_GUI_UNIT));
 
 	resizable(mainButton);
 

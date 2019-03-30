@@ -214,24 +214,18 @@ void menuCallback(Fl_Widget* w, void* v)
 geSampleChannel::geSampleChannel(int X, int Y, int W, int H, const m::SampleChannel* ch)
 	: geChannel(X, Y, W, H, ch)
 {
-	begin();
-
-	playButton  = new geButton(x(), y(), G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm);
-	arm         = new geButton(playButton->x()+playButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm);
-	status      = new geChannelStatus(arm->x()+arm->w()+4, y(), G_GUI_UNIT, H, ch);
-	mainButton  = new geSampleChannelButton(status->x()+status->w()+4, y(), G_GUI_UNIT, H, ch);
-	readActions = new geButton(mainButton->x()+mainButton->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", readActionOff_xpm, readActionOn_xpm);
-	modeBox     = new geChannelMode(readActions->x()+readActions->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, ch);
-	mute        = new geButton(modeBox->x()+modeBox->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", muteOff_xpm, muteOn_xpm);
-	solo        = new geButton(mute->x()+mute->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, "", soloOff_xpm, soloOn_xpm);
+	playButton  = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", channelStop_xpm, channelPlay_xpm));
+	arm         = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", armOff_xpm, armOn_xpm));
+	status      = stack(new geChannelStatus(0, 0, G_GUI_UNIT, H, ch));
+	mainButton  = stack(new geSampleChannelButton(0, 0, G_GUI_UNIT, H, ch));
+	readActions = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", readActionOff_xpm, readActionOn_xpm));
+	modeBox     = stack(new geChannelMode(0, 0, G_GUI_UNIT, G_GUI_UNIT, ch));
+	mute        = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", muteOff_xpm, muteOn_xpm));
+	solo        = stack(new geButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, "", soloOff_xpm, soloOn_xpm));
 #ifdef WITH_VST
-	fx          = new geStatusButton(solo->x()+solo->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT, fxOff_xpm, fxOn_xpm);
-	vol         = new geDial(fx->x()+fx->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT);
-#else
-	vol         = new geDial(solo->x()+solo->w()+4, y(), G_GUI_UNIT, G_GUI_UNIT);
+	fx          = stack(new geStatusButton(0, 0, G_GUI_UNIT, G_GUI_UNIT, fxOff_xpm, fxOn_xpm));
 #endif
-
-	end();
+	vol         = stack(new geDial(0, 0, G_GUI_UNIT, G_GUI_UNIT));
 
 	resizable(mainButton);
 

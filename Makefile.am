@@ -278,6 +278,8 @@ sourcesCore =                              \
 	src/gui/elems/basics/check.cpp         \
 	src/gui/elems/basics/radio.h           \
 	src/gui/elems/basics/radio.cpp         \
+	src/gui/elems/basics/stacker.h         \
+	src/gui/elems/basics/stacker.cpp       \
 	src/utils/log.h                        \
 	src/utils/log.cpp                      \
 	src/utils/time.h                       \
