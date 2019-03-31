@@ -49,11 +49,11 @@
 namespace giada {
 namespace m 
 {
-Channel::Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t column)
+Channel::Channel(ChannelType type, ChannelStatus status, int bufferSize, size_t columnIndex)
 : type           (type),
   status         (status),
   recStatus      (ChannelStatus::OFF),
-  column         (column),
+  columnIndex    (columnIndex),
   previewMode    (PreviewMode::NONE),
   pan            (0.5f),
   volume         (G_DEFAULT_VOL),
@@ -90,7 +90,7 @@ Channel::Channel(const Channel& o)
 : type           (o.type),
   status         (o.status),
   recStatus      (o.recStatus),
-  column         (o.column),
+  columnIndex    (o.columnIndex),
   index          (o.index),
   previewMode    (o.previewMode),
   pan            (o.pan.load()),

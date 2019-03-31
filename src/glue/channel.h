@@ -44,7 +44,7 @@ namespace channel
 /* addChannel
 Adds an empty new channel to the stack. Returns the new channel. */
 
-m::Channel* addChannel(size_t column, ChannelType type, int size);
+m::Channel* addChannel(size_t columnIndex, ChannelType type, int size);
 
 /* loadChannel
 Fills an existing channel with a wave. */

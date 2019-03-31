@@ -150,7 +150,7 @@ int writePatch(const Channel* ch, bool isProject)
 	pch.name            = ch->name;
 	pch.key             = ch->key;
 	pch.armed           = ch->armed;
-	pch.column          = ch->column;
+	pch.column          = ch->columnIndex;
 	pch.mute            = ch->mute;
 	pch.solo            = ch->solo;
 	pch.volume          = ch->volume;

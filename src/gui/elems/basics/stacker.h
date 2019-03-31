@@ -41,7 +41,7 @@ class geStacker : public Fl_Group
 {
 public:
 
-	enum class Dir { HORIZONTAL, VERICAL };
+	enum class Dir { HORIZONTAL, VERTICAL };
 
 	geStacker(int x, int y, int w, int h, Dir);
 
@@ -51,7 +51,7 @@ public:
 		int newx = x();
 		int newy = y();
 
-		if (children() > 1) {  // TODO - why is there always a first child on empty groups?
+		if (children() > 1) {  // TODO - why is there always a first child in empty groups?
 			if (m_dir == Dir::HORIZONTAL)
 				newx = m_prevx + m_prevw + G_GUI_INNER_MARGIN;
 			else
@@ -62,6 +62,8 @@ public:
 		m_prevy = newy;
 		m_prevw = w->w();
 		m_prevh = w->h();
+
+		//printf("x=%d y=%d w=%d h=%d\n", newx, newy, w->w(), w->h()); 
 
 		w->position(newx, newy); 
 		Fl_Group::add(w); 

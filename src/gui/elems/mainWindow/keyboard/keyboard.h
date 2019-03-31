@@ -37,6 +37,7 @@
 
 class geButton;
 class geColumn;
+class geResizerBar;
 
 
 namespace giada {
@@ -52,11 +53,6 @@ public:
 	geKeyboard(int X, int Y, int W, int H);
 
 	int handle(int e) override;
-
-	/* init
-	Builds the initial setup of empty channels. */
-
-	void init();
 
 	/* rebuild
 	Rebuilds this widget from scratch. Used when the model has changed. */
@@ -78,11 +74,6 @@ public:
 
 	void organizeColumns();
 
-	/* getColumn
-	 * return the column with from columns->at(i). */
-
-	geColumn* getColumn(int i);
-
 	/* printChannelMessage
 	 * given any output by glue_loadChannel, print the message on screen
 	 * on a gdAlert subwindow. */
@@ -91,7 +82,7 @@ public:
 
 	/* getTotalColumns */
 
-	unsigned getTotalColumns() { return columns.size(); }
+	//unsigned getTotalColumns() { return columns.size(); }
 
 	/* getChannel
 	Given a chanIndex returns the UI channel it belongs to. */
@@ -100,15 +91,18 @@ public:
 
 private:
 
-	static const int COLUMN_GAP = 16;
+	static const int COLUMN_GAP = 20;
 
 	/* indexColumn
 	The last index used for column. */
 
-	static int indexColumn;
-
-	void emptyColumns();
+	static int indexGen;
 	
+	/* init
+	Builds the initial setup of empty channels. */
+
+	void init();
+
 	/* refreshColIndexes
 	 * Recompute all column indexes in order to avoid any gaps between them.
 	 * Indexes must always be contiguous! */
@@ -116,11 +110,13 @@ private:
 	void refreshColIndexes();
 
 	static void cb_addColumn(Fl_Widget* v, void* p);
-	void cb_addColumn(int width=G_DEFAULT_COLUMN_WIDTH);
+	geColumn* cb_addColumn(int width=G_DEFAULT_COLUMN_WIDTH, int index=-1);
+
+	geColumn* getColumn(int index) const;
 
 	geButton* addColumnBtn;
-
-	std::vector<geColumn*> columns;
+	
+	geResizerBar* m_lastResizerBar;
 };
 }} // giada::v::
 

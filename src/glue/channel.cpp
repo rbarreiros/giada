@@ -87,9 +87,9 @@ int loadChannel(size_t chanIndex, const std::string& fname)
 /* -------------------------------------------------------------------------- */
 
 
-m::Channel* addChannel(size_t column, ChannelType type, int size)
+m::Channel* addChannel(size_t columnIndex, ChannelType type, int size)
 {
-	return m::mh::addChannel(type, column);
+	return m::mh::addChannel(type, columnIndex);
 }
 
 

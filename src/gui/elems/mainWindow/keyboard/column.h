@@ -29,7 +29,7 @@
 #define GE_COLUMN_H
 
 
-#include <FL/Fl_Group.H>
+#include "gui/elems/basics/stacker.h"
 
 
 class geButton;
@@ -42,17 +42,20 @@ namespace v
 class geKeyboard;
 class geChannel;
 
-class geColumn : public Fl_Group
+class geColumn : public geStacker
 {
 public:
 
-	geColumn(int x, int y, int w, int h, int index, geKeyboard* parent);
-	~geColumn();
+	geColumn(int x, int y, int w, int h, int index);
 
 	int handle(int e) override;
 	void draw() override;
 	void resize(int x, int y, int w, int h) override;
 
+	int getIndex() const;
+	bool isEmpty() const;   
+	int countChannels() const;
+	
 	/* addChannel
 	Adds a new channel in this column and set the internal pointer to channel 
 	to 'ch'. */
@@ -66,11 +69,10 @@ public:
 
 	void refresh();
 
+	void empty();
+
 	const m::Channel* getChannel(int i);
-	int getIndex();
 	void setIndex(int i);
-	bool isEmpty();   
-	int countChannels();
 
 private:
 

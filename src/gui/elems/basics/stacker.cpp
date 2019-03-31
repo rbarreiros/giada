@@ -40,26 +40,4 @@ geStacker::geStacker(int x, int y, int w, int h, Dir dir)
   m_prevh (0)
 {
 }
-
-
-/* -------------------------------------------------------------------------- */
-
-/*
-Fl_Widget* geStacker::stack(Fl_Widget* w)
-{
-    int newx = x();
-    int newy = y();
-
-    if (children() > 0) {
-        if (m_dir == Dir::HORIZONTAL)
-            newx = child(children() - 1)->x() + child(children() - 1)->w() + 1;
-        else
-            newy = child(children() - 1)->y() + child(children() - 1)->h() + 1; 
-    }   
-printf("children: %d --- %d %d\n", children(), newx, newy);
-    Fl_Group::add(w); 
-    w->position(newx, newy); 
-    return w;        
-}*/
-
 }} // giada::v::

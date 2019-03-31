@@ -46,46 +46,16 @@
 namespace giada {
 namespace v
 {
-geColumn::geColumn(int X, int Y, int W, int H, int index, geKeyboard* parent)
-: Fl_Group(X, Y, W, H), 
-  m_parent(parent), 
-  m_index (index)
+geColumn::geColumn(int X, int Y, int W, int H, int index)
+: geStacker(X, Y, W, H, geStacker::Dir::VERTICAL), 
+  m_index  (index)
 {
-	/* geColumn does a bit of a mess: we pass a pointer to its parent (geKeyboard) and
-	the geColumn itself deals with the creation of another widget, outside geColumn
-	and inside geKeyboard, which handles the vertical resize bar (geResizerBar).
-	The resizer cannot stay inside geColumn: it needs a broader view on the other
-	side widgets. The view can be obtained from geKeyboard only (the upper level).
-	Unfortunately, parent() can be nullptr: at this point (i.e the constructor)
-	geColumn is still detached from any parent. We use a custom geKeyboard *parent
-	instead. */
-
-	begin();
-	m_addChannelBtn = new geButton(x(), y(), w(), G_GUI_UNIT, "Add new channel");
-	end();
-
-	m_resizer = new geResizerBar(x()+w(), y(), G_GUI_OUTER_MARGIN * 2, h(), 
-		G_MIN_COLUMN_WIDTH, geResizerBar::HORIZONTAL);
-	m_parent->add(m_resizer);
-
+	m_addChannelBtn = stack(new geButton(0, 0, w(), G_GUI_UNIT, "Add new channel"));
 	m_addChannelBtn->callback(cb_addChannel, (void*)this);
 }
 
 
 /* -------------------------------------------------------------------------- */
-
-
-geColumn::~geColumn()
-{
-	/* FIXME - this could actually cause a memory leak. m_resizer is
-	just removed, not deleted. But we cannot delete it right now. */
-
-	m_parent->remove(m_resizer);
-}
-
-
-/* -------------------------------------------------------------------------- */
-
 
 
 int geColumn::handle(int e)
@@ -117,8 +87,8 @@ int geColumn::handle(int e)
 			if (fails) {
 				if (paths.size() > 1)
 					gdAlert("Some files were not loaded successfully.");
-				else
-					m_parent->printChannelMessage(result);
+				//else
+					//m_parent->printChannelMessage(result);
 			}
 			return 1;
 		}
@@ -149,10 +119,6 @@ void geColumn::resize(int X, int Y, int W, int H)
 	infinite recursion. */
 
 	x(X); y(Y); w(W); h(H);
-
-	/* Resize resizerBar. */
-
-	m_resizer->size(G_GUI_OUTER_MARGIN * 2, H);
 }
 
 
@@ -161,7 +127,7 @@ void geColumn::resize(int X, int Y, int W, int H)
 
 void geColumn::refresh()
 {
-	for (int i=1; i<children(); i++) // Child 0 is 'add channel' button
+	for (int i=1; i<children(); i++)  // Skip "add channel" button
 		static_cast<geChannel*>(child(i))->refresh();
 }
 
@@ -193,6 +159,16 @@ void geColumn::cb_addChannel(Fl_Widget* v, void* p) { ((geColumn*)p)->cb_addChan
 /* -------------------------------------------------------------------------- */
 
 
+void geColumn::empty()
+{
+	for (int i=1; i<children(); i++)  // Skip "add channel" button
+		delete child(i);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+
 void geColumn::repositionChannels()
 {
 	int totalH = 0;
@@ -209,19 +185,12 @@ geChannel* geColumn::addChannel(const m::Channel* ch, int size)
 {
 	geChannel* gch = nullptr;
 
-	/* All geChannels are added with y=0. That's not a problem, they will be 
-	repositioned later on during geColumn::resize(). */
-
 	if (ch->type == ChannelType::SAMPLE)
-		gch = new geSampleChannel(x(), 0, w(), size, static_cast<const m::SampleChannel*>(ch));
+		gch = stack(new geSampleChannel(0, 0, w(), size, static_cast<const m::SampleChannel*>(ch)));
 	else
-		gch = new geMidiChannel(x(), 0, w(), size, static_cast<const m::MidiChannel*>(ch));
+		gch = stack(new geMidiChannel(0, 0, w(), size, static_cast<const m::MidiChannel*>(ch)));
 
-	add(gch);
-
-	repositionChannels();
-	gch->redraw();    // fix corruption
-	m_parent->redraw(); // redraw Keyboard
+	gch->redraw();      // fix corruption
 	return gch;
 }
 
@@ -267,9 +236,9 @@ const m::Channel* geColumn::getChannel(int i)
 /* -------------------------------------------------------------------------- */
 
 
-int geColumn::getIndex()       { return m_index; }
+int geColumn::getIndex() const { return m_index; }
 void geColumn::setIndex(int i) { m_index = i; }
-bool geColumn::isEmpty()       { return children() == 1; }
-int geColumn::countChannels()  { return children() - 1; }
+bool geColumn::isEmpty() const { return children() == 1; }
+int geColumn::countChannels() const { return children() - 1; }
 
 }} // giada::v::

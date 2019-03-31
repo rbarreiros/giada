@@ -185,7 +185,7 @@ public:
 	ChannelStatus status;
 	ChannelStatus recStatus;
 
-	size_t column;
+	int    columnIndex;
 	size_t index;
 
 	/* previewMode
